@@ -64,7 +64,10 @@ LOOK_COMPLETE = _("The Mother ID is %(unique_id)s.")
 
 # referrals
 REFERRAL_RESPONSE = _("Thanks %(name)s! Referral for Mother ID %(unique_id)s is complete!")
-
+REFERRAL_TO_HOSPITAL_DRIVER = _("A mother has been referred from %(referring_facility)s to %(referral_facility)s. Make yourself available to transport patient.")
+REFERRAL_TO_DESTINATION_HOSPITAL_NURSE = _("Mother with %(unique_id)s needs EmONC and was referred to your Hospital. Plz respond to this message with RESP %(unique_id)s.")
+REFERRAL_AMBULANCE_STATUS_TO_REFFERING_HOSPITAL =_("Ambulance Response for mother with ID %(unique_id)s: Ambulance is %(status)s you can contact driver at %(phone)s.")
+REFERRAL_RESPONSE_NOTIFICATION_TO_REFERRING_HOSPITAL = _("Emergency Response for mother with ID %(unique_id)s: Ambulance is %(status)s. You can contact driver at %(phone)s.")
 REFERRAL_NOTIFICATION = _("A referral for Mother ID %(unique_id)s has been sent from %(facility)s. Please expect the mother. Reason: %(reason)s. Time: %(time)s. Emergency: %(is_emergency)s")
 REFERRAL_OUTCOME_RESPONSE = _("Thanks %(name)s! Referral outcome for Mother ID %(unique_id)s was received.")
 REFERRAL_OUTCOME_NOTIFICATION = _("This is outcome for Mother ID %(unique_id)s sent on %(date)s: mother is %(mother_outcome)s, Baby is %(baby_outcome)s, Mode of delivery was %(delivery_mode)s.")

@@ -124,7 +124,6 @@ def handle_submission(sender, **args):
     router = args['router']
     xform.initiating_phone_number = session.connection.identity
     keyword = session.trigger.trigger_keyword
-
     logger.debug('Attempting to post-process submission. Keyword: %s  Session is: %s' % (keyword, session))
     try:
         kw_handler = XFormKeywordHandler.objects.get(keyword=keyword)
@@ -142,7 +141,7 @@ def handle_submission(sender, **args):
 
         # call the actual handling function
         return func(session, xform, router)
-    except Exception:
+    except Exception, e:
         # assume that we were supposed to deal with this but something
         # unexpected went wrong. Respond with a general default
         # TODO: should we also mark the form somehow as errored out?

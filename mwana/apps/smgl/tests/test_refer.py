@@ -55,6 +55,7 @@ class SMGLReferTest(SMGLSetUp):
                                                "reason": _verbose_reasons("hbp"),
                                                "time": "12:00",
                                                "is_emergency": "no"}
+        from rapidsms.models import Contact;print Contact.objects.all().values('id',"name")
         script = """
             %(num)s > refer 1234 804024 hbp 1200 nem
             %(num)s < %(resp)s
@@ -76,6 +77,52 @@ class SMGLReferTest(SMGLSetUp):
         self.assertFalse(referral.responded)
         self.assertEqual(None, referral.mother_showed)
 
+    def testReferHospitalToHospital(self):
+        smh_id = "1234"
+        initiator_driver_no = "2342"
+        initiator_tn_no = "3412"
+        destination_tn_no = "7562"
+        initiator_facility = "804031" #Zimba Mission Hospital HAHC
+        initiator_facility_driver = self.createUser("AM", initiator_driver_no, location=initiator_facility)
+        initiator_facility_tn = self.createUser("TN", initiator_tn_no, location=initiator_facility)
+        destination_facility = "804030" #Kalomo Mission Hospital HAHC
+        destination_facility_tn= self.createUser("TN", destination_tn_no, location=destination_facility)
+        amb_status = "OTW"
+        server_resp = const.REFERRAL_RESPONSE % {"name": self.name,
+                                                  "unique_id": smh_id}
+        dest_nurse_notif = const.REFERRAL_TO_DESTINATION_HOSPITAL_NURSE  %{ "unique_id":smh_id }
+        amb_status_notif = const.REFERRAL_AMBULANCE_STATUS_TO_REFFERING_HOSPITAL %{ 'unique_id':smh_id,
+                                                                                                 'status':amb_status,
+                                                                                                 'phone':initiator_facility_driver.default_connection.identity}
+        initiator_hosp_notif = const.REFERRAL_TO_HOSPITAL_DRIVER %{"referring_facility":initiator_facility_tn.location.name,
+                                                                 "referral_facility":destination_facility_tn.location.name
+                                                                }
+
+        script = """
+        %(initiator_facility_tn)s > REFER %(smh_id)s %(destination_facility)s hbp 1200 em
+        %(initiator_facility_tn)s < %(server_resp)s
+        %(initiator_facility_driver)s < %(initiator_hosp_notif)s
+        %(initiator_facility_tn)s < %(initiator_hosp_notif)s 
+        %(destination_facility_nurse)s < %(dest_nurse_notif)s
+        """%{'initiator_facility_tn':initiator_tn_no, 'smh_id':smh_id, 'destination_facility':destination_facility, 
+            'server_resp':server_resp, 'initiator_facility_driver':initiator_driver_no,
+             'initiator_facility_nurse':initiator_tn_no, 'destination_facility_nurse':destination_tn_no,
+             'amb_status_notif':amb_status, "initiator_hosp_notif":initiator_hosp_notif, "dest_nurse_notif":dest_nurse_notif}
+
+        self.runScript(script)
+        self.assertSessionSuccess()
+        [referral] = Referral.objects.all()
+        self.assertEqual("1234", referral.mother_uid)
+        self.assertEqual(Location.objects.get(slug__iexact="804030"), referral.facility)
+        self.assertEqual(Location.objects.get(slug__iexact="804031"), referral.from_facility)
+        self.assertTrue(referral.reason_hbp)
+        self.assertEqual(["hbp"], list(referral.get_reasons()))
+        self.assertEqual("em", referral.status)
+        self.assertEqual(datetime.time(12, 00), referral.time)
+        self.assertFalse(referral.responded)
+        self.assertEqual(None, referral.mother_showed)
+        
+        
     def testReferNotRegistered(self):
         script = """
             %(num)s > refer 1234 804024 hbp 1200 nem

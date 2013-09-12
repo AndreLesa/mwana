@@ -13,7 +13,7 @@ class registration_required(object):
         self.func = func
 
     def __call__(self, session, xform, router):
-        if not session.connection.contact:
+        if not session.connection.contact: 
             return respond_to_session(router, session, const.NOT_REGISTERED,
                                       is_error=True)
         else:

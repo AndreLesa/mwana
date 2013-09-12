@@ -43,7 +43,6 @@ def refer(session, xform, router):
         "Contact must have a location to refer"
     contact = session.connection.contact
     name = contact.name
-
     mother_id = xform.xpath("form/unique_id")
     facility_id = xform.xpath("form/facility")
     loc = get_location(facility_id)
@@ -96,9 +95,27 @@ def refer(session, xform, router):
             amb.save()
             referral.amb_req = amb
             referral.save()
-            _broadcast_to_ER_users(amb, session, xform, router=router)
-            # Respond that we're on it.
-            return respond_to_session(router, session, INITIAL_AMBULANCE_RESPONSE)
+            if is_from_facility(session.connection.contact):
+                #If this is a referral from a facility, we request the people at the RECEIVING facility
+                _broadcast_to_ER_users(amb, session, xform, facility=referral.facility, router=router)
+                #Respond that we're on it.
+                return respond_to_session(router, session, INITIAL_AMBULANCE_RESPONSE)
+            elif is_from_hospital(session.connection.contact):
+                #If this case we request the ambulance driver + Triage Nurse at the VERY facility
+
+                message = const.REFERRAL_TO_HOSPITAL_DRIVER%{"referral_facility":referral.facility,
+															 "referring_facility":referral.from_facility}
+                _broadcast_to_ER_users(amb, session, xform, facility=referral.from_facility, router=router, message=message)
+                #notify triage nurse at receiving facility
+                for c in _get_people_to_notify_hospital(referral):
+                    msg = const.REFERRAL_TO_DESTINATION_HOSPITAL_NURSE %{"unique_id":referral.mother_uid}                                     
+                    router.outgoing(OutgoingMessage(c.default_connection, msg))
+                    
+                #respond to the sender
+                referral_response = const.REFERRAL_RESPONSE % {"name": name,
+                                                  "unique_id": referral.mother_uid}
+                return respond_to_session(router, session, referral_response)
+
 
 @registration_required
 @is_active
@@ -246,6 +263,16 @@ def emergency_response(session, xform, router):
                 logger.error('No Receiving Clinic Worker found (or missing connection for Ambulance Session: %s, XForm Session: %s, XForm: %s' % (ambulance_response, session, xform))
     return True
 
+def _get_people_to_notify_hospital(referral):
+    #This method will specifically be used to get the people to notify
+    #for Hospital to Hospital referrals
+    types = ContactType.objects.filter(
+        slug__in=[const.CTYPE_TRIAGENURSE]
+    ).all()    
+    return Contact.objects.filter(types__in=types,
+                                  location=referral.facility,
+                                  is_active=True)
+
 
 def _get_people_to_notify(referral):
     # who to notifiy on an initial referral
@@ -258,7 +285,6 @@ def _get_people_to_notify(referral):
     return Contact.objects.filter(types__in=types,
                                   location=facility_lookup,
                                   is_active=True)
-
 
 def _get_people_to_notify_outcome(referral):
     # who to notifiy when we've collected a referral outcome
@@ -280,10 +306,10 @@ def _get_people_to_notify_outcome(referral):
     return facility_contacts
 
 
-def _pick_er_driver(session, xform, receiving_facility):
+def _pick_er_driver(session, xform, facility):
     ad_type = ContactType.objects.get(slug__iexact='am')
     ads = Contact.objects.filter(types=ad_type,
-                                 location=receiving_facility,
+                                 location=facility,
                                  is_active=True)
     if ads.count():
         return ads[0]
@@ -291,10 +317,10 @@ def _pick_er_driver(session, xform, receiving_facility):
         raise Exception('No Ambulance Driver type found!')
 
 
-def _pick_er_triage_nurse(session, xform, receiving_facility):
+def _pick_er_triage_nurse(session, xform, facility):
     tn_type = ContactType.objects.get(slug__iexact='tn')
     tns = Contact.objects.filter(types=tn_type,
-                                 location=receiving_facility,
+                                 location=facility,
                                  is_active=True)
     if tns.count():
         return tns[0]
@@ -323,15 +349,17 @@ def _pick_help_admin(session, xform, receiving_facility):
         raise Exception('No Help Admin type found!')
 
 
-def _broadcast_to_ER_users(ambulance_session, session, xform, router, message=None):
+    
+def _broadcast_to_ER_users(ambulance_session, session, xform, router, facility=None, message=None):
     """
     Broadcasts a message to the Emergency Response users.  If message is not
     specified, will send the default initial ER message to each respondent.
     """
-    ref = ambulance_session.referral_set.all()[0]
-    receiving_facility = ref.facility
+    if not facility:
+        ref = ambulance_session.referral_set.all()[0]
+        facility = ref.facility
     try:
-        ambulance_driver = _pick_er_driver(session, xform, receiving_facility)
+        ambulance_driver = _pick_er_driver(session, xform, facility)
     except Exception:
         logger.error('No Ambulance Driver found (or missing connection) for Ambulance Session: %s, XForm Session: %s, XForm: %s' % (ambulance_session, session, xform))
     else:
@@ -343,7 +371,7 @@ def _broadcast_to_ER_users(ambulance_session, session, xform, router, message=No
                 send_msg(ambulance_driver.default_connection, ER_TO_DRIVER, router, **session.template_vars)
 
     try:
-        tn = _pick_er_triage_nurse(session, xform, receiving_facility)
+        tn = _pick_er_triage_nurse(session, xform, facility)
     except Exception:
         logger.error('No Triage Nurse found (or missing connection) for Ambulance Session: %s, XForm Session: %s, XForm: %s' % (ambulance_session, session, xform))
     else:
@@ -355,3 +383,24 @@ def _broadcast_to_ER_users(ambulance_session, session, xform, router, message=No
                 send_msg(tn.default_connection, ER_TO_TRIAGE_NURSE, router, **session.template_vars)
 
     ambulance_session.save()
+
+
+def _get_location_type(contact):
+    #The locationType slug of the contacts location
+    return contact.location.type.slug
+
+def is_from_facility(contact):
+    facilities = ['rural_health_centre']
+    loc = _get_location_type(contact)
+    if loc and loc in facilities:
+        return True
+    else:
+        return False
+        
+def is_from_hospital(contact):
+    hospitals = ['urban_health_centre']
+    loc = _get_location_type(contact)
+    if loc and loc in hospitals:
+        return True
+    else:
+        return False
