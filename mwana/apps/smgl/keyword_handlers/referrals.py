@@ -159,10 +159,10 @@ def referral_outcome(session, xform, router):
                                       outcome=ref.mother_outcome)
     else:
         # also notify folks at the referring facility about the outcome
-        for c in _get_people_to_notify_outcome(ref):
-            if c.default_connection:
+        for con in _get_people_to_notify_outcome(ref):
+            if con.default_connection:
                 if ref.mother_showed:
-                    router.outgoing(OutgoingMessage(c.default_connection,
+                    router.outgoing(OutgoingMessage(con.default_connection,
                                                     const.REFERRAL_OUTCOME_NOTIFICATION % \
                                                         {"unique_id": ref.mother_uid,
                                                          "date": ref.date.date(),
