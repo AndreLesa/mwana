@@ -216,10 +216,10 @@ class SMGLReferTest(SMGLSetUp):
        }
         script = """
             %(num)s > refout 1234 stb cri vag
-            %(num)s < %(resp)s
-            %(num)s < %(notify)s
             %(dc_num)s < %(notify)s
             %(ic_num)s < %(notify)s
+            %(num)s < %(notify)s
+            %(num)s < %(resp)s
         """ % {"num": self.user_number, "resp": resp, "notify": notify,
                "dc_num": "666999", "ic_num": "666000"}
         self.runScript(script)
