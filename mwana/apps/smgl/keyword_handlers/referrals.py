@@ -202,7 +202,7 @@ def referral_outcome(session, xform, router):
                                                          "baby_outcome": ref.get_baby_outcome_display(),
                                                          "delivery_mode": ref.get_mode_of_delivery_display()}))
                 else:
-                    router.outgoing(OutgoingMessage(c.default_connection,
+                    router.outgoing(OutgoingMessage(con.default_connection,
                                                     const.REFERRAL_OUTCOME_NOTIFICATION_NOSHOW % \
                                                         {"unique_id": ref.mother_uid,
                                                          "date": ref.date.date()}))
@@ -246,46 +246,76 @@ def emergency_response(session, xform, router):
                 .exclude(referral__responded=True)\
                 .order_by('-id')
 
-    if not ambulance_requests.count():
-        #session doesn't exist or it has already been confirmed
+    try:
+        ref = Referral.objects.filter(mother_uid=unique_id)[0]
+    except IndexError:
         return respond_to_session(router, session, ER_CONFIRM_SESS_NOT_FOUND,
                                   is_error=True, **{'unique_id': unique_id})
+    if cba_initiated(ref.session.connection.contact):
+        #was this referral initiated by a cba
+        send_msg(ref.session.connection,
+             const.RESP_CBA_UPDATE,
+             router, **session.template_vars)
+        return True
+    else:
+        if not ambulance_requests.count():
+            #session doesn't exist or it has already been confirmed
+            return respond_to_session(router, session, ER_CONFIRM_SESS_NOT_FOUND,
+                                  is_error=True, **{'unique_id': unique_id})
+    
+        ambulance_response.ambulance_request = ambulance_request = ambulance_requests[0]
 
-    #take the latest one in case this mother has been ER'd a bunch
-    ambulance_response.ambulance_request = ambulance_request = ambulance_requests[0]
-    if ambulance_request.ambulanceresponse_set.filter(response='otw').exists():
-        # if we've already responded 'otw' then just respond indicating such
-        last_response = ambulance_request.ambulanceresponse_set.filter(response='otw')[0]
-        return respond_to_session(router, session, AMB_RESPONSE_ALREADY_HANDLED,
+        confirm_contact_type = contact.types.all()[0]
+        session.template_vars.update({"confirm_type": confirm_contact_type,
+                                  "name": contact.name})
+        """
+        if ambulance_request.ambulanceresponse_set.filter(response='otw').exists():
+            # if we've already responded 'otw' then just respond indicating such
+            last_response = ambulance_request.ambulanceresponse_set.filter(response='otw')[0]
+            return respond_to_session(router, session, AMB_RESPONSE_ALREADY_HANDLED,
                                   response=last_response.response,
                                   person=last_response.responder)
-
-    ambulance_request.received_response = True # FIXME: this dosen't do anything?
-
-    confirm_contact_type = contact.types.all()[0]
-    session.template_vars.update({"confirm_type": confirm_contact_type,
-                                  "name": contact.name})
-
-    _broadcast_to_ER_users(ambulance_request, session, xform,
-        message=_(ER_STATUS_UPDATE), router=router)
-
-    ambulance_request.save()
-    ambulance_response.save()
-    ref = ambulance_request.referral_set.all()[0]
-    referrer_cnx = ref.session.connection
-    send_msg(referrer_cnx,
-             AMB_RESPONSE_ORIGINATING_LOCATION_INFO,
-             router, **session.template_vars)
-    if status == 'na':
-        session.template_vars.update({"sender_phone_number": referrer_cnx.identity,
+                                  """
+        ambulance_request.save()
+        ambulance_response.save()
+        
+        if status == 'na':
+            session.template_vars.update({"sender_phone_number": ref.session.connection.identity,
                                       "from_location": str(ref.from_facility.name)})
-        try:
-            help_admins = _pick_help_admin(session, xform, ref.facility)
-        except Exception:
-            logger.error('No Help Admin found (or missing connection for Ambulance Session: %s, XForm Session: %s, XForm: %s' % (ambulance_response, session, xform))
-        else:
-            for ha in help_admins:
-                send_msg(ha.default_connection, AMB_RESPONSE_NOT_AVAILABLE, router, **session.template_vars)
+            try:
+                help_admins = _pick_help_admin(session, xform, ref.facility)
+            except Exception:
+                logger.error('No Help Admin found (or missing connection for Ambulance Session: %s, XForm Session: %s, XForm: %s' % (ambulance_response, session, xform))
+            else:
+                for ha in help_admins:
+                    send_msg(ha.default_connection, AMB_RESPONSE_NOT_AVAILABLE, router, **session.template_vars)
+                return True
+        
+
+        if is_driver(contact):
+            if not status:
+                #if the sender is  a driver, ensure that they haven't left out status
+                RESP_MISSING_STATUS = "Your message is missing the STATUS"
+                return respond_to_session(router, session, RESP_MISSING_STATUS, is_error=True, **{ 'unique_id':unique_id})
+            else:
+                resp = const.AMB_RESP_STATUS%{
+                                              "unique_id":unique_id,
+                                              "status":status.upper(),
+                                              "phone":session.connection.identity}
+                send_msg(ref.session.connection, resp, router, **session.template_vars) 
+                return True
+        else:  
+            notification = const.RESP_NOTIF %{
+                                                "unique_id":unique_id,
+                                                "phone":ambulance_request.ambulance_driver.default_connection.identity
+                                                                           }  
+            thank_message = const.RESP_THANKS %{
+                                          "name":contact.name
+                                          }
+            send_msg(ref.session.connection, notification, router, **session.template_vars) 
+            return respond_to_session(router, session, thank_message, **{ "unique_id":unique_id})#thanks the sender  
+
+        """
     else:
         clinic_recip = _pick_clinic_recip(session, xform, ref.facility)
         if clinic_recip:
@@ -463,6 +493,12 @@ def _broadcast_Notification_to_ER_users(ambulance_session, session, xform, route
 def _get_location_type(contact):
     #The locationType slug of the contacts location
     return contact.location.type.slug
+
+def cba_initiated(contact):
+    return ['cba'] == list(contact.types.all().values_list('slug', flat=True))
+
+def is_driver(contact):
+    return ['am'] == list(contact.types.all().values_list('slug', flat=True))
 
 def is_from_facility(contact):
     facilities = ['rural_health_centre']

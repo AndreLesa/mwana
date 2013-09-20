@@ -235,23 +235,24 @@ class SMGLReferTest(SMGLSetUp):
         self.assertSessionFail()
 
     def testMultipleResponses(self):
+        referral_facility = Location.objects.get(slug="804024")
         success_resp = const.REFERRAL_RESPONSE % {"name": self.name,
-                                                  "unique_id": "1234"}
-        notif = const.REFERRAL_NOTIFICATION % {"unique_id": "1234",
-                                               "facility": self._facility_string,
-                                               "reason": _verbose_reasons("ec, fd, hbp, pec"),
-                                               "time": "12:00",
-                                               "is_emergency": "no"}
+                                                  "unique_id": "1234",
+                                                  "facility_name":referral_facility.name}
+        notif = const.REFERRAL_FACILITY_TO_HOSPITAL_NOTIFICATION % {"unique_id": "1234",
+                                               "facility_name": self.worker.location.name,
+                                               "phone":self.user_number
+                                                }
         script = """
-            %(num)s > refer 1234 804024 hbp,fd,pec,ec 1200 nem
+            %(num)s > refer 1234 %(facility_slug)s hbp,fd,pec,ec 1200 nem
             %(num)s < %(resp)s
-            %(danum)s < %(notif)s
             %(tnnum)s < %(notif)s
+            %(amb_driver_num)s < %(notif)s
         """ % {"num": self.user_number, "resp": success_resp,
-               "danum": "666777", "tnnum": "666888", "notif": notif}
+               "amb_driver_num": "666555", "tnnum": "222222", "notif": notif,
+               "facility_slug":referral_facility.slug}
         self.runScript(script)
         self.assertSessionSuccess()
-
         [referral] = Referral.objects.all()
         self.assertEqual("1234", referral.mother_uid)
         self.assertEqual(Location.objects.get(slug__iexact="804024"), referral.facility)
