@@ -48,21 +48,23 @@ class SMGLReferTest(SMGLSetUp):
         self._facility_string = "Mawaya (in Kalomo District Hospital HAHC)"
 
     def testRefer(self):
+        #Facility to another Facility
+        referral_facility = Location.objects.get(slug="804024")
         success_resp = const.REFERRAL_RESPONSE % {"name": self.name,
-                                                  "unique_id": "1234"}
-        notif = const.REFERRAL_NOTIFICATION % {"unique_id": "1234",
-                                               "facility": self._facility_string,
-                                               "reason": _verbose_reasons("hbp"),
-                                               "time": "12:00",
-                                               "is_emergency": "no"}
-        from rapidsms.models import Contact;print Contact.objects.all().values('id',"name")
+                                                  "unique_id": "1234",
+                                                  "facility_name":referral_facility.name}
+        notif = const.REFERRAL_FACILITY_TO_HOSPITAL_NOTIFICATION % {"unique_id": "1234",
+                                               "facility_name": self.worker.location.name,
+                                               "phone":self.user_number
+                                                }
         script = """
-            %(num)s > refer 1234 804024 hbp 1200 nem
+            %(num)s > refer 1234 %(facility_slug)s hbp 1200 nem
             %(num)s < %(resp)s
-            %(danum)s < %(notif)s
             %(tnnum)s < %(notif)s
+            %(amb_driver_num)s < %(notif)s
         """ % {"num": self.user_number, "resp": success_resp,
-               "danum": "666777", "tnnum": "666888", "notif": notif}
+               "amb_driver_num": "666555", "tnnum": "222222", "notif": notif,
+               "facility_slug":referral_facility.slug}
         self.runScript(script)
         self.assertSessionSuccess()
 
@@ -77,25 +79,48 @@ class SMGLReferTest(SMGLSetUp):
         self.assertFalse(referral.responded)
         self.assertEqual(None, referral.mother_showed)
 
+    def testReferCBAToFacility(self):
+        success_resp = const.REFERRAL_CBA_THANKS % {"facility_name":self.cba.location.parent.name,
+                                                  "name":self.cba.name}
+        notif = const.REFERRAL_CBA_NOTIFICATION % {"unique_id": "1234",
+                                               "village": self.cba.location.name,
+                                               "phone":self.cba_number}
+        script = """
+            %(num)s > refer 1234
+            %(num)s < %(resp)s
+            %(tnnum)s < %(notif)s
+        """ % {"num": self.cba_number, "resp": success_resp,
+                "tnnum": "222222", "notif": notif}
+        self.runScript(script)
+        self.assertSessionSuccess()
+
+        [referral] = Referral.objects.all()
+        self.assertEqual("1234", referral.mother_uid)
+        self.assertEqual(Location.objects.get(slug__iexact="804024"), referral.facility)
+        self.assertEqual(Location.objects.get(slug__iexact="80402404"), referral.from_facility)
+        self.assertFalse(referral.responded)
+        self.assertEqual(None, referral.mother_showed)
+
     def testReferHospitalToHospital(self):
-        smh_id = "1234"
-        initiator_driver_no = "2342"
-        initiator_tn_no = "3412"
-        destination_tn_no = "7562"
+        self.smh_id = "1234"
+        self.initiator_driver_no = "2342"
+        self.initiator_tn_no = "3412"
+        self.destination_tn_no = "7562"
         initiator_facility = "804031" #Zimba Mission Hospital HAHC
-        initiator_facility_driver = self.createUser("AM", initiator_driver_no, location=initiator_facility)
-        initiator_facility_tn = self.createUser("TN", initiator_tn_no, location=initiator_facility)
+        initiator_facility_driver = self.createUser("AM", self.initiator_driver_no, location=initiator_facility)
+        self.initiator_facility_tn = self.createUser("TN", self.initiator_tn_no, location=initiator_facility)
         destination_facility = "804030" #Kalomo Mission Hospital HAHC
-        destination_facility_tn= self.createUser("TN", destination_tn_no, location=destination_facility)
+        self.destination_facility_tn= self.createUser("TN", self.destination_tn_no, location=destination_facility)
         amb_status = "OTW"
         server_resp = const.REFERRAL_RESPONSE % {"name": self.name,
-                                                  "unique_id": smh_id}
-        dest_nurse_notif = const.REFERRAL_TO_DESTINATION_HOSPITAL_NURSE  %{ "unique_id":smh_id }
-        amb_status_notif = const.REFERRAL_AMBULANCE_STATUS_TO_REFFERING_HOSPITAL %{ 'unique_id':smh_id,
+                                                  "unique_id": self.smh_id,
+                                                  "facility_name":self.destination_facility_tn.location.name}
+        dest_nurse_notif = const.REFERRAL_TO_DESTINATION_HOSPITAL_NURSE  %{ "unique_id":self.smh_id }
+        amb_status_notif = const.REFERRAL_AMBULANCE_STATUS_TO_REFERRING_HOSPITAL %{ 'unique_id':self.smh_id,
                                                                                                  'status':amb_status,
                                                                                                  'phone':initiator_facility_driver.default_connection.identity}
-        initiator_hosp_notif = const.REFERRAL_TO_HOSPITAL_DRIVER %{"referring_facility":initiator_facility_tn.location.name,
-                                                                 "referral_facility":destination_facility_tn.location.name
+        initiator_hosp_notif = const.REFERRAL_TO_HOSPITAL_DRIVER %{"referring_facility":self.initiator_facility_tn.location.name,
+                                                                 "referral_facility":self.destination_facility_tn.location.name
                                                                 }
 
         script = """
@@ -104,9 +129,9 @@ class SMGLReferTest(SMGLSetUp):
         %(initiator_facility_driver)s < %(initiator_hosp_notif)s
         %(initiator_facility_tn)s < %(initiator_hosp_notif)s 
         %(destination_facility_nurse)s < %(dest_nurse_notif)s
-        """%{'initiator_facility_tn':initiator_tn_no, 'smh_id':smh_id, 'destination_facility':destination_facility, 
-            'server_resp':server_resp, 'initiator_facility_driver':initiator_driver_no,
-             'initiator_facility_nurse':initiator_tn_no, 'destination_facility_nurse':destination_tn_no,
+        """%{'initiator_facility_tn':self.initiator_tn_no, 'smh_id':self.smh_id, 'destination_facility':destination_facility, 
+            'server_resp':server_resp, 'initiator_facility_driver':self.initiator_driver_no,
+             'initiator_facility_nurse':self.initiator_tn_no, 'destination_facility_nurse':self.destination_tn_no,
              'amb_status_notif':amb_status, "initiator_hosp_notif":initiator_hosp_notif, "dest_nurse_notif":dest_nurse_notif}
 
         self.runScript(script)
@@ -269,8 +294,10 @@ class SMGLReferTest(SMGLSetUp):
             self.assertEqual(0, Referral.objects.count())
 
     def testReferGoodTimes(self):
+        referral_facility = Location.objects.get(slug="804024")
         resp = const.REFERRAL_RESPONSE % {"name": self.name,
-                                          "unique_id": "1234"}
+                                          "unique_id": "1234",
+                                          "facility_name":referral_facility.name}
         for good_time in ["0900", "900"]:
             script = """
                 %(num)s > refer 1234 804024 hbp %(time)s nem
@@ -458,11 +485,14 @@ class SMGLReferTest(SMGLSetUp):
         self.assertEqual("em_ref", notif.type)
 
     def testReferEmWorkflow(self):
-        d = {
-            "unique_id": '1234',
-            "from_location": 'Mawaya',
-            "sender_phone_number": self.user_number
-        }
+        referral_facility = Location.objects.get(slug="804024")
+        success_resp = const.REFERRAL_RESPONSE % {"name": self.name,
+                                                  "unique_id": "1234",
+                                                  "facility_name":referral_facility.name}
+        notif = const.REFERRAL_FACILITY_TO_HOSPITAL_NOTIFICATION % {"unique_id": "1234",
+                                               "facility_name": self.worker.location.name,
+                                               "phone":self.user_number
+                                                }
         tnnum = '222222'
         script = """
             %(num)s > refer 1234 804024 hbp 1200 em
@@ -470,9 +500,9 @@ class SMGLReferTest(SMGLSetUp):
             %(tnnum)s < %(tn_notif)s
             %(amnum)s < %(am_notif)s
         """ % {"num": self.user_number, "amnum": "666555", "tnnum": tnnum,
-               "resp": INITIAL_AMBULANCE_RESPONSE,
-               "tn_notif": ER_TO_TRIAGE_NURSE % d,
-               "am_notif": ER_TO_DRIVER % d}
+               "resp": success_resp,
+               "tn_notif": notif,
+               "am_notif": notif}
         self.runScript(script)
         self.assertSessionSuccess()
 
@@ -547,20 +577,23 @@ class SMGLReferTest(SMGLSetUp):
 
     def testReferEmNotAvailableWorkflow(self):
         tnnum = '222222'
-        d = {
-            "unique_id": '1234',
-            "from_location": 'Mawaya',
-            "sender_phone_number": self.user_number
-        }
+        referral_facility = Location.objects.get(slug="804024")
+        success_resp = const.REFERRAL_RESPONSE % {"name": self.name,
+                                                  "unique_id": "1234",
+                                                  "facility_name":referral_facility.name}
+        notif = const.REFERRAL_FACILITY_TO_HOSPITAL_NOTIFICATION % {"unique_id": "1234",
+                                               "facility_name": self.worker.location.name,
+                                               "phone":self.user_number
+                                                }
         script = """
             %(num)s > refer 1234 804024 hbp 1200 em
             %(num)s < %(resp)s
             %(tnnum)s < %(tn_notif)s
             %(amnum)s < %(am_notif)s
         """ % {"num": self.user_number, "amnum": "666555", "tnnum": tnnum,
-               "resp": INITIAL_AMBULANCE_RESPONSE,
-               "tn_notif": ER_TO_TRIAGE_NURSE % d,
-               "am_notif": ER_TO_DRIVER % d}
+               "resp": success_resp,
+               "tn_notif": notif,
+               "am_notif": notif}
         self.runScript(script)
         self.assertSessionSuccess()
 

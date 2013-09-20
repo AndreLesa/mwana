@@ -35,6 +35,9 @@ def refer(session, xform, router):
 
     Format:
     REFER Mother_UID receiving_facility_id Reason TIME EM/NEM
+
+    A CBA is allowed and expected to only submit the Mother_UID
+    such as: REFER Mother_UID
     """
 
     assert session.connection.contact is not None, \
@@ -44,13 +47,51 @@ def refer(session, xform, router):
     contact = session.connection.contact
     name = contact.name
     mother_id = xform.xpath("form/unique_id")
-    facility_id = xform.xpath("form/facility")
-    loc = get_location(facility_id)
-    if not loc:
-        return respond_to_session(router, session, FACILITY_NOT_RECOGNIZED,
-                                  is_error=True,
-                                  **{"facility": facility_id})
+    referring_loc = session.connection.contact.location
+    # IF CBA, DO NOT SEND AN EMERGENCY REQUEST, JUST NOTIFY via _get_people_to_notify
+    is_cba = ['cba'] == list(contact.types.all().values_list('slug', flat=True))
+    if is_cba:
+        #If a CBA referred the mother, we have to take it that the parent facility is the
+        #destination or referral facility.
+        parent_facility = referring_loc.parent or referring_loc
+        referral = Referral(facility=parent_facility, form_id=xform.get_id,
+                            session=session, date=datetime.utcnow())
+        referral.set_mother(mother_id)
+        referral.from_facility = referring_loc
+        referral.save()
+
+        from_facility = referring_loc.name if not referring_loc.parent else "%s (in %s)" % \
+            (referring_loc.name, referring_loc.parent.name)
+        for con in _get_people_to_notify(referral):
+            if con.default_connection:
+                verbose_reasons = [Referral.REFERRAL_REASONS[r] for r in referral.get_reasons()]
+                msg = const.REFERRAL_CBA_NOTIFICATION % {"unique_id": mother_id,
+                                                     "village": referring_loc.name,
+                                                     "phone": session.connection.identity
+                                                     }
+                router.outgoing(OutgoingMessage(con.default_connection, msg))
+                cba_thanks = const.REFERRAL_CBA_THANKS %{
+                                                    "name":name,
+                                                    "facility_name":parent_facility.name
+                }
+        return respond_to_session(router, session, cba_thanks)
     else:
+        #if the sender wasn't a CBA we expect referral facility, reasons, status
+        facility_id = xform.xpath("form/facility")
+        MISSING_FACILITY = "Kindly enter the facility on your REFER message concerning mother ID: %(unique_id)s" %{ "unique_id":mother_id} 
+        if not facility_id:
+            return respond_to_session(router,
+                                      session,
+                                      MISSING_FACILITY,
+                                      is_error=True,
+                                      **{"facility": facility_id}
+                                      )
+        loc = get_location(facility_id)
+        if not loc:
+            return respond_to_session(router, session, FACILITY_NOT_RECOGNIZED,
+                                      is_error=True,
+                                      **{"facility": facility_id})
+
         referral = Referral(facility=loc, form_id=xform.get_id,
                             session=session, date=datetime.utcnow())
         referral.set_mother(mother_id)
@@ -68,53 +109,46 @@ def refer(session, xform, router):
         status = xform.xpath("form/status")
         referral.status = status
         referral.save()
-        # IF CBA, DO NOT SEND AN EMERGENCY REQUEST, JUST NOTIFY via _get_people_to_notify
-        is_cba = ['cba'] == list(contact.types.all().values_list('slug', flat=True))
-        if is_cba or referral.status == 'nem':
-            loc = session.connection.contact.location
-            from_facility = loc.name if not loc.parent else "%s (in %s)" % \
-                (loc.name, loc.parent.name)
-            for c in _get_people_to_notify(referral):
-                if c.default_connection:
-                    verbose_reasons = [Referral.REFERRAL_REASONS[r] for r in referral.get_reasons()]
-                    msg = const.REFERRAL_NOTIFICATION % {"unique_id": mother_id,
-                                                         "facility": from_facility,
-                                                         "reason": ", ".join(verbose_reasons),
-                                                         "time": referral.time.strftime("%H:%M"),
-                                                         "is_emergency": yesno(referral.is_emergency)}
-                    router.outgoing(OutgoingMessage(c.default_connection, msg))
-            return respond_to_session(router, session, const.REFERRAL_RESPONSE,
-                                      name=name, unique_id=mother_id)
-        else:
-            # Generate an Ambulance Request
-            session.template_vars.update({"sender_phone_number": session.connection.identity})
-            amb = AmbulanceRequest()
-            amb.session = session
-            session.template_vars.update({"from_location": str(referral.from_facility.name)})
-            amb.set_mother(mother_id)
-            amb.save()
-            referral.amb_req = amb
-            referral.save()
-            if is_from_facility(session.connection.contact):
-                #If this is a referral from a facility, we request the people at the RECEIVING facility
-                _broadcast_to_ER_users(amb, session, xform, facility=referral.facility, router=router)
-                #Respond that we're on it.
-                return respond_to_session(router, session, INITIAL_AMBULANCE_RESPONSE)
-            elif is_from_hospital(session.connection.contact):
-                #If this case we request the ambulance driver + Triage Nurse at the VERY facility
 
-                message = const.REFERRAL_TO_HOSPITAL_DRIVER%{"referral_facility":referral.facility,
-															 "referring_facility":referral.from_facility}
-                _broadcast_to_ER_users(amb, session, xform, facility=referral.from_facility, router=router, message=message)
-                #notify triage nurse at receiving facility
-                for c in _get_people_to_notify_hospital(referral):
-                    msg = const.REFERRAL_TO_DESTINATION_HOSPITAL_NURSE %{"unique_id":referral.mother_uid}                                     
-                    router.outgoing(OutgoingMessage(c.default_connection, msg))
-                    
-                #respond to the sender
-                referral_response = const.REFERRAL_RESPONSE % {"name": name,
-                                                  "unique_id": referral.mother_uid}
-                return respond_to_session(router, session, referral_response)
+        # Generate an Ambulance Request
+        session.template_vars.update({"sender_phone_number": session.connection.identity})
+        amb = AmbulanceRequest()
+        amb.session = session
+        session.template_vars.update({"from_location": str(referral.from_facility.name)})
+        amb.set_mother(mother_id)
+        amb.save()
+        referral.amb_req = amb
+        referral.save()
+        if is_from_facility(session.connection.contact):
+            #If this is a referral from a facility, we request the people at the RECEIVING facility/ Hospital
+            msg = const.REFERRAL_FACILITY_TO_HOSPITAL_NOTIFICATION %{
+                                                                     'unique_id':mother_id,
+                                                                     'phone':session.connection.identity,
+                                                                     'facility_name':referral.from_facility.name}
+            _broadcast_to_ER_users(amb, session, xform, facility=referral.facility, router=router, message=msg)
+            #Respond that we're on it.
+            amb_response = const.REFERRAL_RESPONSE%{
+                                            "name":name,
+                                            "unique_id":mother_id,
+                                            "facility_name":referral.facility.name
+            }
+            return respond_to_session(router, session, amb_response)
+        elif is_from_hospital(session.connection.contact):
+            #If this case we request the ambulance driver + Triage Nurse at the VERY facility
+
+            message = const.REFERRAL_TO_HOSPITAL_DRIVER%{"referral_facility":referral.facility,
+														 "referring_facility":referral.from_facility}
+            _broadcast_to_ER_users(amb, session, xform, facility=referral.from_facility, router=router, message=message)
+            #notify triage nurse at receiving facility
+            for c in _get_people_to_notify_hospital(referral):
+                msg = const.REFERRAL_TO_DESTINATION_HOSPITAL_NURSE %{"unique_id":referral.mother_uid}                                     
+                router.outgoing(OutgoingMessage(c.default_connection, msg))
+                
+            #respond to the sender
+            referral_response = const.REFERRAL_RESPONSE % {"name": name,
+                                              "unique_id": referral.mother_uid,
+                                              "facility_name":referral.facility.name}
+            return respond_to_session(router, session, referral_response)
 
 
 @registration_required
@@ -133,7 +167,6 @@ def referral_outcome(session, xform, router):
     if ref.responded:
         return respond_to_session(router, session, const.REFERRAL_ALREADY_RESPONDED,
                                   is_error=True, **{"unique_id": mother_id})
-
     ref.responded = True
     if xform.xpath("form/mother_outcome").lower() == const.REFERRAL_OUTCOME_NOSHOW:
         ref.mother_showed = False
@@ -150,7 +183,6 @@ def referral_outcome(session, xform, router):
         if responses.count() == 0 or responses.all().order_by('-responded_on')[0].response != 'na':
             session.template_vars.update({"contact_type": contact.types.all()[0],
                                           "name": contact.name})
-
             if xform.xpath("form/mode_of_delivery") == 'noamb':
                 _broadcast_to_ER_users(ref.amb_req, session, xform,
                                        message=_(AMB_OUTCOME_FILED), router=router)
@@ -299,7 +331,6 @@ def _get_people_to_notify_hospital(referral):
                                   location=referral.facility,
                                   is_active=True)
 
-
 def _get_people_to_notify(referral):
     # who to notifiy on an initial referral
     # this should be the people who are being referred to
@@ -410,6 +441,24 @@ def _broadcast_to_ER_users(ambulance_session, session, xform, router, facility=N
 
     ambulance_session.save()
 
+def _broadcast_Notification_to_ER_users(ambulance_session, session, xform, router, message=None):
+    """Broadcasts the message to the Response users, usually these are just the people at the referring facility
+    """
+    ref = ambulance_session.referral_set.all()[0]
+    facility = ref.from_facility
+    
+    try:
+        tn = _pick_er_triage_nurse(session, xform, facility)
+    except Exception:
+        logger.error('No Triage Nurse found (or missing connection) for Ambulance Session: %s, XForm Session: %s, XForm: %s' % (ambulance_session, session, xform))
+    else:
+        ambulance_session.triage_nurse = tn
+        if tn.default_connection:
+            if message:
+                send_msg(tn.default_connection, message, router, **session.template_vars)
+            else:
+                send_msg(tn.default_connection, ER_TO_TRIAGE_NURSE, router, **session.template_vars)
+    ambulance_session.save()
 
 def _get_location_type(contact):
     #The locationType slug of the contacts location
