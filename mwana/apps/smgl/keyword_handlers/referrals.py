@@ -70,7 +70,8 @@ def refer(session, xform, router):
                                                      "phone": session.connection.identity
                                                      }
                 router.outgoing(OutgoingMessage(con.default_connection, msg))
-                cba_thanks = const.REFERRAL_CBA_THANKS %{
+        #respond to the sending CBA
+        cba_thanks = const.REFERRAL_CBA_THANKS %{
                                                     "name":name,
                                                     "facility_name":parent_facility.name
                 }
