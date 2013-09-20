@@ -261,11 +261,37 @@ def emergency_response(session, xform, router):
                 send_msg(clinic_recip.default_connection, ER_TO_CLINIC_WORKER, router, **session.template_vars)
             else:
                 logger.error('No Receiving Clinic Worker found (or missing connection for Ambulance Session: %s, XForm Session: %s, XForm: %s' % (ambulance_response, session, xform))
+        """
     return True
+
+def pick(session, xform, router):
+    logger.debug('POST PROCESSING FOR PICK KEYWORD')
+    contact = _get_allowed_ambulance_workflow_contact(session)
+    if not contact:
+        return respond_to_session(router, session, NOT_REGISTERED_TO_CONFIRM_ER,
+                                  is_error=True)
+    mother_id = xform.xpath("form/unique_id")
+    pick_thanks = const.PICK_THANKS%{
+                                     "unique_id":mother_id}
+    respond_to_session(router, session, pick_thanks, is_error=True, **{ 'unique_id':mother_id })
+    
+    
+def drop(session, xform, router):
+    logger.debug('POST PROCESSING FOR DROP KEYWORD')
+    contact = _get_allowed_ambulance_workflow_contact(session)
+    if not contact:
+        return respond_to_session(router, session, NOT_REGISTERED_TO_CONFIRM_ER,
+                                  is_error=True)
+    mother_id = xform.xpath("form/unique_id")
+    drop_thanks = const.DROP_THANKS%{
+                                     "unique_id":mother_id}
+    respond_to_session(router, session, drop_thanks, is_error=True, **{ 'unique_id':mother_id })
+    
 
 def _get_people_to_notify_hospital(referral):
     #This method will specifically be used to get the people to notify
     #for Hospital to Hospital referrals
+    #So basically people at the receiving facility.
     types = ContactType.objects.filter(
         slug__in=[const.CTYPE_TRIAGENURSE]
     ).all()    

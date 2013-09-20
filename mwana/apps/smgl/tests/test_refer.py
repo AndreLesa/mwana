@@ -122,7 +122,85 @@ class SMGLReferTest(SMGLSetUp):
         self.assertFalse(referral.responded)
         self.assertEqual(None, referral.mother_showed)
         
+    def testReferResponseHospitalToHospital(self):
+        self.testReferHospitalToHospital()
+        amb_status = "OTW"
+        amb_status_notif = const.AMB_RESP_STATUS%{
+                                                    "unique_id":self.smh_id,
+                                                    "status":amb_status,
+                                                    "phone":self.initiator_driver_no
+                                                           }
+        resp_notif =const.RESP_NOTIF %{
+                                        "unique_id":self.smh_id,
+                                        "phone":self.initiator_driver_no
+                                        }
+        resp_thanks = const.RESP_THANKS %{
+                                          "name":self.destination_facility_tn.name
+                                          }
         
+        script = """
+        %(initiator_facility_driver)s > RESP %(smh_id)s %(amb_status)s
+        %(initiator_facility_tn)s < %(amb_status_notif)s
+        
+        %(destination_facility_nurse)s > RESP %(smh_id)s
+        %(initiator_facility_tn)s < %(resp_notif)s
+        %(destination_facility_nurse)s < %(resp_thanks)s
+        """%{"initiator_facility_driver":self.initiator_driver_no, "initiator_facility_tn":self.initiator_tn_no, "smh_id":self.smh_id, "amb_status":amb_status, 
+             "amb_status_notif":amb_status_notif, "resp_thanks":resp_thanks, "resp_notif":resp_notif, "destination_facility_nurse":self.destination_tn_no}
+        self.runScript(script)
+    
+    def testReferResponseCommunityToFacility(self):
+        self.testReferCBAToFacility()
+        script = """
+        %(facility_tn)s > RESP %(unique_id)s
+        %(num)s < %(resp)s
+        """%{"unique_id":"1234",
+             "facility_tn":"222222",
+             "num":"456",
+             "resp":const.RESP_CBA_UPDATE}
+        self.runScript(script)
+        
+    def testReferResponseFacilityToFacility(self):
+        self.testRefer()
+        script = """
+        %(
+        """
+        
+        
+    def testReferPick(self):
+        self.testReferHospitalToHospital()
+        pick_thanks = const.PICK_THANKS %{
+                                          "unique_id":self.smh_id
+                                          }
+        
+        script = """
+        %(amb_driver)s > PICK %(smh_id)s
+        %(amb_driver)s < %(pick_thanks)s
+        """%{
+             "amb_driver":self.initiator_driver_no,
+             "smh_id":self.smh_id,
+             "pick_thanks":pick_thanks 
+             }
+        self.runScript(script)
+
+    def testReferDrop(self):
+        self.testReferHospitalToHospital()
+        
+        drop_thanks = const.DROP_THANKS %{
+                                          "unique_id":self.smh_id
+                                          }
+        
+        script = """
+        %(amb_driver)s > DROP %(smh_id)s
+        %(amb_driver)s < %(drop_thanks)s
+        """%{
+             "amb_driver":self.initiator_driver_no,
+             "smh_id":self.smh_id,
+             "drop_thanks":drop_thanks 
+             }
+        self.runScript(script)
+        
+    
     def testReferNotRegistered(self):
         script = """
             %(num)s > refer 1234 804024 hbp 1200 nem
