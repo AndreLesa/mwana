@@ -47,7 +47,10 @@ def refer(session, xform, router):
     contact = session.connection.contact
     name = contact.name
     mother_id = xform.xpath("form/unique_id")
+
     referring_loc = session.connection.contact.location
+    
+
     # IF CBA, DO NOT SEND AN EMERGENCY REQUEST, JUST NOTIFY via _get_people_to_notify
     is_cba = ['cba'] == list(contact.types.all().values_list('slug', flat=True))
     if is_cba:
@@ -106,11 +109,32 @@ def refer(session, xform, router):
         except ValueError, e:
             return respond_to_session(router, session, str(e), 
                                       is_error=True)
-
         status = xform.xpath("form/status")
         referral.status = status
         referral.save()
-
+        #Get all the referrals whose destination facility is the same as the new ORIGIN facility. Ensures we only get the past
+        #referrals sent to the location being referred from. 
+        for past_referral in Referral.objects.filter(facility=referral.from_facility, mother_uid=mother_id):
+            past_referral.re_referral = referral
+            past_referral.save()
+        #If not an emergency, we just notify via get people to notify.
+        if status == "nem":
+            for con in _get_people_to_notify(referral):
+                verbose_reasons = [Referral.REFERRAL_REASONS[r] for r in referral.get_reasons()]
+                msg = const.REFERRAL_NOTIFICATION %{
+                                                    "unique_id":referral.mother_uid,
+                                                    "facility":referral.from_facility,
+                                                    "reason":", ".join(verbose_reasons),
+                                                    "time": referral.time.strftime("%H:%M"),
+                                                    "is_emergency": yesno(referral.is_emergency),
+                                                    }                                     
+                router.outgoing(OutgoingMessage(con.default_connection, msg))
+                
+            referral_response = const.REFERRAL_RESPONSE % {"name": name,
+                                              "unique_id": referral.mother_uid,
+                                              "facility_name":referral.facility.name}
+            return respond_to_session(router, session, referral_response)
+            
         # Generate an Ambulance Request
         session.template_vars.update({"sender_phone_number": session.connection.identity})
         amb = AmbulanceRequest()
@@ -120,30 +144,31 @@ def refer(session, xform, router):
         amb.save()
         referral.amb_req = amb
         referral.save()
+        
         if is_from_facility(session.connection.contact):
             #If this is a referral from a facility, we request the people at the RECEIVING facility/ Hospital
+
             msg = const.REFERRAL_FACILITY_TO_HOSPITAL_NOTIFICATION %{
                                                                      'unique_id':mother_id,
                                                                      'phone':session.connection.identity,
                                                                      'facility_name':referral.from_facility.name}
             _broadcast_to_ER_users(amb, session, xform, facility=referral.facility, router=router, message=msg)
             #Respond that we're on it.
-            amb_response = const.REFERRAL_RESPONSE%{
+            referral_response = const.REFERRAL_RESPONSE%{
                                             "name":name,
                                             "unique_id":mother_id,
                                             "facility_name":referral.facility.name
             }
-            return respond_to_session(router, session, amb_response)
+            return respond_to_session(router, session, referral_response)
         elif is_from_hospital(session.connection.contact):
             #If this case we request the ambulance driver + Triage Nurse at the VERY facility
-
             message = const.REFERRAL_TO_HOSPITAL_DRIVER%{"referral_facility":referral.facility,
 														 "referring_facility":referral.from_facility}
             _broadcast_to_ER_users(amb, session, xform, facility=referral.from_facility, router=router, message=message)
             #notify triage nurse at receiving facility
-            for c in _get_people_to_notify_hospital(referral):
+            for con in _get_people_to_notify_hospital(referral):
                 msg = const.REFERRAL_TO_DESTINATION_HOSPITAL_NURSE %{"unique_id":referral.mother_uid}                                     
-                router.outgoing(OutgoingMessage(c.default_connection, msg))
+                router.outgoing(OutgoingMessage(con.default_connection, msg))
                 
             #respond to the sender
             referral_response = const.REFERRAL_RESPONSE % {"name": name,
@@ -158,7 +183,7 @@ def referral_outcome(session, xform, router):
     contact = session.connection.contact
     name = contact.name
     mother_id = xform.xpath("form/unique_id")
-
+    import ipdb;ipdb.set_trace()
     refs = Referral.objects.filter(mother_uid=mother_id.lower()).order_by('-date')
     if not refs.count():
         return respond_to_session(router, session, const.REFERRAL_NOT_FOUND,
@@ -178,7 +203,7 @@ def referral_outcome(session, xform, router):
         ref.mode_of_delivery = xform.xpath("form/mode_of_delivery")
 
     ref.save()
-
+    """
     if ref.amb_req:
         responses = ref.amb_req.ambulanceresponse_set
         if responses.count() == 0 or responses.all().order_by('-responded_on')[0].response != 'na':
@@ -190,24 +215,24 @@ def referral_outcome(session, xform, router):
             return respond_to_session(router, session, const.AMB_OUTCOME_ORIGINATING_LOCATION_INFO,
                                       unique_id=session.template_vars['unique_id'],
                                       outcome=ref.mother_outcome)
-    else:
+    """
+    if True:
         # also notify folks at the referring facility about the outcome
         for con in _get_people_to_notify_outcome(ref):
             if con.default_connection:
                 if ref.mother_showed:
-                    router.outgoing(OutgoingMessage(con.default_connection,
-                                                    const.REFERRAL_OUTCOME_NOTIFICATION % \
+                    notification = const.REFERRAL_OUTCOME_NOTIFICATION % \
                                                         {"unique_id": ref.mother_uid,
                                                          "date": ref.date.date(),
                                                          "mother_outcome": ref.get_mother_outcome_display(),
                                                          "baby_outcome": ref.get_baby_outcome_display(),
-                                                         "delivery_mode": ref.get_mode_of_delivery_display()}))
+                                                         "delivery_mode": ref.get_mode_of_delivery_display()}
+                    send_msg(con.default_connection, notification, router, **session.template_vars)
                 else:
                     router.outgoing(OutgoingMessage(con.default_connection,
                                                     const.REFERRAL_OUTCOME_NOTIFICATION_NOSHOW % \
                                                         {"unique_id": ref.mother_uid,
                                                          "date": ref.date.date()}))
-
         return respond_to_session(router, session, const.REFERRAL_OUTCOME_RESPONSE,
                                   **{'name': name, "unique_id": mother_id})
 
@@ -248,10 +273,11 @@ def emergency_response(session, xform, router):
                 .order_by('-id')
 
     try:
-        ref = Referral.objects.filter(mother_uid=unique_id)[0]
+        ref = Referral.objects.filter(mother_uid=unique_id).latest('date')
     except IndexError:
         return respond_to_session(router, session, ER_CONFIRM_SESS_NOT_FOUND,
                                   is_error=True, **{'unique_id': unique_id})
+        
     if cba_initiated(ref.session.connection.contact):
         #was this referral initiated by a cba
         send_msg(ref.session.connection,
@@ -269,14 +295,7 @@ def emergency_response(session, xform, router):
         confirm_contact_type = contact.types.all()[0]
         session.template_vars.update({"confirm_type": confirm_contact_type,
                                   "name": contact.name})
-        """
-        if ambulance_request.ambulanceresponse_set.filter(response='otw').exists():
-            # if we've already responded 'otw' then just respond indicating such
-            last_response = ambulance_request.ambulanceresponse_set.filter(response='otw')[0]
-            return respond_to_session(router, session, AMB_RESPONSE_ALREADY_HANDLED,
-                                  response=last_response.response,
-                                  person=last_response.responder)
-                                  """
+            
         ambulance_request.save()
         ambulance_response.save()
         
@@ -369,7 +388,7 @@ def _get_people_to_notify(referral):
         slug__in=[const.CTYPE_DATACLERK, const.CTYPE_TRIAGENURSE]
     ).all()
     loc_parent = referral.from_facility.parent if referral.from_facility else None
-    facility_lookup = loc_parent or referral.facility
+    facility_lookup =  referral.facility or loc_parent 
     return Contact.objects.filter(types__in=types,
                                   location=facility_lookup,
                                   is_active=True)
@@ -391,7 +410,13 @@ def _get_people_to_notify_outcome(referral):
     contact = referral.get_connection().contact
     if contact and contact.is_active and contact not in facility_contacts:
         facility_contacts.append(referral.get_connection().contact)
-    return facility_contacts
+    
+    other_contacts = []
+    if referral.past_referrals:
+        for past_referral in referral.past_referrals.all():
+            past_contacts = _get_people_to_notify_outcome(past_referral)
+            other_contacts.extend(past_contacts)
+    return list(set(facility_contacts + other_contacts))
 
 
 def _pick_er_driver(session, xform, facility):

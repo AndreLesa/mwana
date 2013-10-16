@@ -76,15 +76,14 @@ AMB_OUTCOME_NO_OUTCOME = _("Kindly register OUTCOME for Mother :%(unique_id)s.  
 REFERRAL_CBA_THANKS = _("Thanks %(name)s. A health worker at %(facility_name)s has been alerted.")
 REFERRAL_CBA_NOTIFICATION = _("Mother with ID: %(unique_id)s from %(village)s needs EmONC. Contact: %(phone)s. Plz send 'RESP %(unique_id)s' if you see this.")
 
-REFERRAL_FACILITY_TO_HOSPITAL_NOTIFICATION = _("Mother with ID: %(unique_id)s needs ER. Locaton: %(facility_name)s, contact num: %(phone)s Plz SEND 'RESP %(unique_id)s ....OTW, DL or NA' if you see this.")
-REFERRAL_NOTIFICATION = REFERRAL_FACILITY_TO_HOSPITAL_NOTIFICATION
+REFERRAL_FACILITY_TO_HOSPITAL_NOTIFICATION = _("Mother with ID: %(unique_id)s needs ER. Location: %(facility_name)s, contact num: %(phone)s Plz SEND 'RESP %(unique_id)s ....OTW, DL or NA' if you see this.")
+REFERRAL_NOTIFICATION = _("A referral for Mother ID %(unique_id)s has been sent from %(facility)s. Please expect the mother. Reason: %(reason)s. Time: %(time)s. Emergency: %(is_emergency)s")
 RESP_THANKS = _("Thanks %(name)s. Your response was well received")
 RESP_CBA_UPDATE = _("A health worker has responded to your referral and is waiting for the mother at the facility.")
 RESP_NOTIF = _("Emergency Response for mother with ID %(unique_id)s:  You can contact driver at %(phone)s.")
 AMB_RESP_STATUS = _("Ambulance Response for mother with ID %(unique_id)s: Ambulance is %(status)s You can contact driver at %(phone)s.")
 REFERRAL_AMBULANCE_STATUS_TO_REFERRING_HOSPITAL =_("Ambulance Response for mother with ID %(unique_id)s: You can contact driver at %(phone)s.")
 REFERRAL_RESPONSE_NOTIFICATION_TO_REFERRING_HOSPITAL = _("Emergency Response for mother with ID %(unique_id)s: You can contact driver at %(phone)s.")
-
 
 PICK_THANKS = _("Thanks for picking mother with ID %(unique_id)s")
 DROP_THANKS = _("Thanks for dropping mother with ID %(unique_id)s")

@@ -1,3 +1,4 @@
+# vim: ai ts=4 sts=4 et sw=4
 from rapidsms.models import Contact, Connection
 from django.db import models
 
@@ -232,7 +233,6 @@ class Referral(FormReferenceBase, MotherReferenceBase):
                                       null=True, blank=True,
                                       help_text="The referring facility",
                                       related_name="referrals_made")
-
     responded = models.BooleanField(default=False)
     mother_showed = models.NullBooleanField(default=None)
 
@@ -241,7 +241,7 @@ class Referral(FormReferenceBase, MotherReferenceBase):
                               null=True, blank=True)
 
     time = models.TimeField(help_text="Time of referral", null=True)
-
+    re_referral = models.ForeignKey("self", blank=True, null=True, related_name="past_referrals")
     # outcomes
     mother_outcome = models.CharField(max_length=3,
                                       choices=REFERRAL_OUTCOME_CHOICES,
@@ -267,6 +267,9 @@ class Referral(FormReferenceBase, MotherReferenceBase):
 
     reminded = models.BooleanField(default=False)
     amb_req = models.ForeignKey(AmbulanceRequest, null=True, blank=True)
+    
+    def __unicode__(self):
+        return "MotherID:%s from %s to %s at %s" %(self.mother_uid, self.from_facility, self.facility, self.date)
 
     def set_reason(self, code, val=True):
         assert code in self.REFERRAL_REASONS, "%s is not a valid referral reason" % code
@@ -311,7 +314,8 @@ class Referral(FormReferenceBase, MotherReferenceBase):
 
     def get_receiving_data_clerks(self):
         # people who need to be reminded to collect the outcome
-        return Contact.objects.filter(types__slug=const.CTYPE_DATACLERK,
+        people_types = [const.CTYPE_DATACLERK, const.CTYPE_INCHARGE, const.CTYPE_TRIAGENURSE]
+        return Contact.objects.filter(types__slug__in=people_types,
                                       location=self.facility,
                                       is_active=True)
 
