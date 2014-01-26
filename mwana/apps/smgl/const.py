@@ -84,6 +84,7 @@ RESP_NOTIF = _("Emergency Response for mother with ID %(unique_id)s:  You can co
 AMB_RESP_STATUS = _("Ambulance Response for mother with ID %(unique_id)s: Ambulance is %(status)s You can contact driver at %(phone)s.")
 REFERRAL_AMBULANCE_STATUS_TO_REFERRING_HOSPITAL =_("Ambulance Response for mother with ID %(unique_id)s: You can contact driver at %(phone)s.")
 REFERRAL_RESPONSE_NOTIFICATION_TO_REFERRING_HOSPITAL = _("Emergency Response for mother with ID %(unique_id)s: You can contact driver at %(phone)s.")
+REF_TRIAGE_NURSE_RESP_NOTIF = _("Emergency response for mother with ID %(unique_id)s: You can contact the Triage nurse at %(phone)s.")
 
 PICK_THANKS = _("Thanks for picking mother with ID %(unique_id)s")
 DROP_THANKS = _("Thanks for dropping mother with ID %(unique_id)s")
