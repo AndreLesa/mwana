@@ -354,9 +354,29 @@ def pick(session, xform, router):
         return respond_to_session(router, session, NOT_REGISTERED_TO_CONFIRM_ER,
                                   is_error=True)
     mother_id = xform.xpath("form/unique_id")
+    #Find the referral
+    try:
+        referral = Referral.objects.filter(mother_uid=mother_id)[0]
+    except IndexError:
+        return respond_to_session(
+            router,
+            session,
+            "A referral was not found for mother ID %(unique_id)s"%mother_id,
+            is_error=True)
+
+    if referral.pick:
+        return respond_to_session(
+            router,
+            session,
+            "This mother with ID: %(unique_id)s has already been picked"%mother_id,
+            is_error=True)
+
+    referral.pick = Pick(session=session)
+    referral.save()
+
     pick_thanks = const.PICK_THANKS%{
                                      "unique_id":mother_id}
-    respond_to_session(router, session, pick_thanks, is_error=True, **{ 'unique_id':mother_id })
+    return respond_to_session(router, session, pick_thanks **{ 'unique_id':mother_id })
 
 
 def drop(session, xform, router):
@@ -366,9 +386,27 @@ def drop(session, xform, router):
         return respond_to_session(router, session, NOT_REGISTERED_TO_CONFIRM_ER,
                                   is_error=True)
     mother_id = xform.xpath("form/unique_id")
+    #Find the referral
+    try:
+        referral = Referral.objects.filter(mother_uid=mother_id)[0]
+    except IndexError:
+        return respond_to_session(
+            router,
+            session,
+            "A referral was not found for mother ID %(unique_id)s"%mother_id,
+            is_error=True)
+    if referral.drop:
+        return respond_to_session(
+            router,
+            session,
+            "This mother with ID: %(unique_id)s has already been dropped"%mother_id,
+            is_error=True)
+
+    referral.drop = Drop(session=session)
+    referral.save()
     drop_thanks = const.DROP_THANKS%{
                                      "unique_id":mother_id}
-    respond_to_session(router, session, drop_thanks, is_error=True, **{ 'unique_id':mother_id })
+    return respond_to_session(router, session, drop_thanks, **{ 'unique_id':mother_id })
 
 
 def _get_people_to_notify_hospital(referral):

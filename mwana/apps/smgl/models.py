@@ -212,6 +212,17 @@ DELIVERY_MODE_CHOICES = (("vag", "vaginal"), ("csec", "c-section"),
                          ("pp", "post-partum"), ("ref", "new_referral"),
                             ("oth", "other"))
 
+class Pick(FormReferenceBase):
+    time = models.DateTimeField(auto_now_add=True)
+
+    def __unicode__(self):
+        return self.time
+
+class Drop(FormReferenceBase):
+    time = models.DateTimeField(auto_now_add=True)
+
+    def __unicode__(self):
+        return self.time
 
 class Referral(FormReferenceBase, MotherReferenceBase):
     REFERRAL_REASONS = {
@@ -267,7 +278,9 @@ class Referral(FormReferenceBase, MotherReferenceBase):
 
     reminded = models.BooleanField(default=False)
     amb_req = models.ForeignKey(AmbulanceRequest, null=True, blank=True)
-    
+    pick = models.OneToOneField(Pick, null=True, blank=True)
+    drop = models.OneToOneField(Drop, null=True, blank=True)
+
     def __unicode__(self):
         return "MotherID:%s from %s to %s at %s" %(self.mother_uid, self.from_facility, self.facility, self.date)
 
