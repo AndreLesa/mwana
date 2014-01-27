@@ -60,7 +60,7 @@ def refer(session, xform, router):
         referral = Referral(facility=parent_facility, form_id=xform.get_id,
                             session=session, date=datetime.utcnow())
         referral.set_mother(mother_id)
-        referral.from_facifflity = referring_loc
+        referral.from_facility = referring_loc
         referral.save()
 
         from_facility = referring_loc.name if not referring_loc.parent else "%s (in %s)" % \
@@ -276,7 +276,6 @@ def emergency_response(session, xform, router):
     except IndexError:
         return respond_to_session(router, session, ER_CONFIRM_SESS_NOT_FOUND,
                                   is_error=True, **{'unique_id': unique_id})
-
     if cba_initiated(ref.session.connection.contact):
         #was this referral initiated by a cba
         send_msg(ref.session.connection,
@@ -323,17 +322,56 @@ def emergency_response(session, xform, router):
                                               "unique_id":unique_id,
                                               "status":status.upper(),
                                               "phone":session.connection.identity}
-                send_msg(ref.session.connection, resp, router, **session.template_vars)
+                if is_from_hospital(ref.session.connection.contact):
+                    #Let everyone know that it has been handled
+                    for con in _get_people_to_notify_hospital(ref):
+                        #do not send to responder
+                        if con != contact:
+                            send_msg(con.default_connection, resp, router)
+
+                    #notify people at origin
+                    for con in _get_people_to_notify_response(ref):
+                        send_msg(con.default_connection, resp, router)
+
+                else:
+                    #Notify people at destination
+                    for con in _get_people_to_notify(ref):
+                        if con != contact:
+                            send_msg(con.default_connection, resp, router)
+                    #notify people at origin
+                    for con in _get_people_to_notify_response(ref):
+                        send_msg(con.default_connection, resp, router)
                 return True
+
         else:
-            notification = const.REF_TRIAGE_NURSE_RESP_NOTIF %{
+            resp = const.REF_TRIAGE_NURSE_RESP_NOTIF %{
                                                 "unique_id":unique_id,
                                                 "phone":session.connection.identity
                                                                            }
             thank_message = const.RESP_THANKS %{
                                           "name":contact.name
                                           }
-            send_msg(ref.session.connection, notification, router, **session.template_vars)
+            #Let everyone know that it has been handled
+            if is_from_hospital(ref.session.connection.contact):
+                #Let everyone know that it has been handled
+                for con in _get_people_to_notify_hospital(ref):
+                    #do not send to originator
+                    if con != contact:
+                        send_msg(con.default_connection, resp, router)
+                #notify people at origin
+                for con in _get_people_to_notify_response(ref):
+                    send_msg(con.default_connection, resp, router)
+
+            else:
+                #Let everyone know that it has been handled
+                for con in _get_people_to_notify(ref):
+                    #do not send to originator
+                    if con != contact:
+                        send_msg(con.default_connection, resp, router)
+                #notify people at origin
+                for con in _get_people_to_notify_response(ref):
+                    send_msg(con.default_connection, resp, router)
+
             return respond_to_session(router, session, thank_message, **{ "unique_id":unique_id})#thanks the sender
 
         """
@@ -432,6 +470,17 @@ def _get_people_to_notify(referral):
                                   location=facility_lookup,
                                   is_active=True)
 
+def _get_people_to_notify_response(referral):
+    # who to notifiy on response
+    types = ContactType.objects.filter(
+        slug__in=[const.CTYPE_DATACLERK, const.CTYPE_TRIAGENURSE]
+    ).all()
+    loc_parent = referral.from_facility
+    facility_lookup = loc_parent
+    return Contact.objects.filter(types__in=types,
+                                  location=facility_lookup,
+                                  is_active=True)
+
 def _get_people_to_notify_outcome(referral):
     # who to notifiy when we've collected a referral outcome
     # this should be the people who made the referral
@@ -502,10 +551,12 @@ def _pick_help_admin(session, xform, receiving_facility):
 
 
 
-def _broadcast_to_ER_users(ambulance_session, session, xform, router, facility=None, message=None):
+def _broadcast_to_ER_users(ambulance_session, session, xform, router, facility=None, message=None, excluded=[]):
     """
     Broadcasts a message to the Emergency Response users.  If message is not
     specified, will send the default initial ER message to each respondent.
+
+    exclude perimeter is used to exclude some users from receiving broadcasts
     """
     if not facility:
         ref = ambulance_session.referral_set.all()[0]
@@ -516,7 +567,8 @@ def _broadcast_to_ER_users(ambulance_session, session, xform, router, facility=N
         logger.error('No Ambulance Driver found (or missing connection) for Ambulance Session: %s, XForm Session: %s, XForm: %s' % (ambulance_session, session, xform))
     else:
         for ambulance_driver in ambulance_drivers:
-            if ambulance_driver.default_connection:
+            ambulance_session.ambulance_driver = ambulance_driver #This is just for now before we can properly handle multiple drivers.
+            if ambulance_driver.default_connection and ambulance_driver not in excluded:
                 if message:
                     send_msg(ambulance_driver.default_connection, message, router, **session.template_vars)
                 else:
@@ -528,7 +580,7 @@ def _broadcast_to_ER_users(ambulance_session, session, xform, router, facility=N
         logger.error('No Triage Nurse found (or missing connection) for Ambulance Session: %s, XForm Session: %s, XForm: %s' % (ambulance_session, session, xform))
     else:
         ambulance_session.triage_nurse = tn
-        if tn.default_connection:
+        if tn.default_connection and tn not in excluded:
             if message:
                 send_msg(tn.default_connection, message, router, **session.template_vars)
             else:

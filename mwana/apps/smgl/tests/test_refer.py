@@ -33,10 +33,10 @@ class SMGLReferTest(SMGLSetUp):
         self.cba = self.createUser("cba", self.cba_number, location="80402404")
         self.dc = self.createUser(const.CTYPE_DATACLERK, "666777",
                                   location=self.worker.location.parent.slug)
-    
+
         self.tn = self.createUser(const.CTYPE_TRIAGENURSE, "666888",
                                   location=self.worker.location.parent.slug)
-    
+
         self.am = self.createUser("AM", "666555")
         self.amb_tn = self.createUser(const.CTYPE_TRIAGENURSE, "222222")
         self.ha = self.createUser("worker", "666111")
@@ -81,9 +81,9 @@ class SMGLReferTest(SMGLSetUp):
         self.assertEqual(datetime.time(12, 00), referral.time)
         self.assertFalse(referral.responded)
         self.assertEqual(None, referral.mother_showed)
-        
+
     def testReferNEM(self):
-        #Facility to hospital, Added this one in addition to the above so that we can properly test the 
+        #Facility to hospital, Added this one in addition to the above so that we can properly test the
         #non emergency referral.
         referral_facility = Location.objects.get(slug="804024")
         #we already have the triage nurse but we need also a data clerk for a full test
@@ -167,9 +167,9 @@ class SMGLReferTest(SMGLSetUp):
         %(initiator_facility_tn)s > REFER %(smh_id)s %(destination_facility)s hbp 1200 em
         %(initiator_facility_tn)s < %(server_resp)s
         %(initiator_facility_driver)s < %(initiator_hosp_notif)s
-        %(initiator_facility_tn)s < %(initiator_hosp_notif)s 
+        %(initiator_facility_tn)s < %(initiator_hosp_notif)s
         %(destination_facility_nurse)s < %(dest_nurse_notif)s
-        """%{'initiator_facility_tn':self.initiator_tn_no, 'smh_id':self.smh_id, 'destination_facility':destination_facility, 
+        """%{'initiator_facility_tn':self.initiator_tn_no, 'smh_id':self.smh_id, 'destination_facility':destination_facility,
             'server_resp':server_resp, 'initiator_facility_driver':self.initiator_driver_no,
              'initiator_facility_nurse':self.initiator_tn_no, 'destination_facility_nurse':self.destination_tn_no,
              'amb_status_notif':amb_status, "initiator_hosp_notif":initiator_hosp_notif, "dest_nurse_notif":dest_nurse_notif}
@@ -186,7 +186,7 @@ class SMGLReferTest(SMGLSetUp):
         self.assertEqual(datetime.time(12, 00), referral.time)
         self.assertFalse(referral.responded)
         self.assertEqual(None, referral.mother_showed)
-        
+
     def testReferResponseHospitalToHospital(self):
         self.testReferHospitalToHospital()
         amb_status = "OTW"
@@ -195,25 +195,28 @@ class SMGLReferTest(SMGLSetUp):
                                                     "status":amb_status,
                                                     "phone":self.initiator_driver_no
                                                            }
-        resp_notif =const.RESP_NOTIF %{
+        resp_notif =const.REF_TRIAGE_NURSE_RESP_NOTIF%{
                                         "unique_id":self.smh_id,
-                                        "phone":self.initiator_driver_no
+                                        "phone":self.destination_tn_no
                                         }
         resp_thanks = const.RESP_THANKS %{
                                           "name":self.name
                                           }
-        
+
         script = """
         %(initiator_facility_driver)s > RESP %(smh_id)s %(amb_status)s
+        666888 < %(amb_status_notif)s
+        %(destination_facility_nurse)s < %(amb_status_notif)s
         %(initiator_facility_tn)s < %(amb_status_notif)s
-        
+
         %(destination_facility_nurse)s > RESP %(smh_id)s
-        %(initiator_facility_tn)s < %(resp_notif)s
+        666888 < %(resp_notif)s
         %(destination_facility_nurse)s < %(resp_thanks)s
-        """%{"initiator_facility_driver":self.initiator_driver_no, "initiator_facility_tn":self.initiator_tn_no, "smh_id":self.smh_id, "amb_status":amb_status, 
+        %(initiator_facility_tn)s < %(resp_notif)s
+        """%{"initiator_facility_driver":self.initiator_driver_no, "initiator_facility_tn":self.initiator_tn_no, "smh_id":self.smh_id, "amb_status":amb_status,
              "amb_status_notif":amb_status_notif, "resp_thanks":resp_thanks, "resp_notif":resp_notif, "destination_facility_nurse":self.destination_tn_no}
         self.runScript(script)
-    
+
     def testReferResponseCommunityToFacility(self):
         self.testReferCBAToFacility()
         script = """
@@ -224,7 +227,7 @@ class SMGLReferTest(SMGLSetUp):
              "num":"456",
              "resp":const.RESP_CBA_UPDATE}
         self.runScript(script)
-        
+
 
     def testReferForwarding(self):
         #Used to test referrals that have been forwarded from one facility to another.
@@ -237,7 +240,7 @@ class SMGLReferTest(SMGLSetUp):
 
         self.dc = self.createUser(const.CTYPE_DATACLERK, self.dc_no, location=referring_facility.slug)
         self.dest_amb = self.createUser("AM", self.amb_driver_no, location=dest_facility.slug)
-        
+
         success_resp = const.REFERRAL_RESPONSE % {"name": self.name,
                                                   "unique_id": "1234",
                                                   "facility_name":dest_facility.name}
@@ -257,16 +260,17 @@ class SMGLReferTest(SMGLSetUp):
         self.assertSessionSuccess()
 
     def testReferFowardResponse(self):
+        #This is specifically for when a triage nurse responds
         #Mother has been referred from community to Chilala, then from Chilala to Kalomo
         self.testReferForwarding()
-        resp_notif = const.RESP_NOTIF %{
+        resp_notif = const.REF_TRIAGE_NURSE_RESP_NOTIF %{
                                                 "unique_id":1234,
-                                                "phone":self.amb_driver_no
-                                                                           }  
+                                                "phone":self.dest_tn
+                                                                           }
         thank_message = const.RESP_THANKS %{
                                           "name":self.tn.name
                                           }
-        
+
         script = """
             %(tn)s > resp 1234 otw
             %(tn)s < %(thank_message)s
@@ -276,7 +280,7 @@ class SMGLReferTest(SMGLSetUp):
                   }
         self.runScript(script)
         self.assertSessionSuccess()
-        
+
     def testReferFowardRefout(self):
         self.testReferFowardResponse()
         refout_notif =  const.REFERRAL_OUTCOME_NOTIFICATION % {
@@ -297,41 +301,41 @@ class SMGLReferTest(SMGLSetUp):
                  "tn":self.dest_tn, "refout_notif":refout_notif, "thank_message":thank_message, "origin_dc": self.dc_no, "old_origin":"123"}
         self.runScript(script)
         self.assertSessionSuccess()
-        
+
     def testReferPick(self):
         self.testReferHospitalToHospital()
         pick_thanks = const.PICK_THANKS %{
                                           "unique_id":self.smh_id
                                           }
-        
+
         script = """
         %(amb_driver)s > PICK %(smh_id)s
         %(amb_driver)s < %(pick_thanks)s
         """%{
              "amb_driver":self.initiator_driver_no,
              "smh_id":self.smh_id,
-             "pick_thanks":pick_thanks 
+             "pick_thanks":pick_thanks
              }
         self.runScript(script)
 
     def testReferDrop(self):
         self.testReferHospitalToHospital()
-        
+
         drop_thanks = const.DROP_THANKS %{
                                           "unique_id":self.smh_id
                                           }
-        
+
         script = """
         %(amb_driver)s > DROP %(smh_id)s
         %(amb_driver)s < %(drop_thanks)s
         """%{
              "amb_driver":self.initiator_driver_no,
              "smh_id":self.smh_id,
-             "drop_thanks":drop_thanks 
+             "drop_thanks":drop_thanks
              }
         self.runScript(script)
-        
-    
+
+
     def testReferNotRegistered(self):
         script = """
             %(num)s > refer 1234 804024 hbp 1200 nem
