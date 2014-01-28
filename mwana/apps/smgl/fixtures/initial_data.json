@@ -1304,31 +1304,6 @@
     "fields": {
       "send_live_results": false,
       "name": "Siankope",
-      "point": null,
-      "has_independent_printer": false,
-      "type": 8,
-      "slug": "80401211"
-    }
-  },
-  {
-    "pk": 259,
-    "model": "locations.location",
-    "fields": {
-      "send_live_results": false,
-      "name": "Siakasasa",
-      "parent": 195,
-      "point": null,
-      "has_independent_printer": false,
-      "type": 8,
-      "slug": "80401213"
-    }
-  },
-  {
-    "pk": 260,
-    "model": "locations.location",
-    "fields": {
-      "send_live_results": false,
-      "name": "Siankope",
       "parent": 195,
       "point": null,
       "has_independent_printer": false,
@@ -1346,7 +1321,7 @@
       "point": null,
       "has_independent_printer": false,
       "type": 8,
-      "slug": "80401302"
+      "slug": "80401301"
     }
   },
   {
@@ -1359,7 +1334,7 @@
       "point": null,
       "has_independent_printer": false,
       "type": 8,
-      "slug": "80401303"
+      "slug": "80401302"
     }
   },
   {
@@ -1372,7 +1347,7 @@
       "point": null,
       "has_independent_printer": false,
       "type": 8,
-      "slug": "80401304"
+      "slug": "80401303"
     }
   },
   {
@@ -1398,20 +1373,7 @@
       "point": null,
       "has_independent_printer": false,
       "type": 8,
-      "slug": "80401306"
-    }
-  },
-  {
-    "pk": 197,
-    "model": "locations.location",
-    "fields": {
-      "send_live_results": false,
-      "name": "DMO Office",
-      "parent": 152,
-      "point": null,
-      "has_independent_printer": false,
-      "type": 1,
-      "slug": "804000"
+      "slug": "80401305"
     }
   },
   {
