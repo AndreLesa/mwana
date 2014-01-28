@@ -1,7 +1,7 @@
 import logging
 
 from rapidsms.messages import OutgoingMessage
-from mwana.apps.smgl.models import Referral, AmbulanceRequest, AmbulanceResponse
+from mwana.apps.smgl.models import Referral, AmbulanceRequest, AmbulanceResponse, Pick, Drop
 from mwana.apps.smgl.utils import get_location, to_time, respond_to_session
 from mwana.apps.smgl import const
 from mwana.apps.contactsplus.models import ContactType
@@ -399,22 +399,25 @@ def pick(session, xform, router):
         return respond_to_session(
             router,
             session,
-            "A referral was not found for mother ID %(unique_id)s"%mother_id,
+            "A referral was not found for mother ID %(unique_id)s"%{ "unique_id":mother_id },
             is_error=True)
 
     if referral.pick:
         return respond_to_session(
             router,
             session,
-            "This mother with ID: %(unique_id)s has already been picked"%mother_id,
+            "This mother with ID: %(unique_id)s has already been picked by %(picker_name)s. Call them on: %(picker_num)s."%{
+                "unique_id":mother_id,
+                "picker_name": referral.pick.session.connection.contact.name,
+                "picker_num":referral.pick.session.connection.identity},
             is_error=True)
 
-    referral.pick = Pick(session=session)
+    referral.pick = Pick.objects.create(session=session)
     referral.save()
 
     pick_thanks = const.PICK_THANKS%{
                                      "unique_id":mother_id}
-    return respond_to_session(router, session, pick_thanks **{ 'unique_id':mother_id })
+    return respond_to_session(router, session, pick_thanks)
 
 
 def drop(session, xform, router):
@@ -431,16 +434,19 @@ def drop(session, xform, router):
         return respond_to_session(
             router,
             session,
-            "A referral was not found for mother ID %(unique_id)s"%mother_id,
+            "A referral was not found for mother ID %(unique_id)s"%{ "unique_id":mother_id },
             is_error=True)
     if referral.drop:
         return respond_to_session(
             router,
             session,
-            "This mother with ID: %(unique_id)s has already been dropped"%mother_id,
+            "This mother with ID: %(unique_id)s has already been dropped by %(droper_name)s. Call them on: %(droper_num)s."%{
+                "unique_id":mother_id,
+                "droper_name": referral.drop.session.connection.contact.name,
+                "droper_num":referral.drop.session.connection.identity},
             is_error=True)
 
-    referral.drop = Drop(session=session)
+    referral.drop = Drop.objects.create(session=session)
     referral.save()
     drop_thanks = const.DROP_THANKS%{
                                      "unique_id":mother_id}
