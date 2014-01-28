@@ -1390,42 +1390,29 @@
     }
   },
   {
-    "pk": 151,
+    "pk": 197,
     "model": "locations.location",
     "fields": {
       "send_live_results": false,
-      "name": "Southern Province",
-      "parent": null,
-      "point": null,
-      "has_independent_printer": false,
-      "type": 2,
-      "slug": "souther_province"
-    }
-  },
-  {
-    "pk": 152,
-    "model": "locations.location",
-    "fields": {
-      "send_live_results": false,
-      "name": "Kalomo District",
-      "parent": 151,
-      "point": null,
-      "has_independent_printer": false,
-      "type": 3,
-      "slug": "kalomo_district"
-    }
-  },
-  {
-    "pk": 163,
-    "model": "locations.location",
-    "fields": {
-      "send_live_results": false,
-      "name": "Kalomo District Hospital",
+      "name": "DMO Office",
       "parent": 152,
       "point": null,
       "has_independent_printer": false,
-      "type": 7,
-      "slug": "804002"
+      "type": 1,
+      "slug": "804000"
+    }
+  },
+  {
+    "pk": 198,
+    "model": "locations.location",
+    "fields": {
+      "send_live_results": false,
+      "name": "SMGL Office",
+      "parent": 152,
+      "point": null,
+      "has_independent_printer": false,
+      "type": 1,
+      "slug": "804099"
     }
   },
   {
@@ -1760,14 +1747,6 @@
     }
   },
   {
-    "pk": 20,
-    "model": "smgl.xformkeywordhandler",
-    "fields": {
-      "keyword": "drop",
-      "function_path": "mwana.apps.smgl.keyword_handlers.drop"
-    }
-  },
-  {
     "pk": 5,
     "model": "smgl.xformkeywordhandler",
     "fields": {
@@ -1781,14 +1760,6 @@
     "fields": {
       "keyword": "in",
       "function_path": "mwana.apps.smgl.keyword_handlers.make_active"
-    }
-  },
-  {
-    "pk": 2,
-    "model": "smgl.xformkeywordhandler",
-    "fields": {
-      "keyword": "join",
-      "function_path": "mwana.apps.smgl.join_handler.join_secure"
     }
   },
   {
@@ -1816,51 +1787,11 @@
     }
   },
   {
-    "pk": 15,
-    "model": "smgl.xformkeywordhandler",
-    "fields": {
-      "keyword": "leave",
-      "function_path": "mwana.apps.smgl.keyword_handlers.leave"
-    }
-  },
-  {
     "pk": 16,
     "model": "smgl.xformkeywordhandler",
     "fields": {
       "keyword": "out",
       "function_path": "mwana.apps.smgl.keyword_handlers.out"
-    }
-  },
-  {
-    "pk": 8,
-    "model": "smgl.xformkeywordhandler",
-    "fields": {
-      "keyword": "outc",
-      "function_path": "mwana.apps.smgl.ambulance_workflow.ambulance_outcome"
-    }
-  },
-  {
-    "pk": 19,
-    "model": "smgl.xformkeywordhandler",
-    "fields": {
-      "keyword": "pick",
-      "function_path": "mwana.apps.smgl.keyword_handlers.pick"
-    }
-  },
-  {
-    "pk": 9,
-    "model": "smgl.xformkeywordhandler",
-    "fields": {
-      "keyword": "refer",
-      "function_path": "mwana.apps.smgl.keyword_handlers.refer"
-    }
-  },
-  {
-    "pk": 11,
-    "model": "smgl.xformkeywordhandler",
-    "fields": {
-      "keyword": "refout",
-      "function_path": "mwana.apps.smgl.keyword_handlers.referral_outcome"
     }
   },
   {
@@ -1920,6 +1851,22 @@
     }
   },
   {
+   "pk": 19,
+   "model": "smgl.xformkeywordhandler",
+   "fields": {
+      "keyword": "pick",
+      "function_path": "mwana.apps.smgl.keyword_handlers.pick"
+    }
+  },
+  {
+    "pk": 20,
+    "model": "smgl.xformkeywordhandler",
+    "fields": {
+        "keyword": "drop",
+        "function_path": "mwana.apps.smgl.keyword_handlers.drop"
+    }
+  },
+  {
     "pk": 12,
     "model": "smgl.xformkeywordhandler",
     "fields": {
@@ -1954,15 +1901,7 @@
       "context_data": null,
       "trigger_keyword": "outc",
       "final_response": "",
-      "xform": 16
-    }
-  },
-  {
-    "pk": 12,
-    "model": "smgl.xformkeywordhandler",
-    "fields": {
-      "keyword": "told",
-      "function_path": "mwana.apps.smgl.keyword_handlers.told"
+      "xform": 21
     }
   },
   {
@@ -2126,26 +2065,6 @@
     }
   },
   {
-    "pk": 30,
-    "model": "smsforms.decisiontrigger",
-    "fields": {
-      "context_data": "",
-      "trigger_keyword": "drop",
-      "final_response": "",
-      "xform": 35
-    }
-  },
-  {
-    "pk": 31,
-    "model": "smsforms.decisiontrigger",
-    "fields": {
-      "context_data": "",
-      "trigger_keyword": "pick",
-      "final_response": "",
-      "xform": 36
-    }
-  },
-  {
     "pk": 28,
     "model": "smsforms.decisiontrigger",
     "fields": {
@@ -2153,6 +2072,26 @@
       "trigger_keyword": "back",
       "final_response": "",
       "xform": 27
+    }
+  },
+  {
+    "pk": 28,
+    "model": "smsforms.decisiontrigger",
+    "fields": {
+        "context_data": "",
+        "trigger_keyword": "pick",
+        "final_response": "",
+        "xform": 36
+    }
+  },
+  {
+    "pk": 29,
+    "model": "smsforms.decisiontrigger",
+    "fields": {
+        "context_data": "",
+        "trigger_keyword": "drop",
+        "final_response": "",
+        "xform": 35
     }
   },
   {
@@ -2312,6 +2251,19 @@
     }
   },
   {
+    "pk": 15,
+    "model": "formplayer.xform",
+    "fields": {
+      "uiversion": 1,
+      "name": "Emergency Resp",
+      "created": "2012-04-23T16:34:35.059",
+      "checksum": "60e84f209a390dbd26af2b93da7dc606d17f521f",
+      "namespace": "http://openrosa.org/formdesigner/5EB269CC-F738-4DC4-B495-51E88C6C7A0A",
+      "version": 1,
+      "file": "xforms/emergency_resp.xml"
+    }
+  },
+  {
     "pk": 18,
     "model": "formplayer.xform",
     "fields": {
@@ -2387,19 +2339,6 @@
       "namespace": "http://openrosa.org/formdesigner/2FCF5F3C-7A88-4F78-BA11-D85C00FD85D2",
       "version": 1,
       "file": "xforms/drop.xml"
-    }
-  },
-  {
-    "pk": 15,
-    "model": "formplayer.xform",
-    "fields": {
-      "uiversion": 1,
-      "name": "Emergency Resp",
-      "created": "2012-04-23T16:34:35",
-      "checksum": "60e84f209a390dbd26af2b93da7dc606d17f521f",
-      "namespace": "http://openrosa.org/formdesigner/5EB269CC-F738-4DC4-B495-51E88C6C7A0A",
-      "version": 1,
-      "file": "xforms/emergency_resp.xml"
     }
   }
 ]

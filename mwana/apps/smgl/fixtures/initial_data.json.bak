@@ -1842,26 +1842,26 @@
       "function_path": "mwana.apps.smgl.keyword_handlers.syphilis"
     }
   },
-    {
-        "pk": 28,
-        "model": "smsforms.decisiontrigger",
-        "fields": {
-            "context_data": "",
-            "trigger_keyword": "pick",
-            "final_response": "",
-            "xform": 30
-        }
-    },
-    {
-        "pk": 29,
-        "model": "smsforms.decisiontrigger",
-        "fields": {
-            "context_data": "",
-            "trigger_keyword": "drop",
-            "final_response": "",
-            "xform": 31
-        }
-    },
+  {
+    "pk": 28,
+    "model": "smsforms.decisiontrigger",
+    "fields": {
+        "context_data": "",
+        "trigger_keyword": "pick",
+        "final_response": "",
+        "xform": 30
+    }
+  },
+  {
+    "pk": 29,
+    "model": "smsforms.decisiontrigger",
+    "fields": {
+        "context_data": "",
+        "trigger_keyword": "drop",
+        "final_response": "",
+        "xform": 31
+    }
+  },
   {
     "pk": 18,
     "model": "smsforms.decisiontrigger",
@@ -2170,7 +2170,6 @@
       "file": "xforms/death_reg.xml"
     }
   },
-
   {
     "pk": 11,
     "model": "formplayer.xform",
@@ -2195,6 +2194,32 @@
       "namespace": "http://openrosa.org/formdesigner/D6E73C14-AC82-4F34-8F29-6ECCD47CF24C",
       "version": 1,
       "file": "xforms/followup.xml"
+    }
+  },
+  {
+    "pk": 36,
+    "model": "formplayer.xform",
+    "fields": {
+      "uiversion": 1,
+      "name": "Pick",
+      "created": "2013-09-14T19:09:23",
+      "checksum": "d0874f71dedd01c092fb9ff997f478eb2a284d16",
+      "namespace": "http://openrosa.org/formdesigner/CB05C6F9-971B-4A07-B2FF-4D945DD414B9",
+      "version": 1,
+      "file": "xforms/pick.xml"
+    }
+  },
+  {
+    "pk": 35,
+    "model": "formplayer.xform",
+    "fields": {
+      "uiversion": 1,
+      "name": "Drop",
+      "created": "2013-09-14T19:05:08",
+      "checksum": "246d1ce3b1f7d7444867c905993e727e4517a073",
+      "namespace": "http://openrosa.org/formdesigner/2FCF5F3C-7A88-4F78-BA11-D85C00FD85D2",
+      "version": 1,
+      "file": "xforms/drop.xml"
     }
   }
 ]
