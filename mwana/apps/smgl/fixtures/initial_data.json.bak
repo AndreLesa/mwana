@@ -1,18 +1,10 @@
 [
   {
-    "pk": 4,
+    "pk": 1,
     "model": "contactsplus.contacttype",
     "fields": {
-      "name": "Admin",
-      "slug": "admin"
-    }
-  },
-  {
-    "pk": 10,
-    "model": "contactsplus.contacttype",
-    "fields": {
-      "name": "Ambulance Driver",
-      "slug": "am"
+      "name": "Community Based Agent",
+      "slug": "cba"
     }
   },
   {
@@ -24,11 +16,11 @@
     }
   },
   {
-    "pk": 1,
+    "pk": 4,
     "model": "contactsplus.contacttype",
     "fields": {
-      "name": "Community Based Agent",
-      "slug": "cba"
+      "name": "Admin",
+      "slug": "admin"
     }
   },
   {
@@ -37,6 +29,22 @@
     "fields": {
       "name": "Data Clerk",
       "slug": "dc"
+    }
+  },
+  {
+    "pk": 6,
+    "model": "contactsplus.contacttype",
+    "fields": {
+      "name": "Triage Nurse",
+      "slug": "tn"
+    }
+  },
+  {
+    "pk": 10,
+    "model": "contactsplus.contacttype",
+    "fields": {
+      "name": "Ambulance",
+      "slug": "am"
     }
   },
   {
@@ -64,27 +72,11 @@
     }
   },
   {
-    "pk": 16,
-    "model": "contactsplus.contacttype",
-    "fields": {
-      "name": "Hub Worker",
-      "slug": "hub"
-    }
-  },
-  {
     "pk": 15,
     "model": "contactsplus.contacttype",
     "fields": {
       "name": "In Charge",
       "slug": "incharge"
-    }
-  },
-  {
-    "pk": 6,
-    "model": "contactsplus.contacttype",
-    "fields": {
-      "name": "Triage Nurse",
-      "slug": "tn"
     }
   },
   {
@@ -282,6 +274,266 @@
       "has_independent_printer": false,
       "type": 3,
       "slug": "8010"
+    }
+  },
+  {
+    "pk": 277,
+    "model": "locations.location",
+    "fields": {
+      "send_live_results": false,
+      "name": "Kalomo DH Zone",
+      "parent": 164,
+      "point": null,
+      "has_independent_printer": false,
+      "type": 8,
+      "slug": "80403009"
+    }
+  },
+  {
+    "pk": 279,
+    "model": "locations.location",
+    "fields": {
+      "send_live_results": false,
+      "name": "Siachitema",
+      "parent": 193,
+      "point": null,
+      "has_independent_printer": false,
+      "type": 8,
+      "slug": "80401308"
+    }
+  },
+  {
+    "pk": 233,
+    "model": "locations.location",
+    "fields": {
+      "send_live_results": false,
+      "name": "Kasikili",
+      "parent": 196,
+      "point": null,
+      "has_independent_printer": false,
+      "type": 8,
+      "slug": "80401109"
+    }
+  },
+  {
+    "pk": 234,
+    "model": "locations.location",
+    "fields": {
+      "send_live_results": false,
+      "name": "Kambulu",
+      "parent": 196,
+      "point": null,
+      "has_independent_printer": false,
+      "type": 8,
+      "slug": "80401110"
+    }
+  },
+  {
+    "pk": 235,
+    "model": "locations.location",
+    "fields": {
+      "send_live_results": false,
+      "name": "Najika",
+      "parent": 180,
+      "point": null,
+      "has_independent_printer": false,
+      "type": 8,
+      "slug": "80403401"
+    }
+  },
+  {
+    "pk": 236,
+    "model": "locations.location",
+    "fields": {
+      "send_live_results": false,
+      "name": "Chizunda",
+      "parent": 180,
+      "point": null,
+      "has_independent_printer": false,
+      "type": 8,
+      "slug": "80403402"
+    }
+  },
+  {
+    "pk": 199,
+    "model": "locations.location",
+    "fields": {
+      "send_live_results": false,
+      "name": "Chilala",
+      "parent": 167,
+      "point": null,
+      "has_independent_printer": false,
+      "type": 8,
+      "slug": "80402401"
+    }
+  },
+  {
+    "pk": 200,
+    "model": "locations.location",
+    "fields": {
+      "send_live_results": false,
+      "name": "Mwebo",
+      "parent": 167,
+      "point": null,
+      "has_independent_printer": false,
+      "type": 8,
+      "slug": "80402402"
+    }
+  },
+  {
+    "pk": 201,
+    "model": "locations.location",
+    "fields": {
+      "send_live_results": false,
+      "name": "Kaminya",
+      "parent": 167,
+      "point": null,
+      "has_independent_printer": false,
+      "type": 8,
+      "slug": "80402403"
+    }
+  },
+  {
+    "pk": 202,
+    "model": "locations.location",
+    "fields": {
+      "send_live_results": false,
+      "name": "Chikanta",
+      "parent": 167,
+      "point": null,
+      "has_independent_printer": false,
+      "type": 8,
+      "slug": "80402404"
+    }
+  },
+  {
+    "pk": 203,
+    "model": "locations.location",
+    "fields": {
+      "send_live_results": false,
+      "name": "Hanzembwe",
+      "parent": 167,
+      "point": null,
+      "has_independent_printer": false,
+      "type": 8,
+      "slug": "80402405"
+    }
+  },
+  {
+    "pk": 204,
+    "model": "locations.location",
+    "fields": {
+      "send_live_results": false,
+      "name": "Sichmbwali",
+      "parent": 167,
+      "point": null,
+      "has_independent_printer": false,
+      "type": 8,
+      "slug": "80402406"
+    }
+  },
+  {
+    "pk": 205,
+    "model": "locations.location",
+    "fields": {
+      "send_live_results": false,
+      "name": "Hambweka",
+      "parent": 167,
+      "point": null,
+      "has_independent_printer": false,
+      "type": 8,
+      "slug": "80402407"
+    }
+  },
+  {
+    "pk": 206,
+    "model": "locations.location",
+    "fields": {
+      "send_live_results": false,
+      "name": "Katanda",
+      "parent": 164,
+      "point": null,
+      "has_independent_printer": false,
+      "type": 8,
+      "slug": "80403001"
+    }
+  },
+  {
+    "pk": 207,
+    "model": "locations.location",
+    "fields": {
+      "send_live_results": false,
+      "name": "Muyuni",
+      "parent": 164,
+      "point": null,
+      "has_independent_printer": false,
+      "type": 8,
+      "slug": "80403002"
+    }
+  },
+  {
+    "pk": 208,
+    "model": "locations.location",
+    "fields": {
+      "send_live_results": false,
+      "name": "Boongo",
+      "parent": 164,
+      "point": null,
+      "has_independent_printer": false,
+      "type": 8,
+      "slug": "80403003"
+    }
+  },
+  {
+    "pk": 209,
+    "model": "locations.location",
+    "fields": {
+      "send_live_results": false,
+      "name": "Matoondo",
+      "parent": 164,
+      "point": null,
+      "has_independent_printer": false,
+      "type": 8,
+      "slug": "80403004"
+    }
+  },
+  {
+    "pk": 210,
+    "model": "locations.location",
+    "fields": {
+      "send_live_results": false,
+      "name": "Kinatone",
+      "parent": 164,
+      "point": null,
+      "has_independent_printer": false,
+      "type": 8,
+      "slug": "80403005"
+    }
+  },
+  {
+    "pk": 211,
+    "model": "locations.location",
+    "fields": {
+      "send_live_results": false,
+      "name": "Bowood",
+      "parent": 164,
+      "point": null,
+      "has_independent_printer": false,
+      "type": 8,
+      "slug": "80403006"
+    }
+  },
+  {
+    "pk": 212,
+    "model": "locations.location",
+    "fields": {
+      "send_live_results": false,
+      "name": "Sichimwa",
+      "parent": 174,
+      "point": null,
+      "has_independent_printer": false,
+      "type": 8,
+      "slug": "80403101"
     }
   },
   {
@@ -1455,279 +1707,11 @@
     }
   },
   {
-    "pk": 277,
-    "model": "locations.location",
-    "fields": {
-      "send_live_results": false,
-      "name": "Kalomo DH Zone",
-      "parent": 164,
-      "point": null,
-      "has_independent_printer": false,
-      "type": 8,
-      "slug": "80403009"
-    }
-  },
-  {
-    "pk": 279,
-    "model": "locations.location",
-    "fields": {
-      "send_live_results": false,
-      "name": "Siachitema",
-      "parent": 193,
-      "point": null,
-      "has_independent_printer": false,
-      "type": 8,
-      "slug": "80401308"
-    }
-  },
-  {
-    "pk": 233,
-    "model": "locations.location",
-    "fields": {
-      "send_live_results": false,
-      "name": "Kasikili",
-      "parent": 196,
-      "point": null,
-      "has_independent_printer": false,
-      "type": 8,
-      "slug": "80401109"
-    }
-  },
-  {
-    "pk": 234,
-    "model": "locations.location",
-    "fields": {
-      "send_live_results": false,
-      "name": "Kambulu",
-      "parent": 196,
-      "point": null,
-      "has_independent_printer": false,
-      "type": 8,
-      "slug": "80401110"
-    }
-  },
-  {
-    "pk": 235,
-    "model": "locations.location",
-    "fields": {
-      "send_live_results": false,
-      "name": "Najika",
-      "parent": 180,
-      "point": null,
-      "has_independent_printer": false,
-      "type": 8,
-      "slug": "80403401"
-    }
-  },
-  {
-    "pk": 236,
-    "model": "locations.location",
-    "fields": {
-      "send_live_results": false,
-      "name": "Chizunda",
-      "parent": 180,
-      "point": null,
-      "has_independent_printer": false,
-      "type": 8,
-      "slug": "80403402"
-    }
-  },
-  {
-    "pk": 199,
-    "model": "locations.location",
-    "fields": {
-      "send_live_results": false,
-      "name": "Chilala",
-      "parent": 167,
-      "point": null,
-      "has_independent_printer": false,
-      "type": 8,
-      "slug": "80402401"
-    }
-  },
-  {
-    "pk": 200,
-    "model": "locations.location",
-    "fields": {
-      "send_live_results": false,
-      "name": "Mwebo",
-      "parent": 167,
-      "point": null,
-      "has_independent_printer": false,
-      "type": 8,
-      "slug": "80402402"
-    }
-  },
-  {
-    "pk": 201,
-    "model": "locations.location",
-    "fields": {
-      "send_live_results": false,
-      "name": "Kaminya",
-      "parent": 167,
-      "point": null,
-      "has_independent_printer": false,
-      "type": 8,
-      "slug": "80402403"
-    }
-  },
-  {
-    "pk": 202,
-    "model": "locations.location",
-    "fields": {
-      "send_live_results": false,
-      "name": "Chikanta",
-      "parent": 167,
-      "point": null,
-      "has_independent_printer": false,
-      "type": 8,
-      "slug": "80402404"
-    }
-  },
-  {
-    "pk": 203,
-    "model": "locations.location",
-    "fields": {
-      "send_live_results": false,
-      "name": "Hanzembwe",
-      "parent": 167,
-      "point": null,
-      "has_independent_printer": false,
-      "type": 8,
-      "slug": "80402405"
-    }
-  },
-  {
-    "pk": 204,
-    "model": "locations.location",
-    "fields": {
-      "send_live_results": false,
-      "name": "Sichmbwali",
-      "parent": 167,
-      "point": null,
-      "has_independent_printer": false,
-      "type": 8,
-      "slug": "80402406"
-    }
-  },
-  {
-    "pk": 205,
-    "model": "locations.location",
-    "fields": {
-      "send_live_results": false,
-      "name": "Hambweka",
-      "parent": 167,
-      "point": null,
-      "has_independent_printer": false,
-      "type": 8,
-      "slug": "80402407"
-    }
-  },
-  {
-    "pk": 206,
-    "model": "locations.location",
-    "fields": {
-      "send_live_results": false,
-      "name": "Katanda",
-      "parent": 164,
-      "point": null,
-      "has_independent_printer": false,
-      "type": 8,
-      "slug": "80403001"
-    }
-  },
-  {
-    "pk": 207,
-    "model": "locations.location",
-    "fields": {
-      "send_live_results": false,
-      "name": "Muyuni",
-      "parent": 164,
-      "point": null,
-      "has_independent_printer": false,
-      "type": 8,
-      "slug": "80403002"
-    }
-  },
-  {
-    "pk": 208,
-    "model": "locations.location",
-    "fields": {
-      "send_live_results": false,
-      "name": "Boongo",
-      "parent": 164,
-      "point": null,
-      "has_independent_printer": false,
-      "type": 8,
-      "slug": "80403003"
-    }
-  },
-  {
-    "pk": 209,
-    "model": "locations.location",
-    "fields": {
-      "send_live_results": false,
-      "name": "Matoondo",
-      "parent": 164,
-      "point": null,
-      "has_independent_printer": false,
-      "type": 8,
-      "slug": "80403004"
-    }
-  },
-  {
-    "pk": 210,
-    "model": "locations.location",
-    "fields": {
-      "send_live_results": false,
-      "name": "Kinatone",
-      "parent": 164,
-      "point": null,
-      "has_independent_printer": false,
-      "type": 8,
-      "slug": "80403005"
-    }
-  },
-  {
-    "pk": 211,
-    "model": "locations.location",
-    "fields": {
-      "send_live_results": false,
-      "name": "Bowood",
-      "parent": 164,
-      "point": null,
-      "has_independent_printer": false,
-      "type": 8,
-      "slug": "80403006"
-    }
-  },
-  {
-    "pk": 212,
-    "model": "locations.location",
-    "fields": {
-      "send_live_results": false,
-      "name": "Sichimwa",
-      "parent": 174,
-      "point": null,
-      "has_independent_printer": false,
-      "type": 8,
-      "slug": "80403101"
-    }
-  },
-  {
-    "pk": 4,
+    "pk": 9,
     "model": "smgl.xformkeywordhandler",
     "fields": {
-      "keyword": "amb",
-      "function_path": "mwana.apps.smgl.ambulance_workflow.ambulance_request"
-    }
-  },
-  {
-    "pk": 19,
-    "model": "smgl.xformkeywordhandler",
-    "fields": {
-      "keyword": "back",
-      "function_path": "mwana.apps.smgl.keyword_handlers.make_active"
+      "keyword": "refer",
+      "function_path": "mwana.apps.smgl.keyword_handlers.refer"
     }
   },
   {
@@ -1739,132 +1723,11 @@
     }
   },
   {
-    "pk": 10,
-    "model": "smgl.xformkeywordhandler",
-    "fields": {
-      "keyword": "death",
-      "function_path": "mwana.apps.smgl.keyword_handlers.death_registration"
-    }
-  },
-  {
-    "pk": 20,
-    "model": "smgl.xformkeywordhandler",
-    "fields": {
-      "keyword": "drop",
-      "function_path": "mwana.apps.smgl.keyword_handlers.drop"
-    }
-  },
-  {
-    "pk": 5,
-    "model": "smgl.xformkeywordhandler",
-    "fields": {
-      "keyword": "fup",
-      "function_path": "mwana.apps.smgl.keyword_handlers.follow_up"
-    }
-  },
-  {
-    "pk": 17,
-    "model": "smgl.xformkeywordhandler",
-    "fields": {
-      "keyword": "in",
-      "function_path": "mwana.apps.smgl.keyword_handlers.make_active"
-    }
-  },
-
-  {
     "pk": 2,
     "model": "smgl.xformkeywordhandler",
     "fields": {
       "keyword": "join",
       "function_path": "mwana.apps.smgl.join_handler.join_secure"
-    }
-  },
-  {
-    "pk": 15,
-    "model": "smgl.xformkeywordhandler",
-    "fields": {
-      "keyword": "leave",
-      "function_path": "mwana.apps.smgl.keyword_handlers.leave"
-    }
-  },
-  {
-    "pk": 13,
-    "model": "smgl.xformkeywordhandler",
-    "fields": {
-      "keyword": "look",
-      "function_path": "mwana.apps.smgl.keyword_handlers.motherid_lookup"
-    }
-  },
-  {
-    "pk": 16,
-    "model": "smgl.xformkeywordhandler",
-    "fields": {
-      "keyword": "out",
-      "function_path": "mwana.apps.smgl.keyword_handlers.out"
-    }
-  },
-  {
-    "pk": 19,
-    "model": "smgl.xformkeywordhandler",
-    "fields": {
-      "keyword": "pick",
-      "function_path": "mwana.apps.smgl.keyword_handlers.pick"
-    }
-  },
-  {
-    "pk": 15,
-    "model": "smgl.xformkeywordhandler",
-    "fields": {
-      "keyword": "leave",
-      "function_path": "mwana.apps.smgl.keyword_handlers.leave"
-    }
-  },
-  {
-    "pk": 13,
-    "model": "smgl.xformkeywordhandler",
-    "fields": {
-      "keyword": "look",
-      "function_path": "mwana.apps.smgl.keyword_handlers.motherid_lookup"
-    }
-  },
-  {
-    "pk": 16,
-    "model": "smgl.xformkeywordhandler",
-    "fields": {
-      "keyword": "out",
-      "function_path": "mwana.apps.smgl.keyword_handlers.out"
-    }
-  },
-  {
-    "pk": 8,
-    "model": "smgl.xformkeywordhandler",
-    "fields": {
-      "keyword": "outc",
-      "function_path": "mwana.apps.smgl.ambulance_workflow.ambulance_outcome"
-    }
-  },
-  {
-    "pk": 14,
-    "model": "smgl.xformkeywordhandler",
-    "fields": {
-      "keyword": "pp",
-      "function_path": "mwana.apps.smgl.keyword_handlers.postpartum_visit"
-    }
-  },
-  {
-    "pk": 9,
-    "model": "smgl.xformkeywordhandler",
-    "fields": {
-      "keyword": "refer",
-      "function_path": "mwana.apps.smgl.keyword_handlers.refer"
-    }
-  },
-  {
-    "pk": 11,
-    "model": "smgl.xformkeywordhandler",
-    "fields": {
-      "keyword": "refout",
-      "function_path": "mwana.apps.smgl.keyword_handlers.referral_outcome"
     }
   },
   {
@@ -1876,6 +1739,14 @@
     }
   },
   {
+    "pk": 5,
+    "model": "smgl.xformkeywordhandler",
+    "fields": {
+      "keyword": "fup",
+      "function_path": "mwana.apps.smgl.keyword_handlers.follow_up"
+    }
+  },
+  {
     "pk": 7,
     "model": "smgl.xformkeywordhandler",
     "fields": {
@@ -1884,11 +1755,19 @@
     }
   },
   {
-    "pk": 18,
+    "pk": 10,
     "model": "smgl.xformkeywordhandler",
     "fields": {
-      "keyword": "syp",
-      "function_path": "mwana.apps.smgl.keyword_handlers.syphilis_deprecation"
+      "keyword": "death",
+      "function_path": "mwana.apps.smgl.keyword_handlers.death_registration"
+    }
+  },
+  {
+    "pk": 11,
+    "model": "smgl.xformkeywordhandler",
+    "fields": {
+      "keyword": "refout",
+      "function_path": "mwana.apps.smgl.keyword_handlers.referral_outcome"
     }
   },
   {
@@ -1900,48 +1779,93 @@
     }
   },
   {
-    "pk": 12,
-    "model": "smsforms.decisiontrigger",
+    "pk": 13,
+    "model": "smgl.xformkeywordhandler",
     "fields": {
-      "context_data": null,
-      "trigger_keyword": "confirm",
-      "final_response": "",
-      "xform": 14
-    }
-  },
-  {
-    "pk": 10,
-    "model": "smsforms.decisiontrigger",
-    "fields": {
-      "context_data": null,
-      "trigger_keyword": "amb",
-      "final_response": "",
-      "xform": 12
+      "keyword": "look",
+      "function_path": "mwana.apps.smgl.keyword_handlers.motherid_lookup"
     }
   },
   {
     "pk": 14,
-    "model": "smsforms.decisiontrigger",
+    "model": "smgl.xformkeywordhandler",
     "fields": {
-      "context_data": null,
-      "trigger_keyword": "outc",
-      "final_response": "",
-      "xform": 16
+      "keyword": "pp",
+      "function_path": "mwana.apps.smgl.keyword_handlers.postpartum_visit"
     }
   },
   {
-    "pk": 12,
+    "pk": 15,
     "model": "smgl.xformkeywordhandler",
     "fields": {
-      "keyword": "told",
-      "function_path": "mwana.apps.smgl.keyword_handlers.told"
+      "keyword": "leave",
+      "function_path": "mwana.apps.smgl.keyword_handlers.leave"
+    }
+  },
+  {
+    "pk": 16,
+    "model": "smgl.xformkeywordhandler",
+    "fields": {
+      "keyword": "out",
+      "function_path": "mwana.apps.smgl.keyword_handlers.out"
+    }
+  },
+  {
+     "pk": 19,
+     "model": "smgl.xformkeywordhandler",
+     "fields": {
+      	"keyword": "pick",
+        "function_path": "mwana.apps.smgl.keyword_handlers.pick"
+       }
+    },
+    {
+        "pk": 20,
+        "model": "smgl.xformkeywordhandler",
+        "fields": {
+            "keyword": "drop",
+            "function_path": "mwana.apps.smgl.keyword_handlers.drop"
+        }
+    },
+  {
+    "pk": 17,
+    "model": "smgl.xformkeywordhandler",
+    "fields": {
+      "keyword": "in",
+      "function_path": "mwana.apps.smgl.keyword_handlers.make_active"
     }
   },
   {
     "pk": 18,
+    "model": "smgl.xformkeywordhandler",
+    "fields": {
+      "keyword": "syp",
+      "function_path": "mwana.apps.smgl.keyword_handlers.syphilis"
+    }
+  },
+    {
+        "pk": 28,
+        "model": "smsforms.decisiontrigger",
+        "fields": {
+            "context_data": "",
+            "trigger_keyword": "pick",
+            "final_response": "",
+            "xform": 30
+        }
+    },
+    {
+        "pk": 29,
+        "model": "smsforms.decisiontrigger",
+        "fields": {
+            "context_data": "",
+            "trigger_keyword": "drop",
+            "final_response": "",
+            "xform": 31
+        }
+    },
+  {
+    "pk": 18,
     "model": "smsforms.decisiontrigger",
     "fields": {
-      "context_data": null,
       "trigger_keyword": "hihi",
       "final_response": "",
       "xform": 5
@@ -1951,7 +1875,6 @@
     "pk": 3,
     "model": "smsforms.decisiontrigger",
     "fields": {
-      "context_data": null,
       "trigger_keyword": "join",
       "final_response": "",
       "xform": 5
@@ -1961,7 +1884,6 @@
     "pk": 9,
     "model": "smsforms.decisiontrigger",
     "fields": {
-      "context_data": null,
       "trigger_keyword": "reg",
       "final_response": "",
       "xform": 11
@@ -1971,7 +1893,6 @@
     "pk": 11,
     "model": "smsforms.decisiontrigger",
     "fields": {
-      "context_data": null,
       "trigger_keyword": "fup",
       "final_response": "",
       "xform": 13
@@ -1981,7 +1902,6 @@
     "pk": 13,
     "model": "smsforms.decisiontrigger",
     "fields": {
-      "context_data": null,
       "trigger_keyword": "resp",
       "final_response": "",
       "xform": 15
@@ -1991,7 +1911,6 @@
     "pk": 19,
     "model": "smsforms.decisiontrigger",
     "fields": {
-      "context_data": null,
       "trigger_keyword": "refer",
       "final_response": "",
       "xform": 20
@@ -2001,7 +1920,6 @@
     "pk": 17,
     "model": "smsforms.decisiontrigger",
     "fields": {
-      "context_data": null,
       "trigger_keyword": "birth",
       "final_response": "",
       "xform": 18
@@ -2011,7 +1929,6 @@
     "pk": 16,
     "model": "smsforms.decisiontrigger",
     "fields": {
-      "context_data": null,
       "trigger_keyword": "death",
       "final_response": "",
       "xform": 19
@@ -2021,7 +1938,6 @@
     "pk": 20,
     "model": "smsforms.decisiontrigger",
     "fields": {
-      "context_data": null,
       "trigger_keyword": "refout",
       "final_response": "",
       "xform": 21
@@ -2031,7 +1947,6 @@
     "pk": 21,
     "model": "smsforms.decisiontrigger",
     "fields": {
-      "context_data": null,
       "trigger_keyword": "told",
       "final_response": "",
       "xform": 23
@@ -2041,7 +1956,6 @@
     "pk": 22,
     "model": "smsforms.decisiontrigger",
     "fields": {
-      "context_data": null,
       "trigger_keyword": "look",
       "final_response": "",
       "xform": 24
@@ -2051,7 +1965,6 @@
     "pk": 23,
     "model": "smsforms.decisiontrigger",
     "fields": {
-      "context_data": null,
       "trigger_keyword": "pp",
       "final_response": "",
       "xform": 25
@@ -2061,7 +1974,6 @@
     "pk": 24,
     "model": "smsforms.decisiontrigger",
     "fields": {
-      "context_data": null,
       "trigger_keyword": "leave",
       "final_response": "",
       "xform": 26
@@ -2071,7 +1983,6 @@
     "pk": 25,
     "model": "smsforms.decisiontrigger",
     "fields": {
-      "context_data": null,
       "trigger_keyword": "in",
       "final_response": "",
       "xform": 27
@@ -2081,7 +1992,6 @@
     "pk": 26,
     "model": "smsforms.decisiontrigger",
     "fields": {
-      "context_data": null,
       "trigger_keyword": "out",
       "final_response": "",
       "xform": 28
@@ -2091,66 +2001,9 @@
     "pk": 27,
     "model": "smsforms.decisiontrigger",
     "fields": {
-      "context_data": null,
       "trigger_keyword": "syp",
       "final_response": "",
       "xform": 29
-    }
-  },
-  {
-    "pk": 30,
-    "model": "smsforms.decisiontrigger",
-    "fields": {
-      "context_data": "",
-      "trigger_keyword": "drop",
-      "final_response": "",
-      "xform": 35
-    }
-  },
-  {
-    "pk": 31,
-    "model": "smsforms.decisiontrigger",
-    "fields": {
-      "context_data": "",
-      "trigger_keyword": "pick",
-      "final_response": "",
-      "xform": 36
-    }
-  },
-  {
-    "pk": 28,
-    "model": "smsforms.decisiontrigger",
-    "fields": {
-      "context_data": "",
-      "trigger_keyword": "back",
-      "final_response": "",
-      "xform": 27
-    }
-  },
-  {
-    "pk": 14,
-    "model": "formplayer.xform",
-    "fields": {
-      "uiversion": 1,
-      "name": "Ambulance Request Confirmation",
-      "created": "2012-04-23T12:51:34.552",
-      "checksum": "f2901d7cc981730244271f1d9c1bb4bd1884e86e",
-      "namespace": "http://openrosa.org/formdesigner/073A5845-30AC-4FB5-9D26-1DC056D0C6E3",
-      "version": 1,
-      "file": "xforms/amb_request_conf.xml"
-    }
-  },
-  {
-    "pk": 12,
-    "model": "formplayer.xform",
-    "fields": {
-      "uiversion": 1,
-      "name": "AMB",
-      "created": "2012-04-23T09:10:01.928",
-      "checksum": "f0325162cc4362250c83a1b69d79578db1151cee",
-      "namespace": "http://openrosa.org/formdesigner/A652487B-4E6F-4802-A56F-F68BC7207A47",
-      "version": 1,
-      "file": "xforms/amb.xml"
     }
   },
   {
@@ -2186,7 +2039,6 @@
       "uiversion": 1,
       "name": "Post Partum Visit",
       "created": "2012-11-16T16:45:58.599",
-      "checksum": "",
       "namespace": "http://openrosa.org/formdesigner/523C5102-7B27-4EEC-B2F6-ED4885A4549B",
       "version": 1,
       "file": "xforms/postpartum_visit.xml"
@@ -2199,7 +2051,6 @@
       "uiversion": 1,
       "name": "Leave",
       "created": "2012-11-19T16:45:58.599",
-      "checksum": "",
       "namespace": "http://openrosa.org/formdesigner/523C5102-7B27-4EEC-B2F6-ED4885A4549B",
       "version": 1,
       "file": "xforms/leave.xml"
@@ -2212,7 +2063,6 @@
       "uiversion": 1,
       "name": "In",
       "created": "2012-11-20T16:45:58.599",
-      "checksum": "",
       "namespace": "http://openrosa.org/formdesigner/523C5102-7B27-4EEC-B2F6-ED4885A4549B",
       "version": 1,
       "file": "xforms/in.xml"
@@ -2225,7 +2075,6 @@
       "uiversion": 1,
       "name": "Out",
       "created": "2012-11-20T16:45:58.599",
-      "checksum": "",
       "namespace": "http://openrosa.org/formdesigner/523C5102-7B27-4EEC-B2F6-ED4885A4549B",
       "version": 1,
       "file": "xforms/out.xml"
@@ -2238,7 +2087,6 @@
       "uiversion": 1,
       "name": "Syphilis",
       "created": "2012-11-21T16:45:58.599",
-      "checksum": "",
       "namespace": "http://openrosa.org/formdesigner/523C5102-7B27-4EEC-B2F6-ED4885A4549B",
       "version": 1,
       "file": "xforms/syp.xml"
@@ -2284,6 +2132,19 @@
     }
   },
   {
+    "pk": 15,
+    "model": "formplayer.xform",
+    "fields": {
+      "uiversion": 1,
+      "name": "Emergency Resp",
+      "created": "2012-04-23T16:34:35.059",
+      "checksum": "60e84f209a390dbd26af2b93da7dc606d17f521f",
+      "namespace": "http://openrosa.org/formdesigner/5EB269CC-F738-4DC4-B495-51E88C6C7A0A",
+      "version": 1,
+      "file": "xforms/emergency_resp.xml"
+    }
+  },
+  {
     "pk": 18,
     "model": "formplayer.xform",
     "fields": {
@@ -2309,6 +2170,7 @@
       "file": "xforms/death_reg.xml"
     }
   },
+
   {
     "pk": 11,
     "model": "formplayer.xform",
@@ -2333,45 +2195,6 @@
       "namespace": "http://openrosa.org/formdesigner/D6E73C14-AC82-4F34-8F29-6ECCD47CF24C",
       "version": 1,
       "file": "xforms/followup.xml"
-    }
-  },
-  {
-    "pk": 36,
-    "model": "formplayer.xform",
-    "fields": {
-      "uiversion": 1,
-      "name": "Pick",
-      "created": "2013-09-14T19:09:23",
-      "checksum": "d0874f71dedd01c092fb9ff997f478eb2a284d16",
-      "namespace": "http://openrosa.org/formdesigner/CB05C6F9-971B-4A07-B2FF-4D945DD414B9",
-      "version": 1,
-      "file": "xforms/pick.xml"
-    }
-  },
-  {
-    "pk": 35,
-    "model": "formplayer.xform",
-    "fields": {
-      "uiversion": 1,
-      "name": "Drop",
-      "created": "2013-09-14T19:05:08",
-      "checksum": "246d1ce3b1f7d7444867c905993e727e4517a073",
-      "namespace": "http://openrosa.org/formdesigner/2FCF5F3C-7A88-4F78-BA11-D85C00FD85D2",
-      "version": 1,
-      "file": "xforms/drop.xml"
-    }
-  },
-  {
-    "pk": 15,
-    "model": "formplayer.xform",
-    "fields": {
-      "uiversion": 1,
-      "name": "Emergency Resp",
-      "created": "2012-04-23T16:34:35",
-      "checksum": "60e84f209a390dbd26af2b93da7dc606d17f521f",
-      "namespace": "http://openrosa.org/formdesigner/5EB269CC-F738-4DC4-B495-51E88C6C7A0A",
-      "version": 1,
-      "file": "xforms/emergency_resp.xml"
     }
   }
 ]
