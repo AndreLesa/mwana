@@ -1676,6 +1676,7 @@ def sms_records(request):
     """
     Report on all messages
     """
+
     province = district = facility = keyword = None
     start_date, end_date = get_default_dates()
     if request.GET:
@@ -1716,7 +1717,6 @@ def sms_records(request):
 
 
     if form.data.get('export'):
-        #import ipdb;ipdb.set_trace()
         workbook = xlwt.Workbook(encoding='utf-8')
         worksheet = workbook.add_sheet('SMS Users Page')
         selected_level = facility or district or province

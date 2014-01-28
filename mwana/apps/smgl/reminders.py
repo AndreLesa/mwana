@@ -112,8 +112,8 @@ def send_emergency_referral_reminders(router_obj=None):
     """
     _set_router(router_obj)
     now = datetime.utcnow()
-    reminder_threshold = now - timedelta(days=5)
-    referrals_to_remind = Referral.emergencies().filter(
+    reminder_threshold = now - timedelta(hours=12)
+    referrals_to_remind = Referral.objects.filter(
         reminded=False,
         responded=False,
         date__gte=reminder_threshold - SEND_REMINDER_LOWER_BOUND,

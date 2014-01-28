@@ -549,13 +549,15 @@ class SMGLReferTest(SMGLSetUp):
         ref = Referral.objects.get(pk=ref.pk)
         self.assertEqual(False, ref.reminded)
 
-        # set the date back so it triggers a reminder
-        ref.date = ref.date - datetime.timedelta(days=3)
+        # set the time back so it triggers a reminder
+        ref.date = ref.date - datetime.timedelta(hours=12)
         ref.save()
         send_emergency_referral_reminders(router_obj=self.router)
         reminder = const.REMINDER_EMERGENCY_REFERRAL % {"unique_id": "1234",
                                                         "date": ref.date.date(),
                                                         "loc": "Mawaya"}
+
+
         script = """
             %(num)s < %(msg)s
         """ % {"num": "222222",
