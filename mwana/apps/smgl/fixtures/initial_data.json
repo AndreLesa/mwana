@@ -1895,16 +1895,6 @@
     }
   },
   {
-    "pk": 14,
-    "model": "smsforms.decisiontrigger",
-    "fields": {
-      "context_data": null,
-      "trigger_keyword": "outc",
-      "final_response": "",
-      "xform": 21
-    }
-  },
-  {
     "pk": 18,
     "model": "smsforms.decisiontrigger",
     "fields": {
