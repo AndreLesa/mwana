@@ -1,6 +1,6 @@
 {% extends  "layout.html" %}
 
-{% block title %}SMS Records - {{ block.super }}{% endblock %}
+{% block title %}Reports - {{ block.super }}{% endblock %}
 
 {% block stylesheets %}
 {{ block.super }}
@@ -20,24 +20,72 @@
         $( "#id_start_date" ).datepicker({ dateFormat: "yy-mm-dd" });
         $( "#id_end_date" ).datepicker({ dateFormat: "yy-mm-dd" });
 
+        var activeTab
         //Load report on click
+        $("a[data-toggle='tab']").on('show.bs.tab', function(e){
+            var targ = $(e.target).attr('href');
+            targ = targ.replace('#', '');
+            $("#"+targ).html("<p>Loading....Please wait.</p>").css({
+              'font-size':'25px',
+              'text-align':'center'
+            })
+        });
+
         $("a[data-toggle='tab']").on('shown.bs.tab', function (e) {
+            var formData = $("form").serialize()
             var targ = $(e.target).attr('href');
             targ = targ.replace('#', '');
             var siteURL = "/smgl/";
             var fullURL = siteURL+targ;
-            $.get(fullURL, function(data){
-              $("#"+targ).html(data)
+            var abbv = {
+              'Emergent Referrals':'Referrals',
+              'Referrals With Response': 'Ref. W/ Resp',
+              'Referrals With Response Outcome': 'Ref. W/ Resp-Out.',
+              'Transport By Ambulance': 'Trans. Amb',
+              'Average Turnaround Time': 'Avg. Time',
+              'Most Common Reason For Referral': 'Common Ref. Reason',
+              'Clinic Workers Registered':'Clinic W. Reg.',
+              'Clinic Workers Active':'Clinic W. Actv.',
+              'Data Clerks Registered':'D. Clerks Reg.',
+              'Data Clerks Active':'D. Clerks Actv.',
+              'Community Based Agents Registered':'CBAs Reg.',
+              'Community Based Agents Active':'CBAs Actv.',
+              'Error Rate: Clinic Workers':'Err. Clinic W.',
+              'Error Rate: Data Clerks':'Err. D. Clerks.',
+              'Error Rate: Community Based Agents': 'Err. CBAs'
+            }
+            $.get(fullURL, formData, function(data){
+
+              window.location.hash = '#'+targ //Set the url hash
+                var table = $("#"+targ).html(data)
+                table.css({
+                  'font-size':'14px',
+                  'text-align':'left'
+                }) //put in the data
+
+                var headers = $(table).find('thead tr th a')
+
+                headers.each(function(index, item){
+                  //use the current text value as the key to pull out the
+                  //correct abbreviation and set it in as the text
+                  //while the text value becomes the title
+                  header = $(item)
+                  text = header.text()
+                  abv = abbv[text.trim()]
+                  header.attr('title', text)
+                  header.text(abv)
+                });
             });
+
+
           });
 
         var hash = location.hash
           , hashPieces = hash.split('?')
           , activeTab = $('[href=' + hashPieces[0] + ']');
-        console.log(activeTab)
+
         if (!hash){
           activeTab  = $('[href=#anc-report]')
-          console.log(activeTab)
         }
         activeTab.tab('show');
     });
@@ -58,6 +106,8 @@
         <tr>
           <th colspan="2">Period</th>
           <th colspan="3">Location</th>
+          <th colspan="1">Filter</th>
+          <th colspan="2">User</th>
         </tr>
         <tr>
           <th>Start</th>
@@ -65,6 +115,9 @@
           <th>Province</th>
           <th>District</th>
           <th>Facility</th>
+          <th>Filter</th>
+          <th>Type</th>
+          <th>Status</th>
         </tr>
       </thead>
       <tbody>
@@ -89,11 +142,23 @@
              {{ form.facility.errors}}
              {{ form.facility }}
            </td>
+           <td>
+             {{ form.filter_option.errors}}
+             {{ form.filter_option }}
+           </td>
+          <td>
+            {{ form.c_type.errors}}
+            {{ form.c_type }}
+          </td>
+          <td>
+            {{ form.status.errors }}
+            {{ form.status }}
+          </td>
         </tr>
       </tbody>
     </table>
       <input type="submit" class="btn" name="filter" value="Filter" />
-      <input type="submit" class="btn" name="export" value="Export" />
+      <!--<input type="submit" class="btn" name="export" value="Export" />-->
   </form>
   {{ form.media.js }}
 <div class="row-fluid">
@@ -102,6 +167,8 @@
         <li><a href="#anc-report" data-toggle="tab">ANC Report</a></li>
         <li><a href="#pnc-report" data-toggle="tab">PNC Report</a></li>
         <li><a href="#reminder-report" data-toggle="tab">Reminders Report</a></li>
+        <li><a href="#reminder-report" data-toggle="tab">Reminders Report(Mothers)</a></li>
+        <li><a href="#reminder-report-smag" data-toggle="tab">Reminders Report (SMAG)</a></li>
         <li><a href="#referral-report" data-toggle="tab">Referral Report</a></li>
         <li><a href="#user-report" data-toggle="tab">User Report</a></li>
       </ul>
@@ -111,11 +178,21 @@
         <div class="tab-pane active" id="anc-report"></div>
         <div class="tab-pane" id="pnc-report"></div>
         <div class="tab-pane" id="reminder-report"></div>
+        <div class="tab-pane" id="reminder-report-smag"></div>
         <div class="tab-pane" id="referral-report"></div>
         <div class="tab-pane" id="user-report"></div>
 
       </div>
 </div>
+  <div class="row-fluid" style="padding:8px;">
+    <p>**The Option Filter will only apply on the ANC report table as follows:</p>
+    <ul>
+      <li><b>Option 1</b>: All women who have Pregnancy registrations AND gave birth
+      OR had EDD scheduled within the specified time frame</li>
+      <li><b>Option 2</b>: All women who gave birth or had EDD within specified time frame</li>
+    </ul>
+    <p>**The User Type and Status will only apply on the User report table</p>
+  </div>
 </div>
 
   <script type="text/javascript">

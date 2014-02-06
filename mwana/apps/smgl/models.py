@@ -2,6 +2,7 @@
 from rapidsms.models import Contact, Connection
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.exceptions import MultipleObjectsReturned
 
 # Create your models here.
 from mwana.apps.locations.models import Location
@@ -93,6 +94,7 @@ class PregnantMother(models.Model):
     risk_reason_none = models.BooleanField(default=False)
 
     reminded = models.BooleanField(default=False)
+
 
     def get_field_value_mapping(self):
         mapped_text = "MotherID={self.uid}, Name={self.first_name} \
@@ -243,6 +245,50 @@ class FacilityVisit(models.Model):
                                    choices=POS_STATUS_CHOICES,
                                    null=True, blank=True)
     referred = models.BooleanField(default=False)
+
+    def previous_visit(self):
+        all_visits = FacilityVisit.objects.filter(
+            mother=self.mother
+            ).order_by('created_date')
+        visit_index = 0
+        for index, visit in enumerate(all_visits):
+            if self == visit:
+                visit_num = index
+                break
+        if visit_index > 0:
+            return all_visits[visit_index-1]
+        else:
+            return False
+
+    def told(self):
+        #Tolds sent since last visit
+        previous_visit =  self.previous_visit()
+        if previous_visit:
+            tolds = ToldReminder.objects.filter(
+                date__gte=previous_visit.visit_date,
+                date__lte=self.visit_date,
+                mother=self.mother
+                ).filter(type='nvd')
+        else:
+            tolds = ToldReminder.objects.filter(
+                date__lte=self.visit_date,
+                mother=self.mother).filter(type='nvd')
+        try:
+            told = tolds[0]
+        except IndexError:
+            return False
+        else:
+            return told
+
+    def is_on_time(self):
+        told = self.told()
+        if told:
+            before = told.date - datetime.timedelta(days=14)
+            after = told.date + datetime.timedelta(days=14)
+            if self.visit_date >= before.date() and self.visit_date <= after.date():
+                return True
+            else:
+                return False
 
     def get_field_value_mapping(self):
         # The edd only makes sense for ANC visits and if not set on the
@@ -511,6 +557,14 @@ class Referral(FormReferenceBase, MotherReferenceBase):
         else:
             return ""
 
+    def turn_around_time(self):
+        if not self.date_outcome:
+            return 0
+        else:
+            turn_around = self.date_outcome - self.date
+            return turn_around.seconds
+
+
 
 class PreRegistration(models.Model):
     LANGUAGES_CHOICES = (
@@ -572,6 +626,30 @@ class BirthRegistration(FormReferenceBase):
                                  related_name='birth_facility')
     location = models.ForeignKey(Location, null=True,
                                  related_name='birth_location')
+
+
+    def told(self):
+        try:
+            told = ToldReminder.objects.filter(
+                type='edd_14',
+                date__lte=self.date,
+                mother=self.mother)
+        except IndexError:
+            return False
+        else:
+            return told
+
+    def birth_on_time(self):
+        told = self.told()
+        if told:
+            before = told.date - datetime.timedelta(days=21)
+            after = told.date + datetime.timedelta(days=21)
+            if self.date >= before and self.date <= after:
+                return True
+            else:
+                return False
+        else:
+            return False
 
     def get_field_value_mapping(self):
         if self.mother:
@@ -668,6 +746,19 @@ class ToldReminder(FormReferenceBase, MotherReferenceBase):
                     date_told=self.date.strftime('%d %b %Y'),
                     told_type=self.get_type_display()
                     )
+
+    def get_told_type(self):
+        try:
+            birth = BirthRegistration.objects.get(mother=self.mother)
+        except BirthRegistration.DoesNotExist:
+            return 'anc'
+        except MultipleObjectsReturned:
+            return 'pos'
+        else:
+            if birth.date > self.date.date():
+                return 'pos'
+            else:
+                return 'anc'
 
 
 SYPHILIS_TEST_RESULT_CHOICES = (
