@@ -65,13 +65,20 @@ def refer(session, xform, router):
 
         from_facility = referring_loc.name if not referring_loc.parent else "%s (in %s)" % \
             (referring_loc.name, referring_loc.parent.name)
-        for con in _get_people_to_notify(referral):
+        for con in _get_people_to_notify(referral, ref_type='com_to_facility'):
             if con.default_connection:
                 verbose_reasons = [Referral.REFERRAL_REASONS[r] for r in referral.get_reasons()]#This is pointless right now
-                msg = const.REFERRAL_CBA_NOTIFICATION % {"unique_id": mother_id,
-                                                     "village": referring_loc.name,
-                                                     "phone": session.connection.identity
-                                                     }
+                if con.types.all() in [const.CTYPE_CLINICWORKER]:
+                    #Data Clerks and facility in charges should not be asked to send the resp
+                    msg = const.REFERRAL_CBA_NOTIFICATION_CLINIC_WORKER % {"unique_id": mother_id,
+                                                         "village": referring_loc.name,
+                                                         "phone": session.connection.identity
+                                                         }
+                else:
+                    msg = const.REFERRAL_CBA_NOTIFICATION % {
+                                                         "village": referring_loc.name,
+                                                         "phone": session.connection.identity
+                                                         }
                 router.outgoing(OutgoingMessage(con.default_connection, msg))
         #respond to the sending CBA
         cba_thanks = const.REFERRAL_CBA_THANKS %{
@@ -118,6 +125,7 @@ def refer(session, xform, router):
             past_referral.re_referral = referral
             past_referral.save()
         #If not an emergency, we just notify via get people to notify.
+        """
         if status == "nem":
             for con in _get_people_to_notify(referral):
                 verbose_reasons = [Referral.REFERRAL_REASONS[r] for r in referral.get_reasons()]
@@ -134,7 +142,7 @@ def refer(session, xform, router):
                                               "unique_id": referral.mother_uid,
                                               "facility_name":referral.facility.name}
             return respond_to_session(router, session, referral_response)
-
+        """
         # Generate an Ambulance Request
         session.template_vars.update({"sender_phone_number": session.connection.identity})
         amb = AmbulanceRequest()
@@ -464,12 +472,17 @@ def _get_people_to_notify_hospital(referral):
                                   location=referral.facility,
                                   is_active=True)
 
-def _get_people_to_notify(referral):
+def _get_people_to_notify(referral, ref_type=None):
     # who to notifiy on an initial referral
     # this should be the people who are being referred to
-    types = ContactType.objects.filter(
-        slug__in=[const.CTYPE_DATACLERK, const.CTYPE_TRIAGENURSE]
-    ).all()
+    if ref_type == 'com_to_facility':
+        types = ContactType.objects.filter(
+            slug__in=[const.CTYPE_DATACLERK, const.CTYPE_CLINICWORKER, const.CTYPE_INCHARGE]
+        ).all()
+    else:
+        types = ContactType.objects.filter(
+            slug__in=[const.CTYPE_DATACLERK, const.CTYPE_TRIAGENURSE]
+        ).all()
     loc_parent = referral.from_facility.parent if referral.from_facility else None
     facility_lookup =  referral.facility or loc_parent
     return Contact.objects.filter(types__in=types,
