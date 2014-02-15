@@ -1,156 +1,177 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <h:html xmlns:h="http://www.w3.org/1999/xhtml" xmlns:orx="http://openrosa.org/jr/xforms" xmlns="http://www.w3.org/2002/xforms" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:jr="http://openrosa.org/javarosa">
-    <h:head>
-        <h:title>Referral Outcome</h:title>
-        <model>
-            <instance>
-                <data xmlns:jrm="http://dev.commcarehq.org/jr/xforms" xmlns="http://openrosa.org/formdesigner/0CA4F818-302B-4F37-9B1A-2A984016E3A7" uiVersion="1" version="1" name="Referral Outcome">
-                    <unique_id />
-                    <mother_outcome />
-                    <baby_outcome />
-                    <mode_of_delivery />
-                    <noamb />
-                </data>
-            </instance>
-            <bind nodeset="/data/unique_id" type="xsd:string" />
-            <bind nodeset="/data/mother_outcome" required="true()" />
-            <bind nodeset="/data/baby_outcome" />
-            <bind nodeset="/data/mode_of_delivery" />
-            <bind nodeset="/data/noamb" />
-            <itext>
-                <translation lang="en" default="">
-                    <text id="unique_id-label">
-                        <value>Woman's Unique ID</value>
-                    </text>
-                    <text id="mother_outcome-label">
-                        <value>Outcome of Mother</value>
-                    </text>
-                    <text id="baby_outcome-label">
-                        <value>Outcome of Baby</value>
-                    </text>
-                    <text id="baby_outcome-stb-label">
-                        <value>stb</value>
-                    </text>
-                    <text id="baby_outcome-cri-label">
-                        <value>cri</value>
-                    </text>
-                    <text id="baby_outcome-dec-label">
-                        <value>dec</value>
-                    </text>
-                    <text id="baby_outcome-oth-label">
-                        <value>oth</value>
-                    </text>
-                    <text id="mother_outcome-stb-label">
-                        <value>stb</value>
-                    </text>
-                    <text id="mother_outcome-cri-label">
-                        <value>cri</value>
-                    </text>
-                    <text id="mother_outcome-dec-label">
-                        <value>dec</value>
-                    </text>
-                        <text id="mother_outcome-oth-label">
-                        <value>oth</value>
-                    </text>
-                    <text id="mode_of_delivery-label">
-                        <value>Mode of delivery</value>
-                    </text>
-                    <text id="mode_of_delivery-vag-label">
-                        <value>vag</value>
-                    </text>
-                    <text id="mode_of_delivery-csec-label">
-                        <value>csec</value>
-                    </text>
-                    <text id="mode_of_delivery-pp-label">
-                        <value>pp</value>
-                    </text>
-                    <text id="mode_of_delivery-ref-label">
-                        <value>ref</value>
-                    </text>
-                    <text id="mode_of_delivery-oth-label">
-                        <value>oth</value>
-                    </text>
-                    <text id="mother_outcome-noshow-label">
-                        <value>noshow</value>
-                    </text>
-                    <text id="noamb-label">
-                        <value>No Ambulance</value>
-                    </text>
-                </translation>
-            </itext>
-        </model>
-    </h:head>
-    <h:body>
-        <input ref="/data/unique_id">
-            <label ref="jr:itext('unique_id-label')" />
-        </input>
-        <select1 ref="/data/mother_outcome">
-            <label ref="jr:itext('mother_outcome-label')" />
-            <item>
-                <label ref="jr:itext('mother_outcome-stb-label')" />
-                <value>stb</value>
-            </item>
-            <item>
-                <label ref="jr:itext('mother_outcome-cri-label')" />
-                <value>cri</value>
-            </item>
-            <item>
-                <label ref="jr:itext('mother_outcome-dec-label')" />
-                <value>dec</value>
-            </item>
-            <item>
-                <label ref="jr:itext('mother_outcome-oth-label')" />
-                <value>oth</value>
-            </item>
-            <item>
-                <label ref="jr:itext('mother_outcome-noshow-label')" />
-                <value>noshow</value>
-            </item>
-        </select1>
-        <select1 ref="/data/baby_outcome">
-            <label ref="jr:itext('baby_outcome-label')" />
-            <item>
-                <label ref="jr:itext('baby_outcome-stb-label')" />
-                <value>stb</value>
-            </item>
-            <item>
-                <label ref="jr:itext('baby_outcome-cri-label')" />
-                <value>cri</value>
-            </item>
-            <item>
-                <label ref="jr:itext('baby_outcome-dec-label')" />
-                <value>dec</value>
-            </item>
-            <item>
-                <label ref="jr:itext('baby_outcome-oth-label')" />
-                <value>oth</value>
-            </item>
-        </select1>
-        <select1 ref="/data/mode_of_delivery">
-            <label ref="jr:itext('mode_of_delivery-label')" />
-            <item>
-                <label ref="jr:itext('mode_of_delivery-vag-label')" />
-                <value>vag</value>
-            </item>
-            <item>
-                <label ref="jr:itext('mode_of_delivery-csec-label')" />
-                <value>csec</value>
-            </item>
-            <item>
-            <label ref="jr:itext('mode_of_delivery-pp-label')" />
-                <value>pp</value>
-            </item>
-            <item>
-            <label ref="jr:itext('mode_of_delivery-ref-label')" />
-                <value>ref</value>
-            </item>
-            <item>
-            <label ref="jr:itext('mode_of_delivery-oth-label')" />
-                <value>oth</value>
-            </item>
-        </select1>
-        <input ref="/data/noamb">
-            <label ref="jr:itext('noamb-label')" />
-        </input>
-    </h:body>
+	<h:head>
+		<h:title>Referral Outcome</h:title>
+		<model>
+			<instance>
+				<data xmlns:jrm="http://dev.commcarehq.org/jr/xforms" xmlns="http://openrosa.org/formdesigner/0CA4F818-302B-4F37-9B1A-2A984016E3A7" uiVersion="1" version="1" name="Referral Outcome">
+					<unique_id />
+					<mother_outcome />
+					<baby_outcome />
+					<mode_of_delivery />
+					<otw />
+				</data>
+			</instance>
+			<bind nodeset="/data/unique_id" type="xsd:string" />
+			<bind nodeset="/data/mother_outcome" required="true()" />
+			<bind nodeset="/data/baby_outcome" />
+			<bind nodeset="/data/mode_of_delivery" />
+			<bind nodeset="/data/otw" type="xsd:string" />
+			<itext>
+				<translation lang="en" default="">
+					<text id="unique_id-label">
+						<value>Woman's Unique ID</value>
+					</text>
+					<text id="mother_outcome-label">
+						<value>Outcome of Mother</value>
+					</text>
+					<text id="baby_outcome-label">
+						<value>Outcome of Baby</value>
+					</text>
+					<text id="baby_outcome-stb-label">
+						<value>stb</value>
+					</text>
+					<text id="baby_outcome-cri-label">
+						<value>cri</value>
+					</text>
+					<text id="baby_outcome-dec-label">
+						<value>dec</value>
+					</text>
+					<text id="baby_outcome-oth-label">
+						<value>oth</value>
+					</text>
+					<text id="mother_outcome-stb-label">
+						<value>stb</value>
+					</text>
+					<text id="mother_outcome-cri-label">
+						<value>cri</value>
+					</text>
+					<text id="mother_outcome-dec-label">
+						<value>dec</value>
+					</text>
+					<text id="mother_outcome-oth-label">
+						<value>oth</value>
+					</text>
+					<text id="mode_of_delivery-label">
+						<value>Mode of delivery</value>
+					</text>
+					<text id="mode_of_delivery-vag-label">
+						<value>vag</value>
+					</text>
+					<text id="mode_of_delivery-csec-label">
+						<value>csec</value>
+					</text>
+					<text id="mode_of_delivery-pp-label">
+						<value>pp</value>
+					</text>
+					<text id="mode_of_delivery-ref-label">
+						<value>ref</value>
+					</text>
+					<text id="mode_of_delivery-oth-label">
+						<value>oth</value>
+					</text>
+					<text id="mother_outcome-noshow-label">
+						<value>noshow</value>
+					</text>
+					<text id="otw-label">
+						<value>otw</value>
+					</text>
+					<text id="mother_outcome-dotw-label">
+						<value>dotw</value>
+					</text>
+					<text id="baby_outcome-dotw-label">
+						<value>dotw</value>
+					</text>
+					<text id="mode_of_delivery-none-label">
+						<value>none</value>
+					</text>
+				</translation>
+			</itext>
+		</model>
+	</h:head>
+	<h:body>
+		<input ref="/data/unique_id">
+			<label ref="jr:itext('unique_id-label')" />
+		</input>
+		<select1 ref="/data/mother_outcome">
+			<label ref="jr:itext('mother_outcome-label')" />
+			<item>
+				<label ref="jr:itext('mother_outcome-stb-label')" />
+				<value>stb</value>
+			</item>
+			<item>
+				<label ref="jr:itext('mother_outcome-cri-label')" />
+				<value>cri</value>
+			</item>
+			<item>
+				<label ref="jr:itext('mother_outcome-dec-label')" />
+				<value>dec</value>
+			</item>
+			<item>
+				<label ref="jr:itext('mother_outcome-dotw-label')" />
+				<value>dotw</value>
+			</item>
+			<item>
+				<label ref="jr:itext('mother_outcome-noshow-label')" />
+				<value>noshow</value>
+			</item>
+			<item>
+				<label ref="jr:itext('mother_outcome-oth-label')" />
+				<value>oth</value>
+			</item>
+		</select1>
+		<select1 ref="/data/baby_outcome">
+			<label ref="jr:itext('baby_outcome-label')" />
+			<item>
+				<label ref="jr:itext('baby_outcome-stb-label')" />
+				<value>stb</value>
+			</item>
+			<item>
+				<label ref="jr:itext('baby_outcome-dotw-label')" />
+				<value>dotw</value>
+			</item>
+			<item>
+				<label ref="jr:itext('baby_outcome-cri-label')" />
+				<value>cri</value>
+			</item>
+			<item>
+				<label ref="jr:itext('baby_outcome-dec-label')" />
+				<value>dec</value>
+			</item>
+			<item>
+				<label ref="jr:itext('baby_outcome-oth-label')" />
+				<value>oth</value>
+			</item>
+		</select1>
+		<select1 ref="/data/mode_of_delivery">
+			<label ref="jr:itext('mode_of_delivery-label')" />
+			<item>
+				<label ref="jr:itext('mode_of_delivery-vag-label')" />
+				<value>vag</value>
+			</item>
+			<item>
+				<label ref="jr:itext('mode_of_delivery-none-label')" />
+				<value>none</value>
+			</item>
+			<item>
+				<label ref="jr:itext('mode_of_delivery-csec-label')" />
+				<value>csec</value>
+			</item>
+			<item>
+				<label ref="jr:itext('mode_of_delivery-pp-label')" />
+				<value>pp</value>
+			</item>
+			<item>
+				<label ref="jr:itext('mode_of_delivery-ref-label')" />
+				<value>ref</value>
+			</item>
+			<item>
+				<label ref="jr:itext('mode_of_delivery-oth-label')" />
+				<value>oth</value>
+			</item>
+		</select1>
+		<input ref="/data/otw">
+			<label ref="jr:itext('otw-label')" />
+		</input>
+	</h:body>
 </h:html>

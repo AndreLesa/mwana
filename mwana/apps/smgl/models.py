@@ -376,10 +376,11 @@ class AmbulanceResponse(FormReferenceBase, MotherReferenceBase):
 
 REFERRAL_STATUS_CHOICES = (("em", "emergent"), ("nem", "non-emergent"))
 REFERRAL_OUTCOME_CHOICES = (("stb", "stable"), ("cri", "critical"),
-                            ("dec", "deceased"), ("oth", "other"))
+                            ("dec", "deceased"), ("oth", "other"),
+                            ("dotw", "Dead on the Way"))
 DELIVERY_MODE_CHOICES = (("vag", "vaginal"), ("csec", "c-section"),
                          ("pp", "post-partum"), ("ref", "new_referral"),
-                        ("oth", "other"))
+                        ("oth", "other"), ("dotw", "Dead on the Way"))
 
 class Pick(FormReferenceBase):
     time = models.DateTimeField(auto_now_add=True)
