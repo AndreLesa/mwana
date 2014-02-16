@@ -231,7 +231,7 @@ def referral_outcome(session, xform, router):
                 if ref.mother_showed:
                     notification = const.REFERRAL_OUTCOME_NOTIFICATION % \
                                                         {"unique_id": ref.mother_uid,
-                                                         "date": ref.date.date(),
+                                                         "date": ref.date.strftime('%d %b %Y'),
                                                          "mother_outcome": ref.get_mother_outcome_display(),
                                                          "baby_outcome": ref.get_baby_outcome_display(),
                                                          "delivery_mode": ref.get_mode_of_delivery_display()}
@@ -240,7 +240,7 @@ def referral_outcome(session, xform, router):
                     router.outgoing(OutgoingMessage(con.default_connection,
                                                     const.REFERRAL_OUTCOME_NOTIFICATION_NOSHOW % \
                                                         {"unique_id": ref.mother_uid,
-                                                         "date": ref.date.date()}))
+                                                         "date": ref.date.strftime('%d %b %Y')}))
         return respond_to_session(router, session, const.REFERRAL_OUTCOME_RESPONSE,
                                   **{'name': name, "unique_id": mother_id})
 
@@ -525,7 +525,7 @@ def _get_people_to_notify_outcome(referral):
     # (more specifically, the person who sent it in + all
     # data clerks, Health workers and in-charges at their facility)
     types = ContactType.objects.filter(
-                slug__in=[const.CTYPE_DATACLERK, const.CTYPE_INCHARGE]
+                slug__in=[const.CTYPE_DATACLERK, const.CTYPE_INCHARGE, const.CTYPE_CLINICWORKER]
                 ).all()
     from_facility = referral.referring_facility
     facility_contacts = list(Contact.objects.filter(
