@@ -79,7 +79,7 @@ REFERRAL_CBA_NOTIFICATION = _("Mother with ID: %(unique_id)s from %(village)s ne
 
 REFERRAL_FACILITY_TO_HOSPITAL_NOTIFICATION = _("Mother with ID: %(unique_id)s needs ER. Location: %(facility_name)s, contact num: %(phone)s Plz SEND 'RESP %(unique_id)s ....OTW, DL or NA' if you see this.")
 REFERRAL_NOTIFICATION = _("A referral for Mother ID %(unique_id)s has been sent from %(facility)s. Please expect the mother. Reason: %(reason)s. Time: %(time)s. Emergency: %(is_emergency)s")
-RESP_THANKS = _("Thanks %(name)s. Your response was well received")
+RESP_THANKS = _("Thanks %(name)s. Your response for referral of mother with ID: %(unique_id)s was well received")
 RESP_CBA_UPDATE = _("A health worker has responded to your referral and is waiting for the mother at the facility.")
 RESP_NOTIF = _("Emergency Response for mother with ID %(unique_id)s:  You can contact driver at %(phone)s.")
 AMB_RESP_STATUS = _("Ambulance Response for mother with ID %(unique_id)s: Ambulance is %(status)s You can contact driver at %(phone)s.")
