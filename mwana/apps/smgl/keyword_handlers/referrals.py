@@ -495,7 +495,7 @@ def _get_people_to_notify_hospital(referral):
                                   location=referral.facility,
                                   is_active=True)
 
-def _get_people_to_notify(referral, ref_type=None):
+def _get_people_to_notify(referral):
     # who to notifiy on an initial referral
     # this should be the people who are being referred to
     types = ContactType.objects.filter(
@@ -509,9 +509,9 @@ def _get_people_to_notify(referral, ref_type=None):
                                   is_active=True)
 
 def _get_people_to_notify_response(referral):
-    # who to notifiy on response
+    # who to notify on response
     types = ContactType.objects.filter(
-        slug__in=[const.CTYPE_DATACLERK, const.CTYPE_TRIAGENURSE]
+        slug__in=[const.CTYPE_DATACLERK, const.CTYPE_TRIAGENURSE, const.CTYPE_CLINICWORKER]
     ).all()
     loc_parent = referral.from_facility
     facility_lookup = loc_parent
@@ -523,7 +523,7 @@ def _get_people_to_notify_outcome(referral):
     # who to notifiy when we've collected a referral outcome
     # this should be the people who made the referral
     # (more specifically, the person who sent it in + all
-    # data clerks and in-charges at their facility)
+    # data clerks, Health workers and in-charges at their facility)
     types = ContactType.objects.filter(
                 slug__in=[const.CTYPE_DATACLERK, const.CTYPE_INCHARGE]
                 ).all()
