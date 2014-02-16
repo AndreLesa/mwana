@@ -290,7 +290,12 @@ def emergency_response(session, xform, router):
         send_msg(ref.session.connection,
              const.RESP_CBA_UPDATE,
              router, **session.template_vars)
-        return True
+        #Confirm to the sender that we have seen their response.
+        thank_message = const.RESP_THANKS %{
+                                      "unique_id":unique_id,
+                                      "name":contact.name
+                                      }
+        return respond_to_session(router, session, thank_message)#thanks the sender
     else:
         if not ambulance_requests.count():
             #session doesn't exist or it has already been confirmed
@@ -331,6 +336,10 @@ def emergency_response(session, xform, router):
                                               "unique_id":unique_id,
                                               "status":status.upper(),
                                               "phone":session.connection.identity}
+                thank_message = const.RESP_THANKS %{
+                                          "unique_id":unique_id,
+                                          "name":contact.name
+                                          }
                 if is_from_hospital(ref.session.connection.contact):
                     #Let everyone know that it has been handled
                     for con in _get_people_to_notify_hospital(ref):
@@ -350,7 +359,8 @@ def emergency_response(session, xform, router):
                     #notify people at origin
                     for con in _get_people_to_notify_response(ref):
                         send_msg(con.default_connection, resp, router)
-                return True
+                return respond_to_session(router, session, thank_message)#thanks the sender
+
 
         else:
             resp = const.REF_TRIAGE_NURSE_RESP_NOTIF %{
@@ -358,6 +368,7 @@ def emergency_response(session, xform, router):
                                                 "phone":session.connection.identity
                                                                            }
             thank_message = const.RESP_THANKS %{
+                                          "smh_id":unique_id,
                                           "name":contact.name
                                           }
             #Let everyone know that it has been handled
@@ -381,7 +392,7 @@ def emergency_response(session, xform, router):
                 for con in _get_people_to_notify_response(ref):
                     send_msg(con.default_connection, resp, router)
 
-            return respond_to_session(router, session, thank_message, **{ "unique_id":unique_id})#thanks the sender
+            return respond_to_session(router, session, thank_message)#thanks the sender
 
         """
     else:
