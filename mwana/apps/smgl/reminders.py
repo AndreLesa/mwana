@@ -70,6 +70,8 @@ def send_followup_reminders(router_obj=None):
 
 
 def send_non_emergency_referral_reminders(router_obj=None):
+    #Do Nothing
+    return False
     """
     Reminder for non-emergency referral.
 
@@ -106,6 +108,8 @@ def send_non_emergency_referral_reminders(router_obj=None):
 
 
 def send_emergency_referral_reminders(router_obj=None):
+    #Do Nothing
+    return False
     """
     Reminder to collect outcomes for emergency referrals.
 
@@ -134,7 +138,6 @@ def send_emergency_referral_reminders(router_obj=None):
         if found_someone:
             ref.reminded = True
             ref.save()
-
 
 def send_upcoming_delivery_reminders(router_obj=None):
     """
@@ -331,7 +334,7 @@ def send_no_outcome_reminder(router_obj=None):
 
         for resp in responses_to_remind:
             ref = resp.ambulance_request.referral_set.all()[0]
-            if not ref.responded:
+            if not ref.responded and not ref.re_referral:
                 yield resp
 
     for resp in _responses_to_remind():
@@ -370,7 +373,7 @@ def send_no_outcome_help_admin_reminder(router_obj=None):
 
         for resp in responses_to_remind:
             ref = resp.ambulance_request.referral_set.all()[0]
-            if not ref.responded:
+            if not ref.responded and not ref.re_referral:
                 yield resp
 
     users = Contact.objects.filter(is_super_user=True)
@@ -508,15 +511,16 @@ def send_expected_deliveries(router_obj=None):
             c.message(const.EXPECTED_EDDS, **{"edd_count": c.num_edds, })
 
 def send_resp_reminders_25_mins(router_obj=None):
-    #Request Resp messages from referrals that happened in the past 1hour
+    #Send reminder for referrals that have no Resp
     _set_router(router_obj)
     now = datetime.utcnow()
     reminder_threshold = now - timedelta(hours=1)
     referrals_to_remind = Referral.objects.filter(
-        reminded=False,
+        has_response=False,
         responded=False,
         date__gte=reminder_threshold,
-        date__lte=now
+        date__lte=now,
+        re_referral_isnull=True
     ).exclude(mother_uid=None)
     for ref in referrals_to_remind:
         found_someone = False
@@ -526,9 +530,9 @@ def send_resp_reminders_25_mins(router_obj=None):
                 c.message(const.REMINDER_REFERRAL_RESP,
                           **{"unique_id": ref.mother_uid,
                              "from_facility": ref.referring_facility.name if ref.referring_facility else "?"})
-                _create_notification("em_ref", c, ref.mother_uid)
+                _create_notification("ref_resp_reminder", c, ref.mother_uid)
         if found_someone:
-            ref.reminded = True
+            ref.response_reminded = True
             ref.save()
 
 def send_resp_reminders_super_users(router_obj=None):
@@ -538,12 +542,16 @@ def send_resp_reminders_super_users(router_obj=None):
     _set_router(router_obj)
     now = datetime.utcnow()
     reminder_threshold = now - timedelta(hours=1)
+    # We need referral where the facility users have been reminded(response_reminded) but there still
+    #is no response and there is still no refout(responded)
     referrals_to_remind = Referral.objects.filter(
-        reminded=True,
+        has_response=False,
+        response_reminded=True,
         responded=False,
-        super_user_notified=True,
+        super_user_notified=False,
         date__gte=reminder_threshold,
-        date__lte=now
+        date__lte=now,
+        re_referral__isnull=True
     ).exclude(mother_uid=None)
     for ref in referrals_to_remind:
         found_someone = False

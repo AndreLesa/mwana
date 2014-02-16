@@ -414,7 +414,13 @@ class Referral(FormReferenceBase, MotherReferenceBase):
                                       null=True, blank=True,
                                       help_text="The referring facility",
                                       related_name="referrals_made")
-    responded = models.BooleanField(default=False)
+    #Some highly confusing fields here.
+    #responded is actually set if a refout is sent, while has_response is set
+    #when there is a response to the referral.
+    responded = models.BooleanField(default=False, help_text="Set to True if REFOUT is sent.")
+    has_response = models.BooleanField(default=False)
+    response_reminded = models.BooleanField(default=False)#Has been reminded of response
+
     mother_showed = models.NullBooleanField(default=None)
 
     status = models.CharField(max_length=3,
@@ -709,7 +715,8 @@ REMINDER_TYPE_CHOICES = (("nvd", "Next Visit Date"),
                          ("em_ref", "Emergency Referral"),
                          ("nem_ref", "Non-Emergency Referral"),
                          ("edd_14", "Expected Delivery, 14 days before"),
-                         ("super_user_ref_resp", "Referral Resp missing (30 mins)"),
+                         ("super_user_ref_resp", "Referral Resp not sent (super user)(30 mins)"),
+                         ("ref_resp_reminder", "Referral Resp not sent (facility staff)(20 mins)")
                          ("syp", "Syphilis Treatment"))
 
 

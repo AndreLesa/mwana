@@ -259,32 +259,13 @@ def emergency_response(session, xform, router):
         return respond_to_session(router, session, NOT_REGISTERED_TO_CONFIRM_ER,
                                   is_error=True)
 
-    ambulance_response = AmbulanceResponse()
-    ambulance_response.responder = contact
-    ambulance_response.session = session
-
-    unique_id = get_value_from_form('unique_id', xform)
-    ambulance_response.mother_uid = unique_id
-    session.template_vars.update({'unique_id': unique_id})
-    #try match uid to mother
-    ambulance_response.set_mother(unique_id)
-    ambulance_response.mother_uid = unique_id
-
-    status = get_value_from_form('status', xform).lower()
-    ambulance_response.response = status
-    session.template_vars.update({"status": status.upper(),
-                                   "response": status.upper()})
-
-    #we might be dealing with a mother that has gone through ER multiple times
-    ambulance_requests = AmbulanceRequest.objects.filter(mother_uid=unique_id)\
-                .exclude(referral__responded=True)\
-                .order_by('-id')
-
     try:
         ref = Referral.objects.filter(mother_uid=unique_id).latest('date')
     except IndexError:
         return respond_to_session(router, session, ER_CONFIRM_SESS_NOT_FOUND,
                                   is_error=True, **{'unique_id': unique_id})
+    #Save the fact that we now have a response
+    ref.has_response = True
     if cba_initiated(ref.session.connection.contact):
         #Tell the initiating CBA that a RESP has been received.
         send_msg(ref.session.connection,
@@ -308,6 +289,27 @@ def emergency_response(session, xform, router):
                                       }
         return respond_to_session(router, session, thank_message)#thanks the sender
     else:
+        ambulance_response = AmbulanceResponse()
+        ambulance_response.responder = contact
+        ambulance_response.session = session
+
+        unique_id = get_value_from_form('unique_id', xform)
+        ambulance_response.mother_uid = unique_id
+        session.template_vars.update({'unique_id': unique_id})
+        #try match uid to mother
+        ambulance_response.set_mother(unique_id)
+        ambulance_response.mother_uid = unique_id
+
+        status = get_value_from_form('status', xform).lower()
+        ambulance_response.response = status
+        session.template_vars.update({"status": status.upper(),
+                                       "response": status.upper()})
+
+        #we might be dealing with a mother that has gone through ER multiple times
+        ambulance_requests = AmbulanceRequest.objects.filter(mother_uid=unique_id)\
+                    .exclude(referral__responded=True)\
+                    .order_by('-id')
+
         if not ambulance_requests.count():
             #session doesn't exist or it has already been confirmed
             return respond_to_session(router, session, ER_CONFIRM_SESS_NOT_FOUND,
@@ -371,8 +373,6 @@ def emergency_response(session, xform, router):
                     for con in _get_people_to_notify_response(ref):
                         send_msg(con.default_connection, resp, router)
                 return respond_to_session(router, session, thank_message)#thanks the sender
-
-
         else:
             resp = const.REF_TRIAGE_NURSE_RESP_NOTIF %{
                                                 "unique_id":unique_id,
