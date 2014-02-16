@@ -286,10 +286,21 @@ def emergency_response(session, xform, router):
         return respond_to_session(router, session, ER_CONFIRM_SESS_NOT_FOUND,
                                   is_error=True, **{'unique_id': unique_id})
     if cba_initiated(ref.session.connection.contact):
-        #was this referral initiated by a cba
+        #Tell the initiating CBA that a RESP has been received.
         send_msg(ref.session.connection,
              const.RESP_CBA_UPDATE,
              router, **session.template_vars)
+
+        #Let everyone know that this resp has been handled
+        other_users_message = const.REFERRAL_RESPONSE_NOTIFICATION_OTHER_USERS{
+            "name":contact.name,
+            "unique_id":unique_id
+        }
+        for con in _get_people_to_notify(ref):
+            if con != contact:#Let's not tell the sender.
+                send_msg(con.default_connection,
+                    other_users_message,
+                    router)
         #Confirm to the sender that we have seen their response.
         thank_message = const.RESP_THANKS %{
                                       "unique_id":unique_id,
