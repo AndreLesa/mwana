@@ -13,7 +13,7 @@ from mwana.apps.smgl import const
 from mwana.apps.smgl.models import FacilityVisit, ReminderNotification, Referral,\
     PregnantMother, AmbulanceResponse, SyphilisTreatment, Location
 
-from mwana.apps.smgl.utils import get_district_facility_zone
+from mwana.apps.smgl.utils import get_district_facility_zone, get_district_super_users
 
 # reminders will be sent up to this amount late (if, for example the system
 # was down.
@@ -507,6 +507,37 @@ def send_expected_deliveries(router_obj=None):
         if c.default_connection:
             c.message(const.EXPECTED_EDDS, **{"edd_count": c.num_edds, })
 
+def send_resp_reminders_super_users(router_obj=None):
+    #Notify the super user  that a referral has gone unresponded to in the past
+    #30 minutes, This should come 30 minutes after referral and 10 minutes after
+    #The actual destination users have been notified.
+    _set_router(router_obj)
+    now = datetime.utcnow()
+    reminder_threshold = now - timedelta(hours=1)
+    referrals_to_remind = Referral.objects.filter(
+        reminded=True,
+        responded=False,
+        super_user_notified=True,
+        date__gte=reminder_threshold,
+        date__lte=now
+    ).exclude(mother_uid=None)
+    for ref in referrals_to_remind:
+        found_someone = False
+        ref_district, facility, zone = get_district_facility_zone(ref.facility.location)
+        district_super_users = get_district_super_users(ref_district)
+        for c in district_super_users:
+            if c.default_connection:
+                found_someone = True
+                c.message(const.REMINDER_SUPER_USER_REF,
+                          **{"unique_id": ref.mother_uid,
+                             "dest_facility":ref.from_facility,
+                             "from_facility": ref.referring_facility.name if ref.referring_facility else "?",
+                             "phone":ref.session.connection.identity})
+
+                _create_notification("super_user_ref_resp", c, ref.mother_uid)
+        if found_someone:
+            ref.super_user_notified = True
+            ref.save()
 
 def _create_notification(type, contact, mother_id):
     notif = ReminderNotification(type=type,

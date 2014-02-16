@@ -447,6 +447,7 @@ class Referral(FormReferenceBase, MotherReferenceBase):
     reason_pp = models.BooleanField(default=False)
 
     reminded = models.BooleanField(default=False)
+    super_user_notified = models.BooleanField(default=False)
     amb_req = models.ForeignKey(AmbulanceRequest, null=True, blank=True)
     pick = models.OneToOneField(Pick, null=True, blank=True)
     drop = models.OneToOneField(Drop, null=True, blank=True)
@@ -708,6 +709,7 @@ REMINDER_TYPE_CHOICES = (("nvd", "Next Visit Date"),
                          ("em_ref", "Emergency Referral"),
                          ("nem_ref", "Non-Emergency Referral"),
                          ("edd_14", "Expected Delivery, 14 days before"),
+                         ("super_user_ref_resp", "Referral Resp missing (30 mins)"),
                          ("syp", "Syphilis Treatment"))
 
 
