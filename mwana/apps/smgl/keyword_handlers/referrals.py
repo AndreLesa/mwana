@@ -487,14 +487,10 @@ def _get_people_to_notify_hospital(referral):
 def _get_people_to_notify(referral, ref_type=None):
     # who to notifiy on an initial referral
     # this should be the people who are being referred to
-    if ref_type == 'com_to_facility':
-        types = ContactType.objects.filter(
-            slug__in=[const.CTYPE_DATACLERK, const.CTYPE_CLINICWORKER, const.CTYPE_INCHARGE]
-        ).all()
-    else:
-        types = ContactType.objects.filter(
-            slug__in=[const.CTYPE_DATACLERK, const.CTYPE_TRIAGENURSE]
-        ).all()
+    types = ContactType.objects.filter(
+        slug__in=[const.CTYPE_DATACLERK, const.CTYPE_CLINICWORKER, const.CTYPE_INCHARGE]
+    ).all()
+
     loc_parent = referral.from_facility.parent if referral.from_facility else None
     facility_lookup =  referral.facility or loc_parent
     return Contact.objects.filter(types__in=types,
