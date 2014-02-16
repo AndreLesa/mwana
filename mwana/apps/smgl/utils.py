@@ -12,6 +12,7 @@ from mwana.apps.locations.models import Location
 from mwana.apps.contactsplus.models import ContactType
 from rapidsms.messages.outgoing import OutgoingMessage
 from rapidsms.contrib.messagelog.models import Message, DIRECTION_CHOICES
+from rapidsms.models import Contact
 from mwana.apps.smgl import const
 import string
 import xlwt
@@ -116,6 +117,15 @@ def get_location_and_parents_types(location, facility_types={}):
         return get_location_and_parents_types(location.parent, facility_types)
     else:
         return facility_types
+
+def get_district_super_users(district_name):
+    users = Contact.objects.filter(is_super_user=True)
+    district_super_users = []
+    for user in users:
+        district, facility, zone = get_district_facility_zone(user.location)
+        if district == district_name:
+            district_super_users.append(user)
+    return district_super_users
 
 def get_district_facility_zone(location):
     facility = None
