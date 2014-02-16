@@ -85,6 +85,7 @@ def refer(session, xform, router):
                                                     "name":name,
                                                     "facility_name":parent_facility.name
                 }
+        #Schedule a reminder in 20 minutes if there is no response
         return respond_to_session(router, session, cba_thanks)
     else:
         #if the sender wasn't a CBA we expect referral facility, reasons, status

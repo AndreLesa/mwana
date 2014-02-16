@@ -507,6 +507,30 @@ def send_expected_deliveries(router_obj=None):
         if c.default_connection:
             c.message(const.EXPECTED_EDDS, **{"edd_count": c.num_edds, })
 
+def send_resp_reminders_25_mins(router_obj=None):
+    #Request Resp messages from referrals that happened in the past 1hour
+    _set_router(router_obj)
+    now = datetime.utcnow()
+    reminder_threshold = now - timedelta(hours=1)
+    referrals_to_remind = Referral.objects.filter(
+        reminded=False,
+        responded=False,
+        date__gte=reminder_threshold,
+        date__lte=now
+    ).exclude(mother_uid=None)
+    for ref in referrals_to_remind:
+        found_someone = False
+        for c in get_people_to_notify(referral):
+            if c.default_connection:
+                found_someone = True
+                c.message(const.REMINDER_REFERRAL_RESP,
+                          **{"unique_id": ref.mother_uid,
+                             "from_facility": ref.referring_facility.name if ref.referring_facility else "?"})
+                _create_notification("em_ref", c, ref.mother_uid)
+        if found_someone:
+            ref.reminded = True
+            ref.save()
+
 def send_resp_reminders_super_users(router_obj=None):
     #Notify the super user  that a referral has gone unresponded to in the past
     #30 minutes, This should come 30 minutes after referral and 10 minutes after

@@ -95,6 +95,7 @@ DEATH_ALREADY_REGISTERED = ("Death for mother with ID %(unique_id)s and type  %(
 
 # reminders
 REMINDER_SUPER_USER_REF = _("No response received for referral of mother with ID:%(unique_id)s from %(from_facility)s to %(dest_facility)s by %(phone)s. Kindly follow up.")
+REMINDER_REFERRAL_RESP = _("Please submit RESPONSE for mother with ID %(unique_id)s referred from %(from_facility)s.")
 REMINDER_FU_DUE = _("Mother named %(name)s with ID # %(unique_id)s is due to visit health center %(loc)s for a follow-up visit.")
 REMINDER_NON_EMERGENCY_REFERRAL = _("Mother named %(name)s with ID # %(unique_id)s should visit hospital %(loc)s as referred.")
 REMINDER_EMERGENCY_REFERRAL = _("Please submit outcome SMS (REFOUT) for mother with ID %(unique_id)s referred on %(date)s from %(loc)s")
