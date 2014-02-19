@@ -15,7 +15,8 @@ import ntpath
 
 REASON_FOR_VISIT_CHOICES = (
     ('r', 'Routine'),
-    ('nr', 'Non-Routine')
+    ('nr', 'Non-Routine'),
+    ('reg', 'Pregnancy Registration')
 )
 
 VISIT_TYPE_CHOICES = (
@@ -93,7 +94,7 @@ class PregnantMother(models.Model):
     risk_reason_oth = models.BooleanField(default=False)
     risk_reason_none = models.BooleanField(default=False)
 
-    reminded = models.BooleanField(default=False)
+    reminded = models.BooleanField(default=False, help_text="Set to True if reminded for EDD")
 
 
     def get_field_value_mapping(self):
@@ -716,7 +717,7 @@ REMINDER_TYPE_CHOICES = (("nvd", "Next Visit Date"),
                          ("nem_ref", "Non-Emergency Referral"),
                          ("edd_14", "Expected Delivery, 14 days before"),
                          ("super_user_ref_resp", "Referral Resp not sent (super user)(30 mins)"),
-                         ("ref_resp_reminder", "Referral Resp not sent (facility staff)(20 mins)")
+                         ("ref_resp_reminder", "Referral Resp not sent (facility staff)(20 mins)"),
                          ("syp", "Syphilis Treatment"))
 
 

@@ -105,6 +105,20 @@ def pregnant_registration(session, xform, router):
     mother.contact = data_associate
     mother.save()
 
+    #We will also create a Facility Visit object here
+    #Is this right?
+    facility_visit = FacilityVisit.objects.create(
+        created_date=session.modified_time,
+        mother=mother,
+        location=connection.contact.location,
+        visit_date=datetime.datime.today(),
+        visit_type='anc',
+        reason_for_visit='reg',
+        edd=edd_date,
+        next_visit=next_visit,
+        contact=connection.contact,
+        )
+
     # if there is a lay counselor(s) registered, also notify them
     for contact in mother.get_laycounselors():
         if contact.default_connection:

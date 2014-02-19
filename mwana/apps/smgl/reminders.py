@@ -70,7 +70,6 @@ def send_followup_reminders(router_obj=None):
 
 
 def send_non_emergency_referral_reminders(router_obj=None):
-    #Do Nothing
     return False
     """
     Reminder for non-emergency referral.
@@ -108,13 +107,11 @@ def send_non_emergency_referral_reminders(router_obj=None):
 
 
 def send_emergency_referral_reminders(router_obj=None):
-    #Do Nothing
-    return False
     """
     Reminder to collect outcomes for emergency referrals.
 
     To: Data Clerk operating at the referral facility
-    On: 3 days after referral had been entered
+    On: 12 Hours after referral had been entered
     """
     _set_router(router_obj)
     now = datetime.utcnow()
