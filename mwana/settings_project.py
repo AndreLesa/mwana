@@ -348,4 +348,6 @@ DUPECHECKER_IGNORE = ["birth none",
                       'leave',
                       'quit',
                       'back',
+                      'pick',
+                      'drop'
                      ]
