@@ -119,6 +119,8 @@ REFERRAL_NOTIFICATION = _(
     "A referral for Mother ID %(unique_id)s has been sent from %(facility)s. Please expect the mother. Reason: %(reason)s. Time: %(time)s. Emergency: %(is_emergency)s")
 RESP_THANKS = _(
     "Your response was well received. Please prepare for mother with ID %(unique_id)s to arrive.")
+RESP_THANKS_AMB_DRIVER = _(
+    "Your response was well received. Please prepare to transport mother with ID %(unique_id)s.")
 RESP_CBA_UPDATE = _(
     "A health worker has responded to your referral and is waiting for the mother at the facility.")
 RESP_NOTIF = _(

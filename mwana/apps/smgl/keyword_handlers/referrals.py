@@ -417,7 +417,7 @@ def emergency_response(session, xform, router):
                     "unique_id": unique_id,
                     "status": status.upper(),
                     "phone": session.connection.identity}
-                thank_message = const.RESP_THANKS % {
+                thank_message = const.RESP_THANKS_AMB_DRIVER % {
                     "unique_id": unique_id,
                     "name": contact.name
                 }
