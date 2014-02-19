@@ -205,7 +205,8 @@ class SMGLReferTest(SMGLSetUp):
                                         "phone":self.destination_tn_no
                                         }
         resp_thanks = const.RESP_THANKS %{
-                                          "name":self.name
+                                          "name":self.name,
+                                          "unique_id":self.smh_id
                                           }
 
         script = """
@@ -230,10 +231,11 @@ class SMGLReferTest(SMGLSetUp):
         }
         notify_others = const.REFERRAL_RESPONSE_NOTIFICATION_OTHER_USERS%{
             "unique_id": 1234,
-            "name": self.amb_tn.name
+            "name": self.amb_tn.name,
+            "user_type": "Triage Nurse"
         }
         script = """
-        %(facility_tn)s > RESP %(unique_id)s
+        %(facility_tn)s > RESP %(unique_id)s OTW
         %(facility_tn)s < %(thanks)s
         %(num)s < %(resp)s
         %(other_health_worker)s < %(notify_others)s

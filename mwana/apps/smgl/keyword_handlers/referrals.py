@@ -334,7 +334,7 @@ def emergency_response(session, xform, router):
 
         # Let everyone know that this resp has been handled
         other_users_message = const.REFERRAL_RESPONSE_NOTIFICATION_OTHER_USERS%{
-            "type":",".join(contacttype.name for contacttype in contact.types.all()),
+            "user_type":",".join(contacttype.name for contacttype in contact.types.all()),
             "name": contact.name,
             "unique_id": unique_id
         }
@@ -387,7 +387,6 @@ def emergency_response(session, xform, router):
 
         ambulance_request.save()
         ambulance_response.save()
-
         if status == 'na':
             session.template_vars.update(
                 {"sender_phone_number": ref.session.connection.identity,
@@ -470,7 +469,7 @@ def emergency_response(session, xform, router):
                     "status": status
                 }
             thank_message = const.RESP_THANKS % {
-                "smh_id": unique_id,
+                "unique_id": unique_id,
                 "name": contact.name
             }
             # Let everyone know that it has been handled
