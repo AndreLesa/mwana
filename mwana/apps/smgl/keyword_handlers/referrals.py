@@ -414,6 +414,14 @@ def emergency_response(session, xform, router):
                 "unique_id": unique_id,
                 "phone": session.connection.identity
             }
+            if status:
+                #If the sender added the status
+                resp = const.REF_TRIAGE_NURSE_RESP_NOTIF_STATUS %{
+                    "unique_id": unique_id,
+                    "phone": session.connection.identity,
+                    "title": " ".join(contact.types.all()),
+                    "status": status
+                }
             thank_message = const.RESP_THANKS % {
                 "smh_id": unique_id,
                 "name": contact.name
@@ -488,6 +496,36 @@ def pick(session, xform, router):
 
     pick_thanks = const.PICK_THANKS % {
         "unique_id": mother_id}
+
+    pick_notification = const.DROP_NOTIFICATION %{
+        "unique_id":mother_id,
+        "name":session.connection.name,
+        "number":session.connection.identity
+    }
+
+    #Notify others
+    #Notify those at origin
+    if is_from_hospital(referral.session.connection.contact):
+        # Let everyone know that it has been handled
+        for con in _get_people_to_notify_hospital(referral):
+            # do not send to responder
+            if con != contact:
+                send_msg(con.default_connection, pick_notification, router)
+
+        # notify people at origin
+        for con in _get_people_to_notify_response(referral):
+            if con != contact:
+                send_msg(con.default_connection, pick_notification, router)
+
+    else:
+        # Notify people at destination
+        for con in _get_people_to_notify(referral):
+            if con != contact:
+                send_msg(con.default_connection, pick_notification, router)
+        # notify people at origin
+        for con in _get_people_to_notify_response(referral):
+            send_msg(con.default_connection, pick_notification, router)
+
     return respond_to_session(router, session, pick_thanks)
 
 
@@ -523,6 +561,35 @@ def drop(session, xform, router):
     referral.save()
     drop_thanks = const.DROP_THANKS % {
         "unique_id": mother_id}
+
+    drop_notification = const.DROP_NOTIFICATION %{
+        "unique_id":mother_id,
+        "name":session.connection.name,
+        "number":session.connection.identity
+    }
+
+    #If the person who sent the referral in is from a hospital, we need to handle
+    #the notifications differently
+    if is_from_hospital(referral.session.connection.contact):
+        # Let everyone know that it has been handled
+        for con in _get_people_to_notify_hospital(referral):
+            # do not send to responder
+            if con != contact:
+                send_msg(con.default_connection, drop_notification, router)
+
+        # notify people at origin
+        for con in _get_people_to_notify_response(referral):
+            if con != contact:
+                send_msg(con.default_connection, drop_notification, router)
+    else:
+        # Notify people at destination
+        for con in _get_people_to_notify(referral):
+            if con != contact:
+                send_msg(con.default_connection, drop_notification, router)
+        # notify people at origin
+        for con in _get_people_to_notify_response(referral):
+            send_msg(con.default_connection, drop_notification, router)
+
     return respond_to_session(router, session, drop_thanks, **{'unique_id': mother_id})
 
 
@@ -731,6 +798,7 @@ def is_from_facility(contact):
 
 
 def is_from_hospital(contact):
+    #is the person from a hospital
     hospitals = ['urban_health_centre']
     loc = _get_location_type(contact)
     if loc and loc in hospitals:
