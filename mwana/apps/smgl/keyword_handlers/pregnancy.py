@@ -11,7 +11,7 @@ from mwana.apps.smgl import const
 from mwana.apps.smgl.decorators import registration_required, is_active
 from mwana.apps.smgl.models import PregnantMother, FacilityVisit
 from mwana.apps.smgl.utils import (get_value_from_form, send_msg, make_date,
-    respond_to_session)
+    respond_to_session, get_district_facility_zone)
 
 logger = logging.getLogger(__name__)
 
