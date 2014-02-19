@@ -364,6 +364,7 @@ def emergency_response(session, xform, router):
                 return True
 
         if is_driver(contact):
+            #Set the ambulance driver to the once who just responded
             ambulance_request.ambulance_driver = contact
             ambulance_request.save()
             if not status:
@@ -436,6 +437,10 @@ def emergency_response(session, xform, router):
                 # notify people at origin
                 for con in _get_people_to_notify_response(ref):
                     send_msg(con.default_connection, resp, router)
+
+                #Tell the ambulance driver that the Triage Nurse has responded
+                send_msg(ambulance_request.ambulance_driver.default_connection,
+                    resp, router)
 
             else:
                 # Let everyone know that it has been handled
