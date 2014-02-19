@@ -325,6 +325,7 @@ def emergency_response(session, xform, router):
                                   is_error=True, **{'unique_id': unique_id})
     # Save the fact that we now have a response
     ref.has_response = True
+    ref.save()
     if cba_initiated(ref.session.connection.contact):
         # Tell the initiating CBA that a RESP has been received.
         send_msg(ref.session.connection,
@@ -333,6 +334,7 @@ def emergency_response(session, xform, router):
 
         # Let everyone know that this resp has been handled
         other_users_message = const.REFERRAL_RESPONSE_NOTIFICATION_OTHER_USERS%{
+            "type":",".join(contacttype.name for contacttype in contact.types.all()),
             "name": contact.name,
             "unique_id": unique_id
         }
@@ -431,6 +433,10 @@ def emergency_response(session, xform, router):
                         if con != contact:
                             send_msg(con.default_connection, resp, router)
 
+                    #Tell the other drivers at origin facility
+                    for con in _pick_er_drivers(ref.from_facility):
+                        if con != contact:
+                            send_msg(con.default_connection, resp, router)
                 else:
                     # Notify people at destination
                     for con in _get_people_to_notify(ref):
@@ -440,12 +446,14 @@ def emergency_response(session, xform, router):
                     for con in _get_people_to_notify_response(ref):
                         send_msg(con.default_connection, resp, router)
 
-                # notify other drivers, this has to be done here so that
-                # we handle situation of driver at destinatin or origin
-                #facility in case of hospital to hospital referrals.
-                for con in _pick_er_drivers(con.facility):
-                    if con != contact:
-                        send_msg(con.default_connection, resp, router)
+                    #Tell the driver at the very facility.
+                    driver_notification = const.REFERRAL_RESPONSE_NOTIFICATION_OTHER_USERS %{
+                    "unique_id":unique_id,
+                    "user_type":",".join(contacttype.name for contacttype in contact.types.all()),
+                    "name":contact.name}
+                    for con in _pick_er_drivers(ref.facility):
+                        if con != contact:
+                            send_msg(con.default_connection, driver_notification, router)
                 #thanks the sender
                 return respond_to_session(router, session, thank_message)
         else:

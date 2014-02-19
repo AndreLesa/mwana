@@ -258,6 +258,18 @@ class SMGLReferTest(SMGLSetUp):
         }
         self.runScript(script)
 
+    def testMultiAmbDriverResponse(self):
+        #Test that when an ambulance driver responds the other driver is notified and
+        self.second_amb_driver = self.createUser("AM", "777888")
+        self.testRefer()
+        #At this point all the drivers have received the notification
+        script = """
+        %(second_driver)s > RESP 1234 OTW
+        """%{
+            "second_driver":777888
+        }
+        self.runScript(script)
+
     def testReferForwarding(self):
         #Used to test referrals that have been forwarded from one facility to another.
         self.testRefer()#at this point, the referred mother should be at chilala
