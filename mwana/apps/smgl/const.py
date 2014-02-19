@@ -133,6 +133,8 @@ REF_TRIAGE_NURSE_RESP_NOTIF = _(
     "Emergency response for mother with ID %(unique_id)s: You can contact the Triage nurse at %(phone)s.")
 REF_TRIAGE_NURSE_RESP_NOTIF_STATUS = _(
     "Your referral for mother with ID %(unique_id)s was received. Ambulance is %(status)s. You can contact %(title)s at %(phone)s.")
+REFERRAL_OUTCOME_NOTIFICATION_ORIGIN = _(
+    "%(name)s has submitted an outcome for mother %(unique_id)s referred on %(date)s from %(origin)s to your facility.")
 
 PICK_THANKS = _("Thanks for picking mother with ID %(unique_id)s")
 PICK_NOTIFICATION = _("Mother with ID: %(unique_id)s has been just been picked by %(name)% on %(phone)s.")

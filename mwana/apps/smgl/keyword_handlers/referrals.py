@@ -66,7 +66,7 @@ def refer(session, xform, router):
 
         from_facility = referring_loc.name if not referring_loc.parent else "%s (in %s)" % \
             (referring_loc.name, referring_loc.parent.name)
-        for con in _get_people_to_notify(referral, ref_type='com_to_facility'):
+        for con in _get_people_to_notify(referral):
             if con.default_connection:
                 verbose_reasons = [Referral.REFERRAL_REASONS[r]
                                    for r in referral.get_reasons()]  # This is pointless right now
@@ -80,6 +80,7 @@ def refer(session, xform, router):
                     }
                 else:
                     msg = const.REFERRAL_CBA_NOTIFICATION % {
+                        "unique_id": mother_id,
                         "village": referring_loc.name,
                         "phone": session.connection.identity
                     }
@@ -227,6 +228,14 @@ def referral_outcome(session, xform, router):
         ref.mode_of_delivery = xform.xpath("form/mode_of_delivery")
 
     ref.save()
+
+    #We need the ambulance request so that we can notify the mother as well
+    ambulance_requests = AmbulanceRequest.objects.filter(mother_uid=mother_id)\
+        .order_by('-id')
+    try:
+        ambulance_request = ambulance_requests[0]
+    except IndexError:
+        ambulance_request = None
     """
     if ref.amb_req:
         responses = ref.amb_req.ambulanceresponse_set
@@ -240,27 +249,56 @@ def referral_outcome(session, xform, router):
                                       unique_id=session.template_vars['unique_id'],
                                       outcome=ref.mother_outcome)
     """
-    if True:
-        # also notify folks at the referring facility about the outcome
-        for con in _get_people_to_notify_outcome(ref):
-            if con.default_connection:
-                if ref.mother_showed:
-                    notification = const.REFERRAL_OUTCOME_NOTIFICATION % \
-                        {"unique_id": ref.mother_uid,
-                         "date": ref.date.strftime('%d %b %Y'),
-                         "mother_outcome": ref.get_mother_outcome_display(),
-                         "baby_outcome": ref.get_baby_outcome_display(),
-                         "delivery_mode": ref.get_mode_of_delivery_display()}
-                    send_msg(
-                        con.default_connection, notification, router, **session.template_vars)
-                else:
-                    router.outgoing(OutgoingMessage(con.default_connection,
-                                                    const.REFERRAL_OUTCOME_NOTIFICATION_NOSHOW %
-                                                    {"unique_id": ref.mother_uid,
-                                                     "date": ref.date.strftime('%d %b %Y')}))
-        return respond_to_session(
-            router, session, const.REFERRAL_OUTCOME_RESPONSE,
-            **{'name': name, "unique_id": mother_id})
+
+    if ref.mother_showed:
+        notification_origin = const.REFERRAL_OUTCOME_NOTIFICATION % \
+            {"unique_id": ref.mother_uid,
+             "date": ref.date.strftime('%d %b %Y'),
+             "mother_outcome": ref.get_mother_outcome_display(),
+             "baby_outcome": ref.get_baby_outcome_display(),
+             "delivery_mode": ref.get_mode_of_delivery_display()}
+
+        #notification for users from same location as sender
+        notification_dest = const.REFERRAL_OUTCOME_NOTIFICATION_ORIGIN %\
+            {
+                "unique_id":ref.mother_uid,
+                "name": contact.name,
+                "date":ref.date.strftime('%d %b %Y'),
+                "origin":ref.from_facility
+            }
+    else:
+        notification = const.REFERRAL_OUTCOME_NOTIFICATION_NOSHOW %{
+            "unique_id": ref.mother_uid,
+            "date": ref.date.strftime('%d %b %Y')}
+
+    if is_from_hospital(ref.session.connection.contact):
+        # Let everyone at the referral hospital know
+        for con in _get_people_to_notify_hospital(ref):
+            # do not send to originator
+            if con != contact:
+                send_msg(con.default_connection, notification_dest, router)
+        # notify people at origin
+        for con in _get_people_to_notify_response(ref):
+            send_msg(con.default_connection, notification, router)
+
+    else:
+        # Let everyone know that it has been handled
+        for con in _get_people_to_notify(ref):
+            # do not send to originator
+            if con != contact:
+                send_msg(con.default_connection, notification_dest, router)
+        # notify people at origin
+        for con in _get_people_to_notify_response(ref):
+            send_msg(con.default_connection, notification, router)
+
+    if ambulance_request:
+        #Tell the ambulance driver of the outcome
+        send_msg(ambulance_request.ambulance_driver.default_connection,
+            notification, router)
+
+    return respond_to_session(
+        router, session, const.REFERRAL_OUTCOME_RESPONSE,
+        **{'name': name, "unique_id": mother_id})
 
 
 @registration_required
@@ -279,6 +317,7 @@ def emergency_response(session, xform, router):
             router, session, NOT_REGISTERED_TO_CONFIRM_ER,
             is_error=True)
 
+    unique_id = get_value_from_form('unique_id', xform)
     try:
         ref = Referral.objects.filter(mother_uid=unique_id).latest('date')
     except IndexError:
@@ -293,7 +332,7 @@ def emergency_response(session, xform, router):
                  router, **session.template_vars)
 
         # Let everyone know that this resp has been handled
-        other_users_message = const.REFERRAL_RESPONSE_NOTIFICATION_OTHER_USERS{
+        other_users_message = const.REFERRAL_RESPONSE_NOTIFICATION_OTHER_USERS%{
             "name": contact.name,
             "unique_id": unique_id
         }
@@ -314,7 +353,6 @@ def emergency_response(session, xform, router):
         ambulance_response.responder = contact
         ambulance_response.session = session
 
-        unique_id = get_value_from_form('unique_id', xform)
         ambulance_response.mother_uid = unique_id
         session.template_vars.update({'unique_id': unique_id})
         # try match uid to mother
@@ -439,8 +477,6 @@ def emergency_response(session, xform, router):
                     send_msg(con.default_connection, resp, router)
 
                 #Tell the ambulance driver that the Triage Nurse has responded
-                send_msg(ambulance_request.ambulance_driver.default_connection,
-                    resp, router)
 
             else:
                 # Let everyone know that it has been handled
@@ -452,6 +488,8 @@ def emergency_response(session, xform, router):
                 for con in _get_people_to_notify_response(ref):
                     send_msg(con.default_connection, resp, router)
 
+            send_msg(ambulance_request.ambulance_driver.default_connection,
+                    resp, router)
             #thanks the sender
             return respond_to_session(router, session, thank_message)
 

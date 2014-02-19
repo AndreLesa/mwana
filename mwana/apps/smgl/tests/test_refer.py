@@ -51,7 +51,7 @@ class SMGLReferTest(SMGLSetUp):
         self._facility_string = "Mawaya (in Kalomo District Hospital HAHC)"
 
     def testRefer(self):
-        #Facility to hospital
+        #Facility to Facility
         referral_facility = Location.objects.get(slug="804024")#chilala
         success_resp = const.REFERRAL_RESPONSE % {"name": self.name,
                                                   "unique_id": "1234",
@@ -124,12 +124,17 @@ class SMGLReferTest(SMGLSetUp):
         notif = const.REFERRAL_CBA_NOTIFICATION % {"unique_id": "1234",
                                                "village": self.cba.location.name,
                                                "phone":self.cba_number}
+
+        #Register another health worker
+        self.other_worker = self.createUser("worker", "777222")
         script = """
             %(num)s > refer 1234
             %(num)s < %(resp)s
-            %(tnnum)s < %(notif)s
+            %(in_charge_worker_num)s < %(notif)s
+            %(ordinary_worker)s < %(notif)s
         """ % {"num": self.cba_number, "resp": success_resp,
-                "tnnum": "222222", "notif": notif}
+                "in_charge_worker_num": "666111", "notif": notif,
+                "ordinary_worker": 777222}
         self.runScript(script)
         self.assertSessionSuccess()
 
@@ -219,15 +224,39 @@ class SMGLReferTest(SMGLSetUp):
 
     def testReferResponseCommunityToFacility(self):
         self.testReferCBAToFacility()
+        thank_message = const.RESP_THANKS % {
+            "unique_id": 1234,
+            "name": self.amb_tn.name
+        }
+        notify_others = const.REFERRAL_RESPONSE_NOTIFICATION_OTHER_USERS%{
+            "unique_id": 1234,
+            "name": self.amb_tn.name
+        }
         script = """
         %(facility_tn)s > RESP %(unique_id)s
+        %(facility_tn)s < %(thanks)s
         %(num)s < %(resp)s
+        %(other_health_worker)s < %(notify_others)s
+        %(health_worker)s < %(notify_others)s
         """%{"unique_id":"1234",
              "facility_tn":"222222",
              "num":"456",
-             "resp":const.RESP_CBA_UPDATE}
+             "resp":const.RESP_CBA_UPDATE,
+             "thanks": thank_message,
+             "health_worker": "666111",
+             "other_health_worker": "777222",
+             "notify_others":notify_others}
         self.runScript(script)
 
+    def testReferRefOutCommunityToFacility(self):
+        self.testReferResponseCommunityToFacility()
+
+        script = """
+        %(facility_tn)s > refout 1234 stb cri vag
+        """%{
+            "facility_tn":222222
+        }
+        self.runScript(script)
 
     def testReferForwarding(self):
         #Used to test referrals that have been forwarded from one facility to another.
