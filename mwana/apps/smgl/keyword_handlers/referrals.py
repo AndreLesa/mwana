@@ -721,7 +721,7 @@ def _pick_er_drivers(facility):
         raise Exception('No Ambulance Driver type found!')
 
 
-def _pick_er_triage_nurse(session, xform, facility):
+def _pick_er_triage_nurse(facility):
     tn_type = ContactType.objects.get(slug__iexact='tn')
     tns = Contact.objects.filter(types=tn_type,
                                  location=facility,
@@ -783,7 +783,7 @@ def _broadcast_to_ER_users(ambulance_session, session, xform, router, facility=N
                              ER_TO_DRIVER, router, **session.template_vars)
 
     try:
-        tn = _pick_er_triage_nurse(session, xform, facility)
+        tn = _pick_er_triage_nurse(facility)
     except Exception:
         logger.error(
             'No Triage Nurse found (or missing connection) for Ambulance Session: %s, XForm Session: %s, XForm: %s' %
@@ -808,7 +808,7 @@ def _broadcast_Notification_to_ER_users(ambulance_session, session, xform, route
     facility = ref.from_facility
 
     try:
-        tn = _pick_er_triage_nurse(session, xform, facility)
+        tn = _pick_er_triage_nurse(facility)
     except Exception:
         logger.error(
             'No Triage Nurse found (or missing connection) for Ambulance Session: %s, XForm Session: %s, XForm: %s' %

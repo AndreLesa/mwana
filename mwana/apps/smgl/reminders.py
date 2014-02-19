@@ -15,6 +15,8 @@ from mwana.apps.smgl.models import FacilityVisit, ReminderNotification, Referral
 
 from mwana.apps.smgl.utils import get_district_facility_zone, get_district_super_users
 
+from mwana.apps.smgl.keyword_handlers.referrals import cba_initiated, _pick_er_drivers, _pick_er_triage_nurse, _get_people_to_notify, is_from_facility, is_from_hospital
+
 # reminders will be sent up to this amount late (if, for example the system
 # was down.
 SEND_REMINDER_LOWER_BOUND = timedelta(days=5)
@@ -507,38 +509,55 @@ def send_expected_deliveries(router_obj=None):
         if c.default_connection:
             c.message(const.EXPECTED_EDDS, **{"edd_count": c.num_edds, })
 
-def send_resp_reminders_25_mins(router_obj=None):
-    #Send reminder for referrals that have no Resp
+def send_resp_reminders_20_mins(router_obj=None):
+    #Send reminder for referrals that have no Resp after 20 mins
     _set_router(router_obj)
     now = datetime.utcnow()
-    reminder_threshold = now - timedelta(hours=1)
+    reminder_threshold = now - timedelta(minutes=60)
+    twenty_mins_ago = now - timedelta(minutes=20)
     referrals_to_remind = Referral.objects.filter(
         has_response=False,
         responded=False,
         date__gte=reminder_threshold,
-        date__lte=now,
-        re_referral_isnull=True
+        date__lte=twenty_mins_ago,
+        re_referral__isnull=True
     ).exclude(mother_uid=None)
-    for ref in referrals_to_remind:
+    for referral in referrals_to_remind:
         found_someone = False
-        for c in get_people_to_notify(referral):
-            if c.default_connection:
-                found_someone = True
-                c.message(const.REMINDER_REFERRAL_RESP,
-                          **{"unique_id": ref.mother_uid,
-                             "from_facility": ref.referring_facility.name if ref.referring_facility else "?"})
-                _create_notification("ref_resp_reminder", c, ref.mother_uid)
-        if found_someone:
-            ref.response_reminded = True
-            ref.save()
+        people_to_notify = []
+        if cba_initiated(referral.session.connection.contact):
+            for person in _get_people_to_notify(ref):
+                people_to_notify.append(person)
+        elif is_from_facility(referral.session.connection.contact):
+            for person in _pick_er_drivers(referral.facility):
+                people_to_notify.append(person)
+            for person in [_pick_er_triage_nurse(referral.facility)]:
+                people_to_notify.append(person)
+        elif is_fom_hospital(referral.session.connection.contact):
+            for person in _pick_er_drivers(referral.from_facility):
+                people_to_notify.append(person)
+            for person in [_pick_er_triage_nurse(referral.facility)]:
+                people_to_notify.append(person)
 
-def send_resp_reminders_super_users(router_obj=None):
+        for person in people_to_notify:
+            if person.default_connection:
+                found_someone = True
+                person.message(const.REMINDER_REFERRAL_RESP,
+                          **{"unique_id": referral.mother_uid,
+                             "from_facility": referral.referring_facility.name if referral.referring_facility else "?"})
+                _create_notification("ref_resp_reminder", person, referral.mother_uid)
+        if found_someone:
+            referral.response_reminded = True
+            referral.save()
+
+def send_resp_reminders_super_user(router_obj=None):
     #Notify the super user  that a referral has gone unresponded to in the past
     #30 minutes, This should come 30 minutes after referral and 10 minutes after
     #The actual destination users have been notified.
     _set_router(router_obj)
     now = datetime.utcnow()
     reminder_threshold = now - timedelta(hours=1)
+    thirty_mins_ago = now - timedelta(minutes=30)
     # We need referral where the facility users have been reminded(response_reminded) but there still
     #is no response and there is still no refout(responded)
     referrals_to_remind = Referral.objects.filter(
@@ -547,20 +566,20 @@ def send_resp_reminders_super_users(router_obj=None):
         responded=False,
         super_user_notified=False,
         date__gte=reminder_threshold,
-        date__lte=now,
+        date__lte=thirty_mins_ago,
         re_referral__isnull=True
     ).exclude(mother_uid=None)
     for ref in referrals_to_remind:
         found_someone = False
-        ref_district, facility, zone = get_district_facility_zone(ref.facility.location)
+        ref_district, facility, zone = get_district_facility_zone(ref.facility)
         district_super_users = get_district_super_users(ref_district)
         for c in district_super_users:
             if c.default_connection:
                 found_someone = True
                 c.message(const.REMINDER_SUPER_USER_REF,
                           **{"unique_id": ref.mother_uid,
-                             "dest_facility":ref.from_facility,
-                             "from_facility": ref.referring_facility.name if ref.referring_facility else "?",
+                             "dest_facility":ref.facility,
+                             "from_facility": ref.from_facility if ref.from_facility else "?",
                              "phone":ref.session.connection.identity})
 
                 _create_notification("super_user_ref_resp", c, ref.mother_uid)

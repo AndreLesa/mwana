@@ -8,7 +8,7 @@ from mwana.apps.locations.models import Location
 from mwana.apps.smgl import const
 import datetime
 from mwana.apps.smgl.reminders import (send_non_emergency_referral_reminders,
-    send_emergency_referral_reminders)
+    send_emergency_referral_reminders, send_resp_reminders_20_mins, send_resp_reminders_super_user)
 
 from mwana.apps.smgl.app import (ER_TO_TRIAGE_NURSE, ER_TO_DRIVER,
     ER_STATUS_UPDATE, AMB_RESPONSE_ORIGINATING_LOCATION_INFO,
@@ -81,6 +81,61 @@ class SMGLReferTest(SMGLSetUp):
         self.assertEqual(datetime.time(12, 00), referral.time)
         self.assertFalse(referral.responded)
         self.assertEqual(None, referral.mother_showed)
+
+    def testNoRespReminder(self):
+        self.testRefer()
+        referral = Referral.objects.all()[0]
+        send_resp_reminders_20_mins(router_obj=self.router)#Should do nothing
+        self.assertEqual(False, referral.response_reminded)
+
+        #Now set the time back by 20 mins
+        referral.date = referral.date - datetime.timedelta(minutes=20)
+        referral.save()
+        send_resp_reminders_20_mins(router_obj=self.router)
+        reminder = const.REMINDER_REFERRAL_RESP % {"unique_id": "1234",
+                                                   "from_facility":referral.from_facility}
+        script = """
+            %(num)s < %(msg)s
+            %(amb_num)s < %(msg)s
+        """ % {
+                "amb_num": "666555",
+               "num": "222222",
+               "msg": reminder}
+        self.runScript(script)
+        ref = Referral.objects.get(pk=referral.pk)
+        self.assertEqual(True, ref.response_reminded)
+        notif = ReminderNotification.objects.all()[0]
+        self.assertEqual(ref.mother, notif.mother)
+        self.assertEqual(ref.mother_uid, notif.mother_uid)
+        self.assertEqual("ref_resp_reminder", notif.type)
+
+    def testNoRespSuperUserNotification(self):
+        #First run the first reminder to the users.
+        self.testNoRespReminder()
+        #Ensure we have a super user
+        self.super_user = self.createUser('DC', '1500')
+        self.super_user.is_super_user = True
+        self.super_user.save()
+        #Try to send the super user reminder which shouldn't happen as we are not
+        #in range.
+        send_resp_reminders_super_user(router_obj=self.router)
+        referral = Referral.objects.all()[0]
+        self.assertEqual(False, referral.super_user_notified)
+
+        #Now we set the time back by 10 mins, since it is already 20 mins past
+        referral.date = referral.date - datetime.timedelta(minutes=10)
+        referral.save()
+
+        send_resp_reminders_super_user(router_obj=self.router)
+        referral = Referral.objects.get(pk=referral.pk)
+        self.assertEqual(True, referral.super_user_notified)
+
+        ref = Referral.objects.get(pk=referral.pk)
+        notif = ReminderNotification.objects.filter(type="super_user_ref_resp")[0]
+        self.assertEqual(ref.mother, notif.mother)
+        self.assertEqual(ref.mother_uid, notif.mother_uid)
+        self.assertEqual("super_user_ref_resp", notif.type)
+
 
     def testReferNEM(self):
         #Facility to hospital, Added this one in addition to the above so that we can properly test the

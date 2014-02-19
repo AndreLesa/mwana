@@ -420,7 +420,6 @@ class Referral(FormReferenceBase, MotherReferenceBase):
     #when there is a response to the referral.
     responded = models.BooleanField(default=False, help_text="Set to True if REFOUT is sent.")
     has_response = models.BooleanField(default=False)
-    response_reminded = models.BooleanField(default=False)#Has been reminded of response
 
     mother_showed = models.NullBooleanField(default=None)
 
@@ -454,6 +453,7 @@ class Referral(FormReferenceBase, MotherReferenceBase):
     reason_pp = models.BooleanField(default=False)
 
     reminded = models.BooleanField(default=False)
+    response_reminded = models.BooleanField(default=False)#Has been reminded of response
     super_user_notified = models.BooleanField(default=False)
     amb_req = models.ForeignKey(AmbulanceRequest, null=True, blank=True)
     pick = models.OneToOneField(Pick, null=True, blank=True)
