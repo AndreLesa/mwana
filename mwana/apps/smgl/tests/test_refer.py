@@ -23,6 +23,7 @@ class SMGLReferTest(SMGLSetUp):
     fixtures = ["initial_data.json"]
 
     def setUp(self):
+        #Chilala is default facility
         super(SMGLReferTest, self).setUp()
         Referral.objects.all().delete()
         ReminderNotification.objects.all().delete()
@@ -347,7 +348,7 @@ class SMGLReferTest(SMGLSetUp):
                                                "phone":self.dc_no
                                                 }
         script = """
-            %(num)s > refer 1234 %(facility_slug)s hbp 1200 em
+            %(num)s > refer 1234 %(facility_slug)s hbp 1200
             %(num)s < %(resp)s
             %(tnnum)s < %(notif)s
             %(amb_driver_num)s < %(notif)s
@@ -365,38 +366,57 @@ class SMGLReferTest(SMGLSetUp):
                                                 "unique_id":1234,
                                                 "phone":self.dest_tn
                                                                            }
+        resp_notif_status = const.REF_TRIAGE_NURSE_RESP_NOTIF_STATUS %{
+                    "unique_id": "1234",
+                    "phone": self.dest_tn,
+                    "title": ",".join([contact_type.name for contact_type in self.tn.types.all()]),
+                    "status": "otw"
+                }
         thank_message = const.RESP_THANKS %{
-                                          "name":self.tn.name
+                                          "name":self.tn.name,
+                                          "unique_id":"1234"
                                           }
 
         script = """
             %(tn)s > resp 1234 otw
             %(tn)s < %(thank_message)s
-            %(origin_dc)s < %(resp_notif)s
+            %(origin_dc)s < %(resp_notif_status)s
             """ %{
-                  "old_origin":"123", "tn":self.dest_tn, "resp_notif":resp_notif, "thank_message":thank_message, "origin_dc":self.dc_no
+                  "tn":self.dest_tn,
+                  "resp_notif":resp_notif,
+                  "resp_notif_status":resp_notif_status,
+                  "thank_message":thank_message,
+                  "origin_dc":self.dc_no
                   }
         self.runScript(script)
-        self.assertSessionSuccess()
+
 
     def testReferFowardRefout(self):
         self.testReferFowardResponse()
-        refout_notif =  const.REFERRAL_OUTCOME_NOTIFICATION % {
+        notification_origin =  const.REFERRAL_OUTCOME_NOTIFICATION % {
             "unique_id": "1234",
-            "date": datetime.datetime.now().date(),
+            "date": datetime.datetime.now().date().strftime('%d %b %Y'),
             "mother_outcome": "stable",
             "baby_outcome": "critical",
             "delivery_mode": "vaginal"
         }
+
+        notification_dest = const.REFERRAL_OUTCOME_NOTIFICATION_DEST %\
+            {
+                "unique_id":"1234",
+                "name": self.tn.name,
+                "date":datetime.datetime.now().date().strftime('%d %b %Y'),
+                "origin":"Chilala"
+            }
         thank_message = const.REFERRAL_OUTCOME_RESPONSE % {"name": self.name,
                                                   "unique_id": "1234"}
         script = """
             %(tn)s > refout 1234 stb cri vag
-            %(origin_dc)s < %(refout_notif)s
-            %(old_origin)s < %(refout_notif)s
+            %(origin_dc)s < %(refout_origin)s
+            %(old_origin)s < %(refout_origin)s
             %(tn)s < %(thank_message)s
             """%{
-                 "tn":self.dest_tn, "refout_notif":refout_notif, "thank_message":thank_message, "origin_dc": self.dc_no, "old_origin":"123"}
+                 "tn":self.dest_tn, "refout_origin":notification_origin, "thank_message":thank_message, "origin_dc": self.dc_no, "old_origin":"123"}
         self.runScript(script)
         self.assertSessionSuccess()
 

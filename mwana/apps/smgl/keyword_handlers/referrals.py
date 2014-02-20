@@ -258,8 +258,8 @@ def referral_outcome(session, xform, router):
              "baby_outcome": ref.get_baby_outcome_display(),
              "delivery_mode": ref.get_mode_of_delivery_display()}
 
-        #notification for users from same location as sender
-        notification_dest = const.REFERRAL_OUTCOME_NOTIFICATION_ORIGIN %\
+        #notification for users from same location as sender so the destination
+        notification_dest = const.REFERRAL_OUTCOME_NOTIFICATION_DEST %\
             {
                 "unique_id":ref.mother_uid,
                 "name": contact.name,
@@ -267,7 +267,7 @@ def referral_outcome(session, xform, router):
                 "origin":ref.from_facility
             }
     else:
-        notification = const.REFERRAL_OUTCOME_NOTIFICATION_NOSHOW %{
+        notification_origin = notification_dest = const.REFERRAL_OUTCOME_NOTIFICATION_NOSHOW %{
             "unique_id": ref.mother_uid,
             "date": ref.date.strftime('%d %b %Y')}
 
@@ -278,8 +278,8 @@ def referral_outcome(session, xform, router):
             if con != contact:
                 send_msg(con.default_connection, notification_dest, router)
         # notify people at origin
-        for con in _get_people_to_notify_response(ref):
-            send_msg(con.default_connection, notification, router)
+        for con in _get_people_to_notify_outcome(ref):
+            send_msg(con.default_connection, notification_origin, router)
 
     else:
         # Let everyone know that it has been handled
@@ -288,13 +288,13 @@ def referral_outcome(session, xform, router):
             if con != contact:
                 send_msg(con.default_connection, notification_dest, router)
         # notify people at origin
-        for con in _get_people_to_notify_response(ref):
-            send_msg(con.default_connection, notification, router)
+        for con in _get_people_to_notify_outcome(ref):
+            send_msg(con.default_connection, notification_origin, router)
 
     if ambulance_request:
         #Tell the ambulance driver of the outcome
         send_msg(ambulance_request.ambulance_driver.default_connection,
-            notification, router)
+            notification_origin, router)
 
     return respond_to_session(
         router, session, const.REFERRAL_OUTCOME_RESPONSE,
@@ -462,12 +462,13 @@ def emergency_response(session, xform, router):
             }
             if status:
                 #If the sender added the status
-                resp = const.REF_TRIAGE_NURSE_RESP_NOTIF_STATUS %{
+                resp_status = const.REF_TRIAGE_NURSE_RESP_NOTIF_STATUS %{
                     "unique_id": unique_id,
                     "phone": session.connection.identity,
-                    "title": " ".join(contact.types.all()),
+                    "title": ",".join([contact_type.name for contact_type in contact.types.all()]),
                     "status": status
                 }
+
             thank_message = const.RESP_THANKS % {
                 "unique_id": unique_id,
                 "name": contact.name
@@ -493,7 +494,7 @@ def emergency_response(session, xform, router):
                         send_msg(con.default_connection, resp, router)
                 # notify people at origin
                 for con in _get_people_to_notify_response(ref):
-                    send_msg(con.default_connection, resp, router)
+                    send_msg(con.default_connection, resp_status, router)
 
             send_msg(ambulance_request.ambulance_driver.default_connection,
                     resp, router)
