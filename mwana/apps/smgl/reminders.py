@@ -317,43 +317,6 @@ def reactivate_user(router_obj=None):
             c.message(const.IN_REACTIVATE)
 
 
-def send_no_outcome_reminder(router_obj=None):
-    """
-    Send reminders for Ambulance Responses that have no Ambulance Outcome
-    """
-    def _responses_to_remind():
-        now = datetime.utcnow().date()
-        # Get AmbulanceResponses @ 12 hours old
-        reminder_threshold = now - timedelta(hours=12)
-        responses_to_remind = AmbulanceResponse.objects.filter(
-            responded_on__gte=reminder_threshold - SEND_AMB_OUTCOME_LOWER_BOUND,
-            responded_on__lte=reminder_threshold,
-            )
-        # Check if missed
-
-        for resp in responses_to_remind:
-            ref = resp.ambulance_request.referral_set.all()[0]
-            if not ref.responded and not ref.re_referral:
-                yield resp
-
-    for resp in _responses_to_remind():
-        req = resp.ambulance_request
-        ref = req.referral_set.all()[0]
-
-        if resp.status == 'na':
-            # send reminder to referring facility contact
-            contacts = [ref.session.connection.contact]
-        else:
-            # send reminder(s) to TN and AM
-            contacts = [req.ambulance_driver,
-                        req.triage_nurse,
-                        req.receiving_facility_recipient]
-
-        for c in contacts:
-            if c.default_connection:
-                c.message(const.AMB_OUTCOME_NO_OUTCOME,
-                          **{"unique_id": resp.mother.uid})
-
 
 def send_no_outcome_help_admin_reminder(router_obj=None):
     """
@@ -586,6 +549,49 @@ def send_resp_reminders_super_user(router_obj=None):
         if found_someone:
             ref.super_user_notified = True
             ref.save()
+
+def send_no_outcome_reminder(router_obj=None):
+    #Send the outcome reminder at 12 hours.
+    _set_router(router_obj)
+    now = datetime.utcnow()
+    reminder_threshold = now - timedelta(hours=48)
+    twelve_hours_ago = now - timedelta(hours=12)
+    referrals_to_remind = Referral.objects.filter(
+        has_response=True,
+        responded=False,
+        date__gte=reminder_threshold,
+        date__lte=twelve_hours_ago,
+        re_referral__isnull=True
+    ).exclude(mother_uid=None)
+    for referral in referrals_to_remind:
+        found_someone = False
+        people_to_notify = []
+        if cba_initiated(referral.session.connection.contact):
+            for person in _get_people_to_notify(ref):
+                people_to_notify.append(person)
+        elif is_from_facility(referral.session.connection.contact):
+            for person in _pick_er_drivers(referral.facility):
+                people_to_notify.append(person)
+            for person in [_pick_er_triage_nurse(referral.facility)]:
+                people_to_notify.append(person)
+        elif is_fom_hospital(referral.session.connection.contact):
+            for person in _pick_er_drivers(referral.from_facility):
+                peoplamae_to_notify.append(person)
+            for person in [_pick_er_triage_nurse(referral.facility)]:
+                people_to_notify.append(person)
+
+        for person in people_to_notify:
+            if person.default_connection:
+                found_someone = True
+                person.message(const.AMB_OUTCOME_NO_OUTCOME,
+                          **{"unique_id": referral.mother_uid,
+                             "date":referral.date.strftime('%d %b %Y'),
+                             "from_facility":referral.from_facility})
+                _create_notification("no_refout_reminder_staff", person, referral.mother_uid)
+        if found_someone:
+            referral.reminded = True
+            referral.save()
+
 
 def _create_notification(type, contact, mother_id):
     notif = ReminderNotification(type=type,

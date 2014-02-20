@@ -8,7 +8,8 @@ from mwana.apps.locations.models import Location
 from mwana.apps.smgl import const
 import datetime
 from mwana.apps.smgl.reminders import (send_non_emergency_referral_reminders,
-    send_emergency_referral_reminders, send_resp_reminders_20_mins, send_resp_reminders_super_user)
+    send_emergency_referral_reminders, send_resp_reminders_20_mins,
+    send_resp_reminders_super_user, send_no_outcome_reminder)
 
 from mwana.apps.smgl.app import (ER_TO_TRIAGE_NURSE, ER_TO_DRIVER,
     ER_STATUS_UPDATE, AMB_RESPONSE_ORIGINATING_LOCATION_INFO,
@@ -419,6 +420,33 @@ class SMGLReferTest(SMGLSetUp):
                  "tn":self.dest_tn, "refout_origin":notification_origin, "thank_message":thank_message, "origin_dc": self.dc_no, "old_origin":"123"}
         self.runScript(script)
         self.assertSessionSuccess()
+
+    def testReferForwardRefoutReminder(self):
+        #Test for reminders for refout that should go to only the latest facility
+        #where the referral is and not the past ones.
+        self.testReferFowardResponse()
+        first_ref, second_ref = Referral.objects.all()
+        #Try to send out the reminders, shouldn't do anything since not in time range
+        send_no_outcome_reminder(router_obj=self.router)
+        self.assertEqual(False, first_ref.reminded)
+        self.assertEqual(False, second_ref.reminded)
+
+        #Set the time back
+        first_ref.date = first_ref.date - datetime.timedelta(hours=12)
+        first_ref.save()
+        second_ref.date = second_ref.date - datetime.timedelta(hours=12)
+        second_ref.save()
+
+        #Send the reminders, they should only go to the latest referral since it
+        #is a re-referral based on the first one. Wouldn't make sense to ask the
+        #first people for out come when they already referred.
+        send_no_outcome_reminder(router_obj=self.router)
+        first_ref = Referral.objects.get(pk=first_ref.pk)
+        second_ref = Referral.objects.get(pk=second_ref.pk)
+        self.assertEqual(False, first_ref.reminded)
+        self.assertEqual(True, second_ref.reminded)
+
+
 
     def testReferPick(self):
         self.testReferHospitalToHospital()

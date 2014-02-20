@@ -103,7 +103,7 @@ REFERRAL_ALREADY_RESPONDED = _(
 AMB_OUTCOME_ORIGINATING_LOCATION_INFO = _(
     "We have been notified of the patient outcome for patient with unique_id: %(unique_id)s. Outcome: %(outcome)s")
 AMB_OUTCOME_NO_OUTCOME = _(
-    "Kindly register OUTCOME for Mother :%(unique_id)s.  Please send an outcome!")
+    "Please submit outcome SMS (REFOUT) for mother with ID %(unique_id)s referred on %(date)s from %(from_facility)s.")
 REFERRAL_CBA_THANKS = _(
     "Thanks %(name)s. A health worker at %(facility_name)s has been alerted.")
 REFERRAL_CBA_NOTIFICATION_CLINIC_WORKER = _(
