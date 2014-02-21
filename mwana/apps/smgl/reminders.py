@@ -538,7 +538,7 @@ def send_no_outcome_reminder(router_obj=None):
                 people_to_notify.append(person)
         elif is_fom_hospital(referral.session.connection.contact):
             for person in _pick_er_drivers(referral.from_facility):
-                peoplamae_to_notify.append(person)
+                people_to_notify.append(person)
             for person in [_pick_er_triage_nurse(referral.facility)]:
                 people_to_notify.append(person)
 
