@@ -138,6 +138,7 @@ def send_emergency_referral_reminders(router_obj=None):
             ref.reminded = True
             ref.save()
 
+
 def send_upcoming_delivery_reminders(router_obj=None):
     """
     Reminders for upcoming delivery
@@ -187,7 +188,7 @@ def send_first_postpartum_reminders(router_obj=None):
             next_visit__lte=reminder_threshold,
             reminded=False,
             visit_type='pos'
-            )
+        )
         # Check if first visit for mother
 
         for v in visits_to_remind:
@@ -267,13 +268,13 @@ def send_missed_postpartum_reminders(router_obj=None):
             next_visit__lte=reminder_threshold,
             reminded=False,
             visit_type='pos'
-            )
+        )
         # Check if missed
 
         for v in visits_to_remind:
             if v.mother.facility_visits.filter(visit_type='pos',
-                                        visit_date=reminder_threshold)\
-                        .count() == 1 and \
+                                               visit_date=reminder_threshold)\
+                .count() == 1 and \
                v.is_latest_for_mother():
                 yield v
 
@@ -306,7 +307,7 @@ def reactivate_user(router_obj=None):
             return_date__gte=now - SEND_REMINDER_LOWER_BOUND,
             return_date__lte=now,
             is_active=False,
-            )
+        )
         return contacts_to_activate
 
     for c in _contacts_to_activate():
@@ -315,53 +316,6 @@ def reactivate_user(router_obj=None):
             c.is_active = True
             c.save()
             c.message(const.IN_REACTIVATE)
-
-
-
-def send_no_outcome_help_admin_reminder(router_obj=None):
-    """
-    Send reminders to help admin for Amulance Responses
-    that have no Ambulance Outcome and are @ 24 hours old
-    """
-    def _responses_to_remind():
-        now = datetime.utcnow().date()
-        # Get AmbulanceResponses @ 12 hours old
-        reminder_threshold = now - timedelta(hours=24)
-        responses_to_remind = AmbulanceResponse.objects.filter(
-            responded_on__gte=reminder_threshold - SEND_AMB_OUTCOME_LOWER_BOUND,
-            responded_on__lte=reminder_threshold,
-            )
-        # Check if missed
-
-        for resp in responses_to_remind:
-            ref = resp.ambulance_request.referral_set.all()[0]
-            if not ref.responded and not ref.re_referral:
-                yield resp
-
-    users = Contact.objects.filter(is_super_user=True)
-    users_per_district_super_users = []
-    kalomo_district_super_users = []
-    for user in users:
-        district, facility, zone = get_district_facility_zone(user.location)
-        if district == 'Kalomo District':
-            kalomo_district_super_users.append(user)
-        elif district == 'Choma District':
-            choma_district_super_users.append(user)
-
-    for resp in _responses_to_remind():
-        req = resp.ambulance_request
-        ref = req.referral_set.all()[0]
-        receiving_facility = ref.facility
-        district_users = None
-        if ref.facility.district == 'Kalomo District':
-            district_users = kalomo_district_super_users
-        elif ref.facility.district == 'Choma District':
-            district_users = choma_district_super_users
-
-        for u in district_users:
-            if u.default_connection:
-                u.message(const.AMB_OUTCOME_NO_OUTCOME,
-                          **{"unique_id": resp.mother.uid})
 
 
 def send_syphillis_reminders(router_obj=None):
@@ -378,7 +332,8 @@ def send_syphillis_reminders(router_obj=None):
         now = datetime.utcnow().date()
         reminder_threshold = now + timedelta(days=2)
         visits_to_remind = SyphilisTreatment.objects.filter(
-            next_visit_date__gte=reminder_threshold - SEND_SYPHILIS_REMINDER_LOWER_BOUND,
+            next_visit_date__gte=reminder_threshold -
+            SEND_SYPHILIS_REMINDER_LOWER_BOUND,
             next_visit_date__lte=reminder_threshold,
             reminded=False)
 
@@ -411,6 +366,7 @@ def send_inactive_notice_cbas(router_obj=None):
     """
     _set_router(router_obj)
     cba = ContactType.objects.get(slug='cba')
+
     def _contacts_to_remind():
         now = datetime.utcnow().date()
         inactive_threshold = now - timedelta(days=60)
@@ -423,7 +379,8 @@ def send_inactive_notice_cbas(router_obj=None):
 
     for c in _contacts_to_remind():
         if c.default_connection:
-            c.message(const.INACTIVE_CONTACT, **{'days':60})
+            c.message(const.INACTIVE_CONTACT, **{'days': 60})
+
 
 def send_inactive_notice_data_clerks(router_obj=None):
     """
@@ -435,6 +392,7 @@ def send_inactive_notice_data_clerks(router_obj=None):
     """
     _set_router(router_obj)
     data_clerk = ContactType.objects.get(slug='dc')
+
     def _contacts_to_remind():
         now = datetime.utcnow().date()
         inactive_threshold = now - timedelta(days=14)
@@ -447,7 +405,7 @@ def send_inactive_notice_data_clerks(router_obj=None):
 
     for c in _contacts_to_remind():
         if c.default_connection:
-            c.message(const.INACTIVE_CONTACT, **{'days':14})
+            c.message(const.INACTIVE_CONTACT, **{'days': 14})
 
 
 def send_expected_deliveries(router_obj=None):
@@ -466,14 +424,15 @@ def send_expected_deliveries(router_obj=None):
     contacts = Contact.objects.filter(is_active=True, types=incharge,
                                       location__pregnantmother__edd__gte=now,
                                       location__pregnantmother__edd__lte=next_week) \
-                        .annotate(num_edds=Count('location__pregnantmother'))
+        .annotate(num_edds=Count('location__pregnantmother'))
 
     for c in contacts:
         if c.default_connection:
             c.message(const.EXPECTED_EDDS, **{"edd_count": c.num_edds, })
 
+
 def send_resp_reminders_20_mins(router_obj=None):
-    #Send reminder for referrals that have no Resp after 20 mins
+    # Send reminder for referrals that have no Resp after 20 mins
     _set_router(router_obj)
     now = datetime.utcnow()
     reminder_threshold = now - timedelta(minutes=60)
@@ -506,23 +465,25 @@ def send_resp_reminders_20_mins(router_obj=None):
             if person.default_connection:
                 found_someone = True
                 person.message(const.REMINDER_REFERRAL_RESP,
-                          **{"unique_id": referral.mother_uid,
-                             "from_facility": referral.referring_facility.name if referral.referring_facility else "?"})
-                _create_notification("ref_resp_reminder", person, referral.mother_uid)
+                               **{"unique_id": referral.mother_uid,
+                                  "from_facility": referral.referring_facility.name if referral.referring_facility else "?"})
+                _create_notification(
+                    "ref_resp_reminder", person, referral.mother_uid)
         if found_someone:
             referral.response_reminded = True
             referral.save()
 
+
 def send_resp_reminders_super_user(router_obj=None):
-    #Notify the super user  that a referral has gone unresponded to in the past
-    #30 minutes, This should come 30 minutes after referral and 10 minutes after
-    #The actual destination users have been notified.
+    # Notify the super user  that a referral has gone unresponded to in the past
+    # 30 minutes, This should come 30 minutes after referral and 10 minutes after
+    # The actual destination users have been notified.
     _set_router(router_obj)
     now = datetime.utcnow()
     reminder_threshold = now - timedelta(hours=1)
     thirty_mins_ago = now - timedelta(minutes=30)
     # We need referral where the facility users have been reminded(response_reminded) but there still
-    #is no response and there is still no refout(responded)
+    # is no response and there is still no refout(responded)
     referrals_to_remind = Referral.objects.filter(
         has_response=False,
         response_reminded=True,
@@ -541,17 +502,18 @@ def send_resp_reminders_super_user(router_obj=None):
                 found_someone = True
                 c.message(const.REMINDER_SUPER_USER_REF,
                           **{"unique_id": ref.mother_uid,
-                             "dest_facility":ref.facility,
+                             "dest_facility": ref.facility,
                              "from_facility": ref.from_facility if ref.from_facility else "?",
-                             "phone":ref.session.connection.identity})
+                             "phone": ref.session.connection.identity})
 
                 _create_notification("super_user_ref_resp", c, ref.mother_uid)
         if found_someone:
             ref.super_user_notified = True
             ref.save()
 
+
 def send_no_outcome_reminder(router_obj=None):
-    #Send the outcome reminder at 12 hours.
+    # Send the outcome reminder at 12 hours.
     _set_router(router_obj)
     now = datetime.utcnow()
     reminder_threshold = now - timedelta(hours=48)
@@ -584,14 +546,60 @@ def send_no_outcome_reminder(router_obj=None):
             if person.default_connection:
                 found_someone = True
                 person.message(const.AMB_OUTCOME_NO_OUTCOME,
-                          **{"unique_id": referral.mother_uid,
-                             "date":referral.date.strftime('%d %b %Y'),
-                             "from_facility":referral.from_facility})
-                _create_notification("no_refout_reminder_staff", person, referral.mother_uid)
+                               **{"unique_id": referral.mother_uid,
+                                  "date": referral.date.strftime('%d %b %Y'),
+                                  "from_facility": referral.from_facility})
+                _create_notification(
+                    "no_refout_reminder_staff", person, referral.mother_uid)
         if found_someone:
             referral.reminded = True
             referral.save()
 
+"""
+def send_no_outcome_superusers_reminder(router_obj=None):
+
+    #Send reminders to super users for Referrals
+    #that have no Outcome and are @ 24 hours old
+
+
+    def _responses_to_remind():
+        now = datetime.utcnow()
+        # Get AmbulanceResponses @ 24 hours old
+        twenty_four_hours_ago = now - timedelta(hours=24)
+        referrals_to_remind = Referral.objects.filter(
+            has_response=True,
+            responded=False,
+            reminded=True,
+            date__gte=twenty_four_hours_ago-timedelta(hours=12),
+            date__lte=twenty_four_hours_ago,
+            re_referral__isnull=True
+        ).exclude(mother_uid=None)
+        return referrals_to_remind
+
+    users = Contact.objects.filter(is_super_user=True)
+    users_per_district_super_users = []
+    kalomo_district_super_users = []
+    for user in users:
+        district, facility, zone = get_district_facility_zone(user.location)
+        if district == 'Kalomo District':
+            kalomo_district_super_users.append(user)
+        elif district == 'Choma District':
+            choma_district_super_users.append(user)
+
+    for referral in _responses_to_remind():
+        receiving_facility = referral.facility
+        district_users = None
+        if referral.facility.district == 'Kalomo District':
+            district_users = kalomo_district_super_users
+        elif referral.facility.district == 'Choma District':
+            district_users = choma_district_super_users
+
+        for u in district_users:
+            if u.default_connection:
+                u.message(const.AMB_OUTCOME_NO_OUTCOME,
+                          **{"unique_id": referral.mother_uid,
+                             "date": referral.date.strftime("%d %B %Y")})
+"""
 
 def _create_notification(type, contact, mother_id):
     notif = ReminderNotification(type=type,

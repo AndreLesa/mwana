@@ -523,7 +523,7 @@ def pick(session, xform, router):
     mother_id = xform.xpath("form/unique_id")
     # Find the referral
     try:
-        referral = Referral.objects.filter(mother_uid=mother_id)[0]
+        referral = Referral.objects.filter(mother_uid=mother_id).order_by('-date')[0]
     except IndexError:
         return respond_to_session(
             router,
@@ -548,10 +548,10 @@ def pick(session, xform, router):
     pick_thanks = const.PICK_THANKS % {
         "unique_id": mother_id}
 
-    pick_notification = const.DROP_NOTIFICATION %{
+    pick_notification = const.PICK_NOTIFICATION % {
         "unique_id":mother_id,
-        "name":session.connection.name,
-        "number":session.connection.identity
+        "name":session.connection.contact.name,
+        "phone":session.connection.identity
     }
 
     #Notify others
@@ -590,7 +590,7 @@ def drop(session, xform, router):
     mother_id = xform.xpath("form/unique_id")
     # Find the referral
     try:
-        referral = Referral.objects.filter(mother_uid=mother_id)[0]
+        referral = Referral.objects.filter(mother_uid=mother_id).order_by('-date')[0]
     except IndexError:
         return respond_to_session(
             router,
@@ -615,8 +615,8 @@ def drop(session, xform, router):
 
     drop_notification = const.DROP_NOTIFICATION %{
         "unique_id":mother_id,
-        "name":session.connection.name,
-        "number":session.connection.identity
+        "name":session.connection.contact.name,
+        "phone":session.connection.identity
     }
 
     #If the person who sent the referral in is from a hospital, we need to handle

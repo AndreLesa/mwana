@@ -445,7 +445,25 @@ class SMGLReferTest(SMGLSetUp):
         second_ref = Referral.objects.get(pk=second_ref.pk)
         self.assertEqual(False, first_ref.reminded)
         self.assertEqual(True, second_ref.reminded)
+    """
+    def testReferForwardSuperUserReminder(self):
+        self.testReferForwardRefoutReminder()
+        self.super_user = self.createUser('DC', '1500')
+        self.super_user.is_super_user = True
+        self.super_user.save()
 
+        first_ref, second_ref = Referral.objects.all()
+        send_no_outcome_superusers_reminder(router_obj=self.router)
+
+        #set the time back by another 12 hours since it is currently 12 hours behind
+        first_ref.date = first_ref.date - datetime.timedelta(hours=12)
+        first_ref.save()
+
+        second_ref.date = second_ref.date - datetime.timedelta(hours=12)
+        second_ref.save()
+
+        send_no_outcome_superusers_reminder(router_obj=self.router)
+    """
 
 
     def testReferPick(self):
@@ -465,7 +483,7 @@ class SMGLReferTest(SMGLSetUp):
         self.runScript(script)
 
     def testReferDrop(self):
-        self.testReferHospitalToHospital()
+        self.testReferPick()
 
         drop_thanks = const.DROP_THANKS %{
                                           "unique_id":self.smh_id

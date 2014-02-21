@@ -139,10 +139,10 @@ REFERRAL_OUTCOME_NOTIFICATION_DEST = _(
     "%(name)s has submitted an outcome for mother %(unique_id)s referred on %(date)s from %(origin)s to your facility.")
 
 PICK_THANKS = _("Thanks for picking mother with ID %(unique_id)s")
-PICK_NOTIFICATION = _("Mother with ID: %(unique_id)s has been just been picked by %(name)% on %(phone)s.")
+PICK_NOTIFICATION = _("Mother with ID: %(unique_id)s has been just been picked by %(name)s on %(phone)s.")
 
 DROP_THANKS = _("Thanks for dropping mother with ID %(unique_id)s")
-DROP_NOTIFICATION = _("Mother with ID: %(unique_id)s has been just been dropped by %(name)% on %(phone)s.")
+DROP_NOTIFICATION = _("Mother with ID: %(unique_id)s has been just been dropped by %(name)s on %(phone)s.")
 # death registration
 DEATH_REG_RESPONSE = _(
     "Thanks %(name)s! the Facility/Community death for mother with ID %(unique_id)s has been registered.")
@@ -152,6 +152,7 @@ DEATH_ALREADY_REGISTERED = (
 # reminders
 REMINDER_SUPER_USER_REF = _(
     "No response received for referral of mother with ID:%(unique_id)s from %(from_facility)s to %(dest_facility)s by %(phone)s. Kindly follow up.")
+
 REMINDER_REFERRAL_RESP = _(
     "Please submit response SMS (RESP) for mother with ID %(unique_id)s referred from %(from_facility)s.")
 REMINDER_FU_DUE = _(
