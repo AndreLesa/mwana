@@ -107,14 +107,14 @@ AMB_OUTCOME_NO_OUTCOME = _(
 REFERRAL_CBA_THANKS = _(
     "Thanks %(name)s. A health worker at %(facility_name)s has been alerted.")
 REFERRAL_CBA_NOTIFICATION_CLINIC_WORKER = _(
-    "Mother with ID: %(unique_id)s from %(village)s needs EmONC. Contact: %(phone)s. Plz send 'RESP %(unique_id)s' if you see this.")
+    "Mother with ID: %(unique_id)s from %(village)s needs EmONC. Contact: %(phone)s. Plz send 'RESP %(unique_id)s'.")
 REFERRAL_CBA_NOTIFICATION = _(
     "Mother with ID: %(unique_id)s from %(village)s needs EmONC. Contact: %(phone)s.")
 REFERRAL_RESPONSE_NOTIFICATION_OTHER_USERS = _(
     "%(user_type)s %(name)s has responded to Referral for mother with ID:%(unique_id)s")
 
 REFERRAL_FACILITY_TO_HOSPITAL_NOTIFICATION = _(
-    "Mother with ID: %(unique_id)s needs ER. Location: %(facility_name)s, contact num: %(phone)s Plz SEND 'RESP %(unique_id)s OTW, DL or NA' if you see this.")
+    "Mother with ID: %(unique_id)s needs ER. Location: %(facility_name)s, contact num: %(phone)s Plz SEND 'RESP %(unique_id)s OTW, DL or NA'")
 REFERRAL_NOTIFICATION = _(
     "A referral for Mother ID %(unique_id)s has been sent from %(facility)s. Please expect the mother. Reason: %(reason)s. Time: %(time)s. Emergency: %(is_emergency)s")
 RESP_THANKS = _(
