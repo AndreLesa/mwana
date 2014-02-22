@@ -111,7 +111,7 @@ def pregnant_registration(session, xform, router):
         created_date=session.modified_time,
         mother=mother,
         location=connection.contact.location,
-        visit_date=datetime.datime.today(),
+        visit_date=datetime.datetime.today(),
         visit_type='anc',
         reason_for_visit='reg',
         edd=edd_date,
@@ -171,7 +171,7 @@ def follow_up(session, xform, router):
                                   is_error=True, **{"date_name": "Next Visit",
                                                     "date": next_visit})
 
-    # Make the follow up facility visit
+    # Create the facility visit
     visit = FacilityVisit()
     visit.mother = mother
     visit.contact = contact

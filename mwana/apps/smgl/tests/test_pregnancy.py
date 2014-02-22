@@ -49,7 +49,12 @@ class SMGLPregnancyTest(SMGLSetUp):
         self.assertEqual(["none"], list(mom.get_risk_reasons()))
         self.assertEqual("r", mom.reason_for_visit)
 
-        self.assertEqual(0, FacilityVisit.objects.count())
+    def testRegisterWithFacilityVisit(self):
+        """Should create a facility visit on registration."""
+        self.testRegister()
+        #A facility visit should have been registered by now.
+        self.assertEqual(1, FacilityVisit.objects.count())
+
 
     def testRegisterNotRegistered(self):
         script = """
