@@ -3,7 +3,7 @@ from mwana.apps.smgl.models import PregnantMother, Referral
 from mwana.apps.smgl import const
 
 
-class SMGLBirthRegTest(SMGLSetUp):
+class SMGLBirthBugRegTest(SMGLSetUp):
     fixtures = ["initial_data.json"]
 
     def setUp(self):
