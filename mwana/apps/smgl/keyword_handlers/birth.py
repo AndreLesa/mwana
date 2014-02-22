@@ -52,16 +52,16 @@ def birth_registration(session, xform, router):
 
     #We automatically create the 2 day visit in the database and assume that
     #the next visit will be 6 days from that visit day
-    next_visit = datetime.datetime.now() + datetime.timedelta(days=7)
+    next_visit = datetime.datetime.now() + datetime.timedelta(days=6)
     facility_visit = FacilityVisit.objects.create(
         created_date=session.modified_time,
         mother=mom,
         location=session.connection.contact.location,
-        visit_date=datetime.datime.today() + datetime.timedelta(days=1),
+        visit_date=datetime.datetime.today() + datetime.timedelta(days=1),
         visit_type='pnc',
         reason_for_visit='birth_reg',
         next_visit=next_visit,
-        contact=connection.contact,
+        contact=contact,
         )
     return respond_to_session(router, session, BIRTH_REG_RESPONSE,
                                **{"name": name, "unique_id": xform.xpath("form/unique_id").lower()})

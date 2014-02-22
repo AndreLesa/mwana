@@ -53,7 +53,7 @@ class SMGLPregnancyTest(SMGLSetUp):
         """Should create a facility visit on registration."""
         self.testRegister()
         #A facility visit should have been registered by now.
-        self.assertEqual(1, FacilityVisit.objects.count())
+        self.assertEqual(1, FacilityVisit.objects.filter(visit_type='anc').count())
 
 
     def testRegisterNotRegistered(self):

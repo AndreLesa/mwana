@@ -1,6 +1,6 @@
 from mwana.apps.smgl.tests.shared import SMGLSetUp, get_last_session
 from mwana.apps.smgl.app import BIRTH_REG_RESPONSE
-from mwana.apps.smgl.models import BirthRegistration
+from mwana.apps.smgl.models import BirthRegistration, FacilityVisit
 from datetime import date, datetime, timedelta
 from mwana.apps.smgl import const
 
@@ -47,6 +47,12 @@ class SMGLBirthRegTest(SMGLSetUp):
         self.assertEqual(True, reg.complications)
         self.assertEqual(2, reg.number)
         self.assertSessionSuccess()
+
+    def testBirthFacilityVisit(self):
+        self.testBasicBirthReg()
+        #Check for facility visit
+        self.assertEqual(1, FacilityVisit.objects.filter(visit_type='pnc').count())
+
 
     def testBirthNotRegistered(self):
         script = """

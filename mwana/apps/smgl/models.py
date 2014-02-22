@@ -326,6 +326,9 @@ class FacilityVisit(models.Model):
         return FacilityVisit.objects.filter(mother=self.mother)\
             .order_by("-created_date")[0] == self
 
+    def __unicode__(self):
+        return "%s %s"%(self.visit_type, self.visit_date)
+
     def save(self, *args, **kwargs):
         """
         Sets the district associated with the current location
