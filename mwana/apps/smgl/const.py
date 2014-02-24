@@ -62,7 +62,7 @@ FOLLOW_UP_COMPLETE = _(
 
 # pregnancy postpartum visit messages
 PP_MOTHER_DOES_NOT_EXIST = _(
-    "Sorry, the mother you are trying to provide post partum data for is not registered in the system. Check the safe motherhood ID ( %(unique_id) ) and try again or register her first.")
+    "Sorry, the mother you are trying to provide post partum data for is not registered in the system. Check the safe motherhood ID ( %(unique_id)s ) and try again or register her first.")
 PP_MOTHER_HAS_NOT_DELIVERED = _(
     "Sorry, the mother with ID %(unique_id) you are trying to provide post partum data for has no birth registered.")
 PP_NVD_REQUIRED = _(
