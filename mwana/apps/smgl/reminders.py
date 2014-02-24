@@ -138,13 +138,44 @@ def send_emergency_referral_reminders(router_obj=None):
             ref.reminded = True
             ref.save()
 
-
-def send_upcoming_delivery_reminders(router_obj=None):
+def send_upcoming_delivery_reminders_one_week(router_obj=None):
     """
     Reminders for upcoming delivery
 
     To: CBA
-    On: 14 days prior expected delivery day
+    On: 7 days prior to expected delivery day
+
+    Cancel reminders after notification of birth.
+    """
+    _set_router(router_obj)
+    now = datetime.utcnow().date()
+    reminder_threshold = now + timedelta(days=7)
+    moms_to_remind = PregnantMother.objects.filter(
+        one_week_away_reminded=False,
+        birthregistration__isnull=True,
+        edd__gte=reminder_threshold - SEND_REMINDER_LOWER_BOUND,
+        edd__lte=reminder_threshold
+    )
+    for mom in moms_to_remind:
+        found_someone = False
+        for c in mom.get_laycounselors():
+            if c.default_connection:
+                found_someone = True
+                c.message(const.REMINDER_UPCOMING_DELIVERY,
+                          **{"name": mom.name,
+                             "unique_id": mom.uid,
+                             "date": mom.edd.strftime('%d %b %Y')})
+                _create_notification("edd_7", c, mom.uid)
+        if found_someone:
+            mom.one_week_away_reminded = True
+            mom.save()
+
+def send_upcoming_delivery_reminders_two_week(router_obj=None):
+    """
+    Reminders for upcoming delivery
+
+    To: CBA
+    On: 14 days prior to expected delivery day
 
     Cancel reminders after notification of birth.
     """
@@ -152,7 +183,7 @@ def send_upcoming_delivery_reminders(router_obj=None):
     now = datetime.utcnow().date()
     reminder_threshold = now + timedelta(days=14)
     moms_to_remind = PregnantMother.objects.filter(
-        reminded=False,
+        two_week_away_reminded=False,
         birthregistration__isnull=True,
         edd__gte=reminder_threshold - SEND_REMINDER_LOWER_BOUND,
         edd__lte=reminder_threshold
@@ -168,9 +199,104 @@ def send_upcoming_delivery_reminders(router_obj=None):
                              "date": mom.edd.strftime('%d %b %Y')})
                 _create_notification("edd_14", c, mom.uid)
         if found_someone:
-            mom.reminded = True
+            mom.two_week_away_reminded = True
             mom.save()
 
+def send_upcoming_delivery_reminders_three_week(router_obj=None):
+    """
+    Reminders for upcoming delivery
+
+    To: CBA
+    On: 21 days prior to expected delivery day
+
+    Cancel reminders after notification of birth.
+    """
+    _set_router(router_obj)
+    now = datetime.utcnow().date()
+    reminder_threshold = now + timedelta(days=21)
+    moms_to_remind = PregnantMother.objects.filter(
+        three_week_away_reminded=False,
+        birthregistration__isnull=True,
+        edd__gte=reminder_threshold - SEND_REMINDER_LOWER_BOUND,
+        edd__lte=reminder_threshold
+    )
+    for mom in moms_to_remind:
+        found_someone = False
+        for c in mom.get_laycounselors():
+            if c.default_connection:
+                found_someone = True
+                c.message(const.REMINDER_UPCOMING_DELIVERY,
+                          **{"name": mom.name,
+                             "unique_id": mom.uid,
+                             "date": mom.edd.strftime('%d %b %Y')})
+                _create_notification("edd_21", c, mom.uid)
+        if found_someone:
+            mom.three_week_away_reminded = True
+            mom.save()
+
+def send_upcoming_delivery_reminders_four_week(router_obj=None):
+    """
+    Reminders for upcoming delivery
+
+    To: CBA
+    On: 28 days prior to expected delivery day
+
+    Cancel reminders after notification of birth.
+    """
+    _set_router(router_obj)
+    now = datetime.utcnow().date()
+    reminder_threshold = now + timedelta(days=28)
+    moms_to_remind = PregnantMother.objects.filter(
+        four_week_away_reminded=False,
+        birthregistration__isnull=True,
+        edd__gte=reminder_threshold - SEND_REMINDER_LOWER_BOUND,
+        edd__lte=reminder_threshold
+    )
+    for mom in moms_to_remind:
+        found_someone = False
+        for c in mom.get_laycounselors():
+            if c.default_connection:
+                found_someone = True
+                c.message(const.REMINDER_UPCOMING_DELIVERY,
+                          **{"name": mom.name,
+                             "unique_id": mom.uid,
+                             "date": mom.edd.strftime('%d %b %Y')})
+                _create_notification("edd_28", c, mom.uid)
+        if found_someone:
+            mom.four_week_away_reminded = True
+            mom.save()
+
+def send_upcoming_delivery_reminders_five_week(router_obj=None):
+    """
+    Reminders for upcoming delivery
+
+    To: CBA
+    On: 35 days prior to expected delivery day
+
+    Cancel reminders after notification of birth.
+    """
+    _set_router(router_obj)
+    now = datetime.utcnow().date()
+    reminder_threshold = now + timedelta(days=35)
+    moms_to_remind = PregnantMother.objects.filter(
+        five_week_away_reminded=False,
+        birthregistration__isnull=True,
+        edd__gte=reminder_threshold - SEND_REMINDER_LOWER_BOUND,
+        edd__lte=reminder_threshold
+    )
+    for mom in moms_to_remind:
+        found_someone = False
+        for c in mom.get_laycounselors():
+            if c.default_connection:
+                found_someone = True
+                c.message(const.REMINDER_UPCOMING_DELIVERY,
+                          **{"name": mom.name,
+                             "unique_id": mom.uid,
+                             "date": mom.edd.strftime('%d %b %Y')})
+                _create_notification("edd_35", c, mom.uid)
+        if found_someone:
+            mom.five_week_away_reminded = True
+            mom.save()
 
 def send_first_postpartum_reminders(router_obj=None):
     """

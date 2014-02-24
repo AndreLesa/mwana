@@ -95,6 +95,11 @@ class PregnantMother(models.Model):
     risk_reason_none = models.BooleanField(default=False)
 
     reminded = models.BooleanField(default=False, help_text="Set to True if reminded for EDD")
+    one_week_away_reminded = models.BooleanField(default=False)
+    two_week_away_reminded = models.BooleanField(default=False)
+    three_week_away_reminded = models.BooleanField(default=False)
+    four_week_away_reminded = models.BooleanField(default=False)
+    five_week_away_reminded = models.BooleanField(default=False)
 
 
     def get_field_value_mapping(self):
