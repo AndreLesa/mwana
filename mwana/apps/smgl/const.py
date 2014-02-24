@@ -42,8 +42,9 @@ NOT_A_DATA_ASSOCIATE = _(
 MOTHER_NOT_FOUND = _(
     "The mother's ID: %(unique_id)s was not recognized, please check and send again. If the mother was not registered enter 'none' in the place of the ID.")
 GENERAL_ERROR = _(
-    "Your message is either incomplete or incorrect. Please check and send again.")
-
+    "Your message with %(keyword)s is either incomplete or incorrect. Please check and send again.")
+GENERAL_ERROR_WITH_UNIQUE_ID = _(
+    "Your message with keyword: %(keyword)s and Mother ID: %(unique_id)s is either incomplete or incorrect. Please check and send again.")
 # pregnancy messages
 LMP_OR_EDD_DATE_REQUIRED = _(
     "Sorry, either the LMP or the EDD must be filled in!")
@@ -56,7 +57,7 @@ DUPLICATE_REGISTRATION = _(
 
 # pregnancy follow up messages
 FUP_MOTHER_DOES_NOT_EXIST = _(
-    "Sorry, the mother you are trying to follow up is not registered in the system. Check the safe motherhood number ( %(unique_id) ) and try again or register her first.")
+    "Sorry, the mother you are trying to follow up is not registered in the system. Check the safe motherhood number ( %(unique_id)s ) and try again or register her first.")
 FOLLOW_UP_COMPLETE = _(
     "Thanks %(name)s! Follow up for Mother ID %(unique_id)s is complete!")
 
@@ -64,9 +65,9 @@ FOLLOW_UP_COMPLETE = _(
 PP_MOTHER_DOES_NOT_EXIST = _(
     "Sorry, the mother you are trying to provide post partum data for is not registered in the system. Check the safe motherhood ID ( %(unique_id)s ) and try again or register her first.")
 PP_MOTHER_HAS_NOT_DELIVERED = _(
-    "Sorry, the mother with ID %(unique_id) you are trying to provide post partum data for has no birth registered.")
+    "Sorry, the mother with ID %(unique_id)s you are trying to provide post partum data for has no birth registered.")
 PP_NVD_REQUIRED = _(
-    "Sorry, the mother with ID %(unique_id) has had only %(num)s post partum followup(s). 3 are required and the NVD is missing.")
+    "Sorry, the mother with ID %(unique_id)s has had only %(num)s post partum followup(s). 3 are required and the NVD is missing.")
 PP_COMPLETE = _(
     "Thanks %(name)s! Post Partum visit for Mother ID %(unique_id)s is complete!")
 

@@ -145,9 +145,19 @@ def handle_submission(sender, **args):
         # assume that we were supposed to deal with this but something
         # unexpected went wrong. Respond with a general default
         # TODO: should we also mark the form somehow as errored out?
+
+        #we try to get the unique_id that was passed in.
+        #TODO: need to look for other variations of unique_id such as mother_id e.t.c
+        try:
+            unique_id = xform.get_form['unique_id']
+            error_msg = const.GENERAL_ERROR_WITH_UNIQUE_ID%{'unique_id':unique_id,
+                                                            'keyword':keyword.upper()}
+        except IndexError:
+            error_msg = const.GENERAL_ERROR%{'keyword':keyword.upper()}
+
         logging.exception("Problem processing message in session %s from %s." % \
                           (session, session.connection))
-        respond_to_session(router, session, const.GENERAL_ERROR, is_error=True)
+        respond_to_session(router, session, error_msg, is_error=True)
 
 # then wire it to the xform_received signal
 xform_saved_with_session.connect(handle_submission)
