@@ -246,7 +246,7 @@ class SMGLPregnancyTest(SMGLSetUp):
     def testVisitReminders(self):
         self.testFollowUp()
         [mom] = PregnantMother.objects.all()
-        visit = FacilityVisit.objects.get(mother=mom)
+        visit = FacilityVisit.objects.filter(mother=mom)[1]
         self.assertEqual(False, visit.reminded)
 
         # set 10 days in the future, no reminder
