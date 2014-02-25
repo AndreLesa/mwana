@@ -74,7 +74,7 @@ class SMGLBirthRegTest(SMGLSetUp):
         self.assertSessionFail()
 
     def testOptionalLastQuestion(self):
-        resp = BIRTH_REG_RESPONSE % {"name": self.name}
+        resp = BIRTH_REG_RESPONSE % {"name": self.name, "unique_id":1234}
         script = """
             %(num)s > birth 1234 01 01 2012 gi f yes
             %(num)s < %(resp)s
