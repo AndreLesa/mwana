@@ -26,9 +26,10 @@ class SMGLJoinTest(SMGLSetUp):
         self.createDefaults()
 
     def testNotPreRegd(self):
+        #Will return response in Tonga since it is the default.
         script = """
-            12 > join Foo en
-            12 < Sorry, you are not on the pre-registered users list. Please contact ZCAHRD for assistance
+            12 > join Foo Foo en
+            12 < Amutujatile, tamulembedwe mumulongolongo wasikubelesya. Twakomba mutuma ku ZCAHRD kutegwa mujane lugwasyo
         """
         self.runScript(script)
 
