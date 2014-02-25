@@ -45,7 +45,7 @@ class SMGLPostPartumTest(SMGLSetUp):
         self.assertEqual(["none"], list(mom.get_risk_reasons()))
         self.assertEqual("r", mom.reason_for_visit)
 
-        self.assertEqual(0, FacilityVisit.objects.count())
+        self.assertEqual(1, FacilityVisit.objects.count())
 
     def testPostPartum(self):
         self.testRegister()
@@ -61,7 +61,7 @@ class SMGLPostPartumTest(SMGLSetUp):
                 }
         self.runScript(script)
 
-        self.assertEqual(1, FacilityVisit.objects.count())
+        self.assertEqual(2, FacilityVisit.objects.count())
 
     def testPostPartumNotRegistered(self):
         script = """
@@ -86,7 +86,7 @@ class SMGLPostPartumTest(SMGLSetUp):
         """ % {"num": self.user_number, "resp": resp}
         self.runScript(script)
 
-        self.assertEqual(3, FacilityVisit.objects.count())
+        self.assertEqual(4, FacilityVisit.objects.count())
 
     def testPostPartumBadNvd(self):
         self.testRegister()
@@ -99,7 +99,7 @@ class SMGLPostPartumTest(SMGLSetUp):
         """ % {"num": self.user_number, "resp": resp}
         self.runScript(script)
 
-        self.assertEqual(0, FacilityVisit.objects.count())
+        self.assertEqual(1, FacilityVisit.objects.count())#Only the first visit at birth
 
     def testDatesInPast(self):
         self.testRegister()
