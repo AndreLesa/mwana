@@ -274,10 +274,32 @@ class SMGLReferTest(SMGLSetUp):
         666888 < %(amb_status_notif)s
         %(destination_facility_nurse)s < %(amb_status_notif)s
         %(initiator_facility_tn)s < %(amb_status_notif)s
+        """%{"initiator_facility_driver":self.initiator_driver_no, "initiator_facility_tn":self.initiator_tn_no, "smh_id":self.smh_id, "amb_status":amb_status,
+             "amb_status_notif":amb_status_notif, "resp_thanks":resp_thanks, "resp_notif":resp_notif, "destination_facility_nurse":self.destination_tn_no}
+        self.runScript(script)
 
+    def testReferResponseHospitalToHospitalTriageNurse(self):
+        self.testReferHospitalToHospital()
+        amb_status = "OTW"
+        amb_status_notif = const.AMB_RESP_STATUS%{
+                                                    "unique_id":self.smh_id,
+                                                    "status":amb_status,
+                                                    "phone":self.initiator_driver_no
+                                                           }
+        resp_notif =const.REF_TRIAGE_NURSE_RESP_NOTIF%{
+                                        "unique_id":self.smh_id,
+                                        "phone":self.destination_tn_no
+                                        }
+        resp_thanks = const.RESP_THANKS %{
+                                          "name":self.name,
+                                          "unique_id":self.smh_id
+                                          }
+
+        script = """
         %(destination_facility_nurse)s > RESP %(smh_id)s
         666888 < %(resp_notif)s
         %(destination_facility_nurse)s < %(resp_thanks)s
+        %(initiator_facility_driver)s < %(resp_notif)s
         %(initiator_facility_tn)s < %(resp_notif)s
         """%{"initiator_facility_driver":self.initiator_driver_no, "initiator_facility_tn":self.initiator_tn_no, "smh_id":self.smh_id, "amb_status":amb_status,
              "amb_status_notif":amb_status_notif, "resp_thanks":resp_thanks, "resp_notif":resp_notif, "destination_facility_nurse":self.destination_tn_no}
@@ -416,11 +438,21 @@ class SMGLReferTest(SMGLSetUp):
                                                   "unique_id": "1234"}
         script = """
             %(tn)s > refout 1234 stb cri vag
+            666777 < %(refout_dest)s
+            666999 < %(refout_origin)s
             %(origin_dc)s < %(refout_origin)s
             %(old_origin)s < %(refout_origin)s
+            666000 < %(refout_origin)s
+            666111 < %(refout_origin)s
+            43422 < %(refout_origin)s
             %(tn)s < %(thank_message)s
             """%{
-                 "tn":self.dest_tn, "refout_origin":notification_origin, "thank_message":thank_message, "origin_dc": self.dc_no, "old_origin":"123"}
+                 "tn":self.dest_tn,
+                 "refout_origin":notification_origin,
+                 "thank_message":thank_message,
+                 "origin_dc": self.dc_no,
+                 "old_origin":"123",
+                 "refout_dest": notification_dest}
         self.runScript(script)
         self.assertSessionSuccess()
 
@@ -513,9 +545,10 @@ class SMGLReferTest(SMGLSetUp):
 
     def testMultipleResponses(self):
         referral_facility = Location.objects.get(slug="804030")
-        success_resp = const.REFERRAL_RESPONSE % {"name": self.name,
+        success_resp = const.REFERRAL_FACILITY_TO_HOSPITAL_NOTIFICATION % {"name": self.name,
                                                   "unique_id": "1234",
-                                                  "facility_name":referral_facility.name
+                                                  "facility_name":referral_facility.name,
+                                                  "phone": self.user_number
                                                   }
         notif = const.REFERRAL_NOTIFICATION % {"unique_id": "1234",
                                                "facility": self.worker.location.name,
@@ -600,13 +633,23 @@ class SMGLReferTest(SMGLSetUp):
             "baby_outcome": "critical",
             "delivery_mode": "vaginal"
        }
+
+        notification_dest = const.REFERRAL_OUTCOME_NOTIFICATION_DEST %\
+            {
+                "unique_id":"1234",
+                "name": self.worker.name,
+                "date":datetime.datetime.now().date().strftime('%d %b %Y'),
+                "origin":"Mawaya"
+            }
         script = """
             %(num)s > refout 1234 stb cri vag
+            666111 < %(dest_notif)s
             %(num)s < %(resp)s
             %(dc_num)s < %(notify)s
             %(ic_num)s < %(notify)s
             %(num)s < %(notify)s
-        """ % {"num": self.user_number, "resp": resp, "notify": notify,
+        """ % {"num": self.user_number, "resp": resp,
+               "notify": notify, "dest_notif":notification_dest,
                "dc_num": "666999", "ic_num": "666000"}
         self.runScript(script)
         self.assertSessionSuccess()
@@ -750,7 +793,7 @@ class SMGLReferTest(SMGLSetUp):
                                                "phone":self.user_number
                                                 }
         script = """
-            %(num)s > refer 1234 804024 hbp 1200 em
+            %(num)s > refer 1234 804024 hbp 1200
             %(num)s < %(resp)s
             %(tnnum)s < %(tn_notif)s
             %(amnum)s < %(am_notif)s
