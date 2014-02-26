@@ -71,6 +71,7 @@ PP_NVD_REQUIRED = _(
 PP_COMPLETE = _(
     "Thanks %(name)s! Post Partum visit for Mother ID %(unique_id)s is complete!")
 
+
 # "told" messages
 TOLD_COMPLETE = _(
     "Thanks %(name)s for reminding mother with ID %(unique_id)s.")
