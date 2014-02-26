@@ -90,8 +90,7 @@ class ReferralsTable(Table):
     number = Column(
         value=lambda cell: cell.object.session.connection.identity if cell.object.session.connection else '', sortable=False)
     response = Column(
-        value=lambda cell: "Yes" if cell.object.responded else "No", sortable=False)
-    status = Column()
+        value=lambda cell: "Yes" if cell.object.has_seen_response else "No", sortable=False)
     confirm_amb = Column(
         value=lambda cell: cell.object.ambulance_response, sortable=False)
     outcome = Column(sortable=False)

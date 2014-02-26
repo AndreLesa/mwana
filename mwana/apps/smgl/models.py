@@ -484,6 +484,13 @@ class Referral(FormReferenceBase, MotherReferenceBase):
             if self.get_reason(c):
                 yield c
 
+    @property
+    def has_seen_response(self):
+        if self.has_response or self.ambulance_response != None:
+            return True
+        else:
+            return False
+
     @classmethod
     def non_emergencies(cls):
         return cls.objects.filter(status="nem")
@@ -521,16 +528,15 @@ class Referral(FormReferenceBase, MotherReferenceBase):
 
     @property
     def ambulance_response(self):
-        response = 'non-em'
-        if self.status == 'em':
-            if self.amb_req:
-                try:
-                    response = self.amb_req.ambulanceresponse_set.all()[
-                        0].response
-                except:
-                    response = None
-            else:
-                response = "No Data"
+
+        if self.amb_req:
+            try:
+                response = self.amb_req.ambulanceresponse_set.all()[
+                    0].response
+            except IndexError:
+                response = None
+        else:
+            response = None
         return response
 
     @property
@@ -542,14 +548,12 @@ class Referral(FormReferenceBase, MotherReferenceBase):
 
     @property
     def flag(self):
-        if self.status == 'em':
-            if self.ambulance_response and not self.outcome:
-                return 'resp-no-out'
-            elif self.ambulance_response and self.outcome:
-                return 'resp-out'
-            else:
-                return 'no-resp-no-out'
-        return ''
+        if self.has_seen_response and not self.outcome:
+            return 'resp-no-out'
+        elif self.has_seen_response and self.outcome:
+            return 'resp-out'
+        else:
+            return 'no-resp-no-out'
 
     def amb_responders(self):
         try:
