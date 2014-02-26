@@ -224,7 +224,7 @@ def anc_report(request, id=None):
             else:
                 num_visits[num] = 1
         for i in range(1, 4):
-            key = 'anc{0}'.format(i + 1)
+            key = 'anc{0}'.format(i)
             if i in num_visits:
                 r[key] = num_visits[i]
 
@@ -1053,7 +1053,7 @@ def statistics(request, id=None):
             else:
                 num_visits[num] = 1
         for i in range(1, 4):
-            key = 'anc{0}'.format(i + 1)
+            key = 'anc{0}'.format(i)
             if i in num_visits:
                 r[key] = num_visits[i]
 
@@ -1200,7 +1200,7 @@ def reminder_stats(request, smag_table_requested=False):
             #started sending reminders earlier
             scheduled_reminders = filter_by_dates(mothers, 'edd',
                 start=start_date,
-                end=end_date+datetime.timedelta(days=14))
+                end=end_date+datetime.timedelta(days=35))
             scheduled_mothers = scheduled_reminders
             number = scheduled_mothers.distinct()
             sent_reminders= ReminderNotification.objects.filter(
