@@ -414,7 +414,7 @@ def pnc_report(request, id=None):
         deaths = DeathRegistration.objects.filter(**reg_filter)
         deaths = filter_by_dates(deaths, 'date',
                                  start=start_date, end=end_date)
-
+        """
         nmr_deaths = 0
         for death in DeathRegistration.objects.filter(person='inf'):
             try:
@@ -434,6 +434,7 @@ def pnc_report(request, id=None):
             nmr = '0'
 
         r['nmr'] = nmr
+        """
         r['home'] = births.filter(place='h').count() #home births
         r['facility'] = births.filter(place='f').count() #facility births
 
