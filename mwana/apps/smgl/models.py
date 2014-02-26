@@ -575,10 +575,10 @@ class Referral(FormReferenceBase, MotherReferenceBase):
             return ""
 
     def turn_around_time(self):
-        if not self.date_outcome:
+        if not self.pick:
             return 0
         else:
-            turn_around = self.date_outcome - self.date
+            turn_around = self.pick.time - self.date
             return turn_around.seconds
 
 
