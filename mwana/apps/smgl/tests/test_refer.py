@@ -437,7 +437,7 @@ class SMGLReferTest(SMGLSetUp):
         thank_message = const.REFERRAL_OUTCOME_RESPONSE % {"name": self.name,
                                                   "unique_id": "1234"}
         script = """
-            %(tn)s > refout 1234 stb cri vag
+            %(tn)s > refout 1234 stb cri vag otw
             666777 < %(refout_dest)s
             666999 < %(refout_origin)s
             %(origin_dc)s < %(refout_origin)s
