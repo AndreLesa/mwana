@@ -210,6 +210,9 @@ class SMGLReferTest(SMGLSetUp):
         self.destination_tn_no = "7562"
         initiator_facility = "804031" #Zimba Mission Hospital HAHC
         initiator_facility_driver = self.createUser("AM", self.initiator_driver_no, location=initiator_facility)
+
+        #test that clinic workers get response
+        initiator_clinic_worker = self.createUser("worker", "3000", location=initiator_facility)
         self.initiator_facility_tn = self.createUser("TN", self.initiator_tn_no, location=initiator_facility)
         destination_facility = "804030" #Kalomo Mission Hospital HAHC
         self.destination_facility_tn = self.createUser("TN", self.destination_tn_no, location=destination_facility)
