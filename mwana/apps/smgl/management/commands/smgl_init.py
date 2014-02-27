@@ -38,7 +38,7 @@ class Command(BaseCommand):
         _update_schedules(weekly_reminders, days=[0])
         _update_schedules(amb_reminders, hours=[0, 12])
 
-        _update_schedules(referral_response_reminders, hours=[0], minutes=[0])
+        _update_schedules(referral_response_reminders, hours=['*'], minutes=['*'])
 
 
 
