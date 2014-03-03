@@ -649,7 +649,7 @@ def _get_people_to_notify_hospital(referral):
     # for Hospital to Hospital referrals
     # So basically people at the receiving facility.
     types = ContactType.objects.filter(
-        slug__in=[const.CTYPE_TRIAGENURSE]
+        slug__in=[const.CTYPE_TRIAGENURSE, const.CTYPE_INCHARGE]
     ).all()
     return Contact.objects.filter(types__in=types,
                                   location=referral.facility,
@@ -675,7 +675,7 @@ def _get_people_to_notify_response(referral):
     # who to notify on response
     types = ContactType.objects.filter(
         slug__in=[const.CTYPE_DATACLERK,
-                  const.CTYPE_TRIAGENURSE, const.CTYPE_CLINICWORKER]
+                  const.CTYPE_TRIAGENURSE, const.CTYPE_CLINICWORKER, const.CTYPE_CLINICWORKER]
     ).all()
     loc_parent = referral.from_facility
     facility_lookup = loc_parent
