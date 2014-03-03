@@ -89,7 +89,6 @@ def pregnant_registration(session, xform, router):
     mother.edd = edd_date
 
     mother.location = data_associate.location
-    import ipdb;ipdb.set_trace()
     if zone_name:
         try:
             mother.zone = Location.objects.get(type=LocationType.objects.get(slug__iexact=const.LOCTYPE_ZONE),

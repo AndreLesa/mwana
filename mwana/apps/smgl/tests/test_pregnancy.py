@@ -31,7 +31,7 @@ class SMGLPregnancyTest(SMGLSetUp):
         resp = const.MOTHER_SUCCESS_REGISTERED % {"name": self.name,
                                                   "unique_id": "80403000000112"}
         script = """
-            %(num)s > REG 80403000000112 Mary Soko none %(tomorrow)s R 8040240109 %(earlier)s %(later)s
+            %(num)s > REG 80403000000112 Mary Soko none %(tomorrow)s R 80402404 %(earlier)s %(later)s
             %(num)s < %(resp)s
         """ % {"num": self.user_number, "resp": resp,
                "tomorrow": self.tomorrow.strftime("%d %m %Y"),
