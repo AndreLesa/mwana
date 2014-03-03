@@ -5,6 +5,7 @@ _ = lambda s: s
 
 # location type slugs
 LOCTYPE_ZONE = "zone"
+LOCTYPE_VILLAGE = "village"
 
 # contact type slugs
 CTYPE_LAYCOUNSELOR = "cba"

@@ -89,13 +89,21 @@ def pregnant_registration(session, xform, router):
     mother.edd = edd_date
 
     mother.location = data_associate.location
+    import ipdb;ipdb.set_trace()
     if zone_name:
         try:
             mother.zone = Location.objects.get(type=LocationType.objects.get(slug__iexact=const.LOCTYPE_ZONE),
                                                slug__iexact=zone_name)
         except Location.DoesNotExist:
-            return respond_to_session(router, session, const.UNKOWN_ZONE,
-                                      is_error=True, **{"zone": zone_name})
+            #See if this is a village
+            try:
+                village = Location.objects.get(type=LocationType.objects.get(slug__iexact=const.LOCTYPE_VILLAGE),
+                    slug=zone_name)
+                mother.village = village
+                mother.zone = village.parent
+            except Location.DoesNotExist:
+                return respond_to_session(router, session, const.UNKOWN_ZONE,
+                                          is_error=True, **{"zone": zone_name})
 
     reasons = xform.xpath("form/high_risk_factor")
     if reasons:

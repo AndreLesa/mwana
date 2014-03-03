@@ -85,7 +85,8 @@ class PregnantMother(models.Model):
         max_length=160, choices=REASON_FOR_VISIT_CHOICES)
     zone = models.ForeignKey(Location, null=True, blank=True,
                              related_name="pregnant_mother_zones")
-
+    village = models.ForeignKey(Location, null=True, blank=True,
+                             related_name="pregnant_mother_villages")
     risk_reason_csec = models.BooleanField(default=False)
     risk_reason_cmp = models.BooleanField(default=False)
     risk_reason_gd = models.BooleanField(default=False)

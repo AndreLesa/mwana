@@ -16,7 +16,7 @@ def load_villages(file_path, log_to_console=True):
     try:
         location_type = LocationType.objects.get(slug='village')
     except LocationType.DoesNotExist:
-        LocationType.objects.create(slug='village')
+        location_type = LocationType.objects.create(slug='village', singular='village', plural='villages')
 
     csv_file = open(file_path, 'r')
 
