@@ -660,7 +660,7 @@ def _get_people_to_notify(referral):
     # who to notifiy on an initial referral
     # this should be the people who are being referred to
     types = ContactType.objects.filter(
-        slug__in=[const.CTYPE_DATACLERK,
+        slug__in=[const.CTYPE_DATACLERK, const.CTYPE_TRIAGENURSE,
                   const.CTYPE_CLINICWORKER, const.CTYPE_INCHARGE]
     ).all()
 
