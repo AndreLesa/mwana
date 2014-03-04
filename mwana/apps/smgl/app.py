@@ -102,7 +102,7 @@ def _get_or_create_zone(clinic, name):
 
 def _get_allowed_ambulance_workflow_contact(session):
     connection = session.connection
-    legal_types = ['tn', 'am', 'dmo', 'worker', 'in']
+    legal_types = ['tn', 'am', 'dmo', 'worker', 'incharge']
     try:
         contact = Contact.objects.get(connection=connection, types__slug__in=legal_types)
         return contact
