@@ -219,6 +219,7 @@ def referral_outcome(session, xform, router):
             router, session, const.REFERRAL_ALREADY_RESPONDED,
             is_error=True, **{"unique_id": mother_id})
     ref.responded = True
+
     if xform.xpath("form/mother_outcome").lower() == const.REFERRAL_OUTCOME_NOSHOW:
         ref.mother_showed = False
     else:
@@ -270,7 +271,6 @@ def referral_outcome(session, xform, router):
         notification_origin = notification_dest = const.REFERRAL_OUTCOME_NOTIFICATION_NOSHOW %{
             "unique_id": ref.mother_uid,
             "date": ref.date.strftime('%d %b %Y')}
-
     if is_from_hospital(ref.session.connection.contact):
         # Let everyone at the referral hospital know
         for con in _get_people_to_notify_hospital(ref):
@@ -675,7 +675,7 @@ def _get_people_to_notify_response(referral):
     # who to notify on response
     types = ContactType.objects.filter(
         slug__in=[const.CTYPE_DATACLERK,
-                  const.CTYPE_TRIAGENURSE, const.CTYPE_CLINICWORKER, const.CTYPE_CLINICWORKER]
+                  const.CTYPE_TRIAGENURSE, const.CTYPE_CLINICWORKER, const.CTYPE_INCHARGE]
     ).all()
     loc_parent = referral.from_facility
     facility_lookup = loc_parent
@@ -693,7 +693,7 @@ def _get_people_to_notify_outcome(referral):
         slug__in=[
             const.CTYPE_DATACLERK, const.CTYPE_INCHARGE, const.CTYPE_CLINICWORKER]
     ).all()
-    from_facility = referral.referring_facility
+    from_facility = referral.from_facility
     facility_contacts = list(Contact.objects.filter(
         types__in=types,
         location=from_facility,

@@ -626,10 +626,14 @@ class SMGLReferTest(SMGLSetUp):
         self.testRefer()
         resp = const.REFERRAL_OUTCOME_RESPONSE % {"name": self.name,
                                                   "unique_id": "1234"}
+
+        self.dest_ic = self.createUser(const.CTYPE_INCHARGE, "9834",
+                                             location="804024")
+
         notify = const.REFERRAL_OUTCOME_NOTIFICATION % {
             "unique_id": "1234",
-            "date": datetime.datetime.now().date(),
-            "mother_outcome": "stable",
+            "date": datetime.datetime.now().strftime('%d %b %Y'),
+            "mother_outcome": "critical",
             "baby_outcome": "critical",
             "delivery_mode": "vaginal"
        }
@@ -638,27 +642,73 @@ class SMGLReferTest(SMGLSetUp):
             {
                 "unique_id":"1234",
                 "name": self.worker.name,
-                "date":datetime.datetime.now().date().strftime('%d %b %Y'),
+                "date":datetime.datetime.now().strftime('%d %b %Y'),
                 "origin":"Mawaya"
             }
         script = """
-            %(num)s > refout 1234 stb cri vag
-            666111 < %(dest_notif)s
-            %(num)s < %(resp)s
+            666111 > refout 1234 cri cri vag
+            %(num)s < %(notify)s
             %(dc_num)s < %(notify)s
             %(ic_num)s < %(notify)s
-            %(num)s < %(notify)s
+            666555 < %(notify)s
+            %(dest_ic)s < %(dest_notif)s
+            666111 < %(resp)s
+
         """ % {"num": self.user_number, "resp": resp,
                "notify": notify, "dest_notif":notification_dest,
-               "dc_num": "666999", "ic_num": "666000"}
+               "dc_num": "666999", "ic_num": "666000", "dest_ic":self.dest_ic.default_connection.identity}
         self.runScript(script)
         self.assertSessionSuccess()
         [ref] = Referral.objects.all()
         self.assertTrue(ref.responded)
         self.assertTrue(ref.mother_showed)
-        self.assertEqual("stb", ref.mother_outcome)
+        self.assertEqual("cri", ref.mother_outcome)
         self.assertEqual("cri", ref.baby_outcome)
         self.assertEqual("vag", ref.mode_of_delivery)
+
+    def testReferralOutcomeDOTW(self):
+        self.testRefer()
+        resp = const.REFERRAL_OUTCOME_RESPONSE % {"name": self.name,
+                                                  "unique_id": "1234"}
+
+        self.dest_ic = self.createUser(const.CTYPE_INCHARGE, "9834",
+                                             location="804024")
+
+        notify = const.REFERRAL_OUTCOME_NOTIFICATION % {
+            "unique_id": "1234",
+            "date": datetime.datetime.now().strftime('%d %b %Y'),
+            "mother_outcome": "Dead on the Way",
+            "baby_outcome": "Dead on the Way",
+            "delivery_mode": "none"
+       }
+
+        notification_dest = const.REFERRAL_OUTCOME_NOTIFICATION_DEST %\
+            {
+                "unique_id":"1234",
+                "name": self.worker.name,
+                "date":datetime.datetime.now().strftime('%d %b %Y'),
+                "origin":"Mawaya"
+            }
+        script = """
+            666111 > refout 1234 dotw dotw none
+            %(num)s < %(notify)s
+            %(dc_num)s < %(notify)s
+            %(ic_num)s < %(notify)s
+            666555 < %(notify)s
+            %(dest_ic)s < %(dest_notif)s
+            666111 < %(resp)s
+
+        """ % {"num": self.user_number, "resp": resp,
+               "notify": notify, "dest_notif":notification_dest,
+               "dc_num": "666999", "ic_num": "666000", "dest_ic":self.dest_ic.default_connection.identity}
+        self.runScript(script)
+        self.assertSessionSuccess()
+        [ref] = Referral.objects.all()
+        self.assertTrue(ref.responded)
+        self.assertTrue(ref.mother_showed)
+        self.assertEqual("dotw", ref.mother_outcome)
+        self.assertEqual("dotw", ref.baby_outcome)
+        self.assertEqual("none", ref.mode_of_delivery)
 
     def testReferralOutcomeNoShow(self):
         self.testRefer()

@@ -566,6 +566,7 @@ def send_resp_reminders_20_mins(router_obj=None):
     referrals_to_remind = Referral.objects.filter(
         has_response=False,
         responded=False,
+        response_reminded=False,
         date__gte=reminder_threshold,
         date__lte=twenty_mins_ago,
         re_referral__isnull=True
@@ -612,7 +613,6 @@ def send_resp_reminders_super_user(router_obj=None):
     # is no response and there is still no refout(responded)
     referrals_to_remind = Referral.objects.filter(
         has_response=False,
-        response_reminded=True,
         responded=False,
         super_user_notified=False,
         date__gte=reminder_threshold,
