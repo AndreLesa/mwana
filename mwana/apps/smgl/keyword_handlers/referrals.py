@@ -462,7 +462,7 @@ def emergency_response(session, xform, router):
             }
             if status:
                 #If the sender added the status
-                resp_status = const.REF_TRIAGE_NURSE_RESP_NOTIF_STATUS %{
+                resp = const.REF_TRIAGE_NURSE_RESP_NOTIF_STATUS %{
                     "unique_id": unique_id,
                     "phone": session.connection.identity,
                     "title": ",".join([contact_type.name for contact_type in contact.types.all()]),
