@@ -33,3 +33,24 @@ class SMGLJoinTest(SMGLSetUp):
         """
         self.runScript(script)
 
+    def testLeave(self):
+        self.testJoin()
+        script = """
+        11 > leave now
+        """
+        self.runScript(script)
+
+    def testQuit(self):
+        self.testJoin()
+        script = """
+        11 > quit now
+        """
+        self.runScript(script)
+
+    def testBack(self):
+        self.testLeave()
+
+        script = """
+        11 > BACK now
+        """
+        self.runScript(script)

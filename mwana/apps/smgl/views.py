@@ -520,8 +520,8 @@ def referral_report(request):
 
     ref['referral_responses'] = 0
     for referral in referrals:
-        if referral.amb_req:
-            ref['referral_responses'] += referral.amb_req.ambulanceresponse_set.count()
+        if referral.has_seen_response:
+            ref['referral_responses'] += 1
 
     ref_with_outcome = referrals.filter(
         responded=True
