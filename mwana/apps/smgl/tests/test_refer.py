@@ -241,7 +241,7 @@ class SMGLReferTest(SMGLSetUp):
 
         self.runScript(script)
         self.assertSessionSuccess()
-        [referral] = Referral.objects.all()
+        [referral] = Referral.objects.filter(from_facility__slug="804031")
         self.assertEqual("1234", referral.mother_uid)
         self.assertEqual(Location.objects.get(slug__iexact="804030"), referral.facility)
         self.assertEqual(Location.objects.get(slug__iexact="804031"), referral.from_facility)
@@ -384,6 +384,7 @@ class SMGLReferTest(SMGLSetUp):
         self.runScript(script)
         self.assertSessionSuccess()
 
+
     def testReferFowardResponse(self):
         #This is specifically for when a triage nurse responds
         #Mother has been referred from community to Chilala, then from Chilala to Kalomo
@@ -467,7 +468,7 @@ class SMGLReferTest(SMGLSetUp):
         self.assertEqual(False, second_ref.reminded)
 
         #Set the time back
-        first_ref.date = first_ref.date - datetime.timedelta(hours=12)
+        first_ref.date = first_ref.date - datetime.timedelta(hours=13)
         first_ref.save()
         second_ref.date = second_ref.date - datetime.timedelta(hours=12)
         second_ref.save()
@@ -480,6 +481,39 @@ class SMGLReferTest(SMGLSetUp):
         second_ref = Referral.objects.get(pk=second_ref.pk)
         self.assertEqual(False, first_ref.reminded)
         self.assertEqual(True, second_ref.reminded)
+
+
+    def testTemp(self):
+        script = """
+        123 > refer 1234 804031 hbp 1200
+        """
+        self.runScript(script)
+
+    def testRefoutReminderHospital(self):
+        self.testTemp()
+        self.testReferHospitalToHospital()
+        first_ref, second_ref = Referral.objects.all()
+        #Try to send out the reminders, shouldn't do anything since not in time range
+        send_no_outcome_reminder(router_obj=self.router)
+        self.assertEqual(False, first_ref.reminded)
+        self.assertEqual(False, second_ref.reminded)
+
+        #Set the time back
+        first_ref.date = first_ref.date - datetime.timedelta(hours=13)
+        first_ref.save()
+        second_ref.date = second_ref.date - datetime.timedelta(hours=12)
+        second_ref.save()
+
+        #Send the reminders, they should only go to the latest referral since it
+        #is a re-referral based on the first one. Wouldn't make sense to ask the
+        #first people for out come when they already referred.
+        send_no_outcome_reminder(router_obj=self.router)
+        first_ref = Referral.objects.get(pk=first_ref.pk)
+        second_ref = Referral.objects.get(pk=second_ref.pk)
+        self.assertEqual(False, first_ref.reminded)
+        self.assertEqual(True, second_ref.reminded)
+
+
     """
     def testReferForwardSuperUserReminder(self):
         self.testReferForwardRefoutReminder()

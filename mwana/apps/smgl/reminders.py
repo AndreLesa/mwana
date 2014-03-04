@@ -645,7 +645,6 @@ def send_no_outcome_reminder(router_obj=None):
     reminder_threshold = now - timedelta(hours=48)
     twelve_hours_ago = now - timedelta(hours=12)
     referrals_to_remind = Referral.objects.filter(
-        has_response=True,
         responded=False,
         date__gte=reminder_threshold,
         date__lte=twelve_hours_ago,
@@ -662,9 +661,7 @@ def send_no_outcome_reminder(router_obj=None):
                 people_to_notify.append(person)
             for person in [_pick_er_triage_nurse(referral.facility)]:
                 people_to_notify.append(person)
-        elif is_fom_hospital(referral.session.connection.contact):
-            for person in _pick_er_drivers(referral.from_facility):
-                people_to_notify.append(person)
+        elif is_from_hospital(referral.session.connection.contact):
             for person in [_pick_er_triage_nurse(referral.facility)]:
                 people_to_notify.append(person)
 
