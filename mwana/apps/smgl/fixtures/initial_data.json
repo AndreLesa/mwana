@@ -7367,14 +7367,6 @@
     }
   },
   {
-    "pk": 14,
-    "model": "smgl.xformkeywordhandler",
-    "fields": {
-      "keyword": "pp",
-      "function_path": "mwana.apps.smgl.keyword_handlers.postpartum_visit"
-    }
-  },
-  {
     "pk": 20,
     "model": "smgl.xformkeywordhandler",
     "fields": {
@@ -7656,6 +7648,16 @@
       "trigger_keyword": "drop",
       "final_response": "",
       "xform": 35
+    }
+  },
+  {
+    "pk": 32,
+    "model": "smsforms.decisiontrigger",
+    "fields": {
+      "context_data": "",
+      "trigger_keyword": "fup",
+      "final_response": "",
+      "xform": 13
     }
   },
   {
