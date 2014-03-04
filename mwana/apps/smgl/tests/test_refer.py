@@ -716,7 +716,7 @@ class SMGLReferTest(SMGLSetUp):
                                                   "unique_id": "1234"}
         notify = const.REFERRAL_OUTCOME_NOTIFICATION_NOSHOW % {
             "unique_id": "1234",
-            "date": datetime.datetime.now().date(),
+            "date": datetime.datetime.now().strftime("%d %b %Y"),
        }
         script = """
             %(num)s > refout 1234 noshow

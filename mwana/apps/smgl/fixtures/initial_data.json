@@ -7295,6 +7295,14 @@
     }
   },
   {
+    "pk": 23,
+    "model": "smgl.xformkeywordhandler",
+    "fields": {
+      "keyword": "drop",
+      "function_path": "mwana.apps.smgl.keyword_handlers.drop"
+    }
+  },
+  {
     "pk": 5,
     "model": "smgl.xformkeywordhandler",
     "fields": {
