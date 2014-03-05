@@ -575,12 +575,13 @@ def send_resp_reminders_20_mins(router_obj=None):
         found_someone = False
         people_to_notify = []
         if cba_initiated(referral.session.connection.contact):
-            for person in _get_people_to_notify(ref):
+            for person in _get_people_to_notify(referral, excluded=const.CTYPE_INCHARGE):
                 people_to_notify.append(person)
+
         elif is_from_facility(referral.session.connection.contact):
-            for person in _pick_er_drivers(referral.facility):
+            for person in _get_people_to_notify(referral, excluded=const.CTYPE_INCHARGE):
                 people_to_notify.append(person)
-            for person in [_pick_er_triage_nurse(referral.facility)]:
+            for person in _pick_er_drivers(referral.facility):
                 people_to_notify.append(person)
         elif is_fom_hospital(referral.session.connection.contact):
             for person in _pick_er_drivers(referral.from_facility):
@@ -591,11 +592,19 @@ def send_resp_reminders_20_mins(router_obj=None):
         for person in people_to_notify:
             if person.default_connection:
                 found_someone = True
-                person.message(const.REMINDER_REFERRAL_RESP,
-                               **{"unique_id": referral.mother_uid,
-                                  "from_facility": referral.referring_facility.name if referral.referring_facility else "?"})
-                _create_notification(
-                    "ref_resp_reminder", person, referral.mother_uid)
+                past_reminders = ReminderNotification.objects.filter(
+                    mother_uid=referral.mother_uid,
+                    type="ref_resp_reminder",
+                    recipient=person,
+                    date__gte=twenty_mins_ago,
+                    date__lte=now)
+                #Ensure reminders are not sent twice
+                if not past_reminders:
+                    person.message(const.REMINDER_REFERRAL_RESP,
+                                   **{"unique_id": referral.mother_uid,
+                                      "from_facility": referral.referring_facility.name if referral.referring_facility else "?"})
+                    _create_notification(
+                        "ref_resp_reminder", person, referral.mother_uid)
         if found_someone:
             referral.response_reminded = True
             referral.save()
@@ -623,16 +632,24 @@ def send_resp_reminders_super_user(router_obj=None):
         found_someone = False
         ref_district, facility, zone = get_district_facility_zone(ref.facility)
         district_super_users = get_district_super_users(ref_district)
-        for c in district_super_users:
-            if c.default_connection:
+        for user in district_super_users:
+            if user.default_connection:
                 found_someone = True
-                c.message(const.REMINDER_SUPER_USER_REF,
-                          **{"unique_id": ref.mother_uid,
-                             "dest_facility": ref.facility,
-                             "from_facility": ref.from_facility if ref.from_facility else "?",
-                             "phone": ref.session.connection.identity})
+                #Ensure that we don't send twice.
+                past_reminders = ReminderNotification.objects.filter(
+                    mother_uid=ref.mother_uid,
+                    type="super_user_ref_resp",
+                    recipient=user,
+                    date__gte=thirty_mins_ago,
+                    date__lte=now)
+                if not past_reminders:
+                    user.message(const.REMINDER_SUPER_USER_REF,
+                              **{"unique_id": ref.mother_uid,
+                                 "dest_facility": ref.facility,
+                                 "from_facility": ref.from_facility if ref.from_facility else "?",
+                                 "phone": ref.session.connection.identity})
 
-                _create_notification("super_user_ref_resp", c, ref.mother_uid)
+                    _create_notification("super_user_ref_resp", user, ref.mother_uid)
         if found_someone:
             ref.super_user_notified = True
             ref.save()

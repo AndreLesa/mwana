@@ -172,6 +172,8 @@ def anc_report(request, id=None):
             birth_mothers = pregnancies.filter(id__in=births.values_list('mother'))
             pregnancies = pregnancies_edd | birth_mothers
 
+#TODO Mothers should be unique per option so filter by mothers not dates.
+#TODO Mothers visits should be total that each mother appeared and not the count.
         r['gestational_age'] = 0
         gestational_ages = 0
         pregnacies_to_calc = 0
@@ -273,6 +275,8 @@ def anc_report(request, id=None):
     return HttpResponse(anc_delivery_table.as_html())
 
 def pnc_report(request, id=None):
+
+#TODO: pnc remove nmr and ensure filters work down to one month.
     records = []
     facility_parent = None
     start_date, end_date = get_default_dates()

@@ -494,7 +494,7 @@ def emergency_response(session, xform, router):
                         send_msg(con.default_connection, resp, router)
                 # notify people at origin
                 for con in _get_people_to_notify_response(ref):
-                    send_msg(con.default_connection, resp_status, router)
+                    send_msg(con.default_connection, resp, router)
 
             send_msg(ambulance_request.ambulance_driver.default_connection,
                     resp, router)
@@ -656,13 +656,16 @@ def _get_people_to_notify_hospital(referral):
                                   is_active=True)
 
 
-def _get_people_to_notify(referral):
+def _get_people_to_notify(referral, excluded=None):
     # who to notifiy on an initial referral
     # this should be the people who are being referred to
     types = ContactType.objects.filter(
         slug__in=[const.CTYPE_DATACLERK, const.CTYPE_TRIAGENURSE,
                   const.CTYPE_CLINICWORKER, const.CTYPE_INCHARGE]
     ).all()
+
+    if excluded:
+        types = types.exclude(slug__in=types)
 
     loc_parent = referral.from_facility.parent if referral.from_facility else None
     facility_lookup = referral.facility or loc_parent

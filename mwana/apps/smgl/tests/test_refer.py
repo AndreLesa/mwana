@@ -129,6 +129,8 @@ class SMGLReferTest(SMGLSetUp):
         referral.save()
 
         send_resp_reminders_super_user(router_obj=self.router)
+        send_resp_reminders_super_user(router_obj=self.router)#Don't send twice
+
         referral = Referral.objects.get(pk=referral.pk)
         self.assertEqual(True, referral.super_user_notified)
 
@@ -514,7 +516,7 @@ class SMGLReferTest(SMGLSetUp):
         self.assertEqual(True, second_ref.reminded)
 
 
-    """
+
     def testReferForwardSuperUserReminder(self):
         self.testReferForwardRefoutReminder()
         self.super_user = self.createUser('DC', '1500')
@@ -522,7 +524,7 @@ class SMGLReferTest(SMGLSetUp):
         self.super_user.save()
 
         first_ref, second_ref = Referral.objects.all()
-        send_no_outcome_superusers_reminder(router_obj=self.router)
+        send_resp_reminders_super_user(router_obj=self.router)
 
         #set the time back by another 12 hours since it is currently 12 hours behind
         first_ref.date = first_ref.date - datetime.timedelta(hours=12)
@@ -531,8 +533,8 @@ class SMGLReferTest(SMGLSetUp):
         second_ref.date = second_ref.date - datetime.timedelta(hours=12)
         second_ref.save()
 
-        send_no_outcome_superusers_reminder(router_obj=self.router)
-    """
+        send_resp_reminders_super_user(router_obj=self.router)
+
 
 
     def testReferPick(self):
