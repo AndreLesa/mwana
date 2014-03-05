@@ -562,21 +562,22 @@ def pick(session, xform, router):
             # do not send to responder
             if con != contact:
                 send_msg(con.default_connection, pick_notification, router)
-
+        """
         # notify people at origin
         for con in _get_people_to_notify_response(referral):
             if con != contact:
                 send_msg(con.default_connection, pick_notification, router)
-
+        """
     else:
         # Notify people at destination
         for con in _get_people_to_notify(referral):
             if con != contact:
                 send_msg(con.default_connection, pick_notification, router)
+        """
         # notify people at origin
         for con in _get_people_to_notify_response(referral):
             send_msg(con.default_connection, pick_notification, router)
-
+        """
     return respond_to_session(router, session, pick_thanks)
 
 
@@ -623,10 +624,12 @@ def drop(session, xform, router):
     #the notifications differently
     if is_from_hospital(referral.session.connection.contact):
         # Let everyone know that it has been handled
+        """
         for con in _get_people_to_notify_hospital(referral):
             # do not send to responder
             if con != contact:
                 send_msg(con.default_connection, drop_notification, router)
+        """
 
         # notify people at origin
         for con in _get_people_to_notify_response(referral):
@@ -634,9 +637,11 @@ def drop(session, xform, router):
                 send_msg(con.default_connection, drop_notification, router)
     else:
         # Notify people at destination
+        """
         for con in _get_people_to_notify(referral):
             if con != contact:
                 send_msg(con.default_connection, drop_notification, router)
+        """
         # notify people at origin
         for con in _get_people_to_notify_response(referral):
             send_msg(con.default_connection, drop_notification, router)
