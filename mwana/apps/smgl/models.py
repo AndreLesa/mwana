@@ -465,6 +465,7 @@ class Referral(FormReferenceBase, MotherReferenceBase):
     response_reminded = models.BooleanField(default=False)#Has been reminded of response
     super_user_notified = models.BooleanField(default=False)
     amb_req = models.ForeignKey(AmbulanceRequest, null=True, blank=True)
+    delivered_on_the_way = models.BooleanField(default=False)
     pick = models.OneToOneField(Pick, null=True, blank=True)
     drop = models.OneToOneField(Drop, null=True, blank=True)
 
@@ -542,9 +543,12 @@ class Referral(FormReferenceBase, MotherReferenceBase):
 
     @property
     def outcome(self):
-        outcome = self.mother_outcome if self.mother_outcome else ''
+        outcome = ''
+        mother_outcome = "Mother is %s"%self.get_mother_outcome_display().title() if self.mother_outcome else ''
         if self.baby_outcome:
-            outcome = '{}/{}'.format(outcome, self.baby_outcome)
+            outcome = '{}/Baby is {}'.format(mother_outcome, self.get_baby_outcome_display().title())
+        if self.delivered_on_the_way:
+            outcome = '{}/{}'.format(outcome, "Delivered on The way")
         return outcome
 
     @property

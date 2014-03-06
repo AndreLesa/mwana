@@ -474,8 +474,7 @@ class SMGLReferTest(SMGLSetUp):
         first_ref.save()
         second_ref.date = second_ref.date - datetime.timedelta(hours=12)
         second_ref.save()
-        print Referral.objects.all(),
-        print "!!", first_ref.re_referral
+
 
         #Send the reminders, they should only go to the latest referral since it
         #is a re-referral based on the first one. Wouldn't make sense to ask the

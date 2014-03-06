@@ -228,6 +228,8 @@ def referral_outcome(session, xform, router):
         ref.baby_outcome = xform.xpath("form/baby_outcome")
         ref.mode_of_delivery = xform.xpath("form/mode_of_delivery")
 
+    if xform.xpath("form/delivery_on_the_way"):
+        ref.delivered_on_the_way = True
     ref.save()
 
     #We need the ambulance request so that we can notify the mother as well
@@ -254,6 +256,14 @@ def referral_outcome(session, xform, router):
     if ref.mother_showed:
         notification_origin = const.REFERRAL_OUTCOME_NOTIFICATION % \
             {"unique_id": ref.mother_uid,
+             "date": ref.date.strftime('%d %b %Y'),
+             "mother_outcome": ref.get_mother_outcome_display(),
+             "baby_outcome": ref.get_baby_outcome_display(),
+             "delivery_mode": ref.get_mode_of_delivery_display()}
+
+        if ref.delivered_on_the_way:
+            notification_origin = const.REFERRAL_OUTCOME_NOTIFICATION_OTW %\
+             {"unique_id": ref.mother_uid,
              "date": ref.date.strftime('%d %b %Y'),
              "mother_outcome": ref.get_mother_outcome_display(),
              "baby_outcome": ref.get_baby_outcome_display(),
@@ -290,12 +300,12 @@ def referral_outcome(session, xform, router):
         # notify people at origin
         for con in _get_people_to_notify_outcome(ref):
             send_msg(con.default_connection, notification_origin, router)
-
+    """
     if ambulance_request:
         #Tell the ambulance driver of the outcome
         send_msg(ambulance_request.ambulance_driver.default_connection,
             notification_origin, router)
-
+    """
     return respond_to_session(
         router, session, const.REFERRAL_OUTCOME_RESPONSE,
         **{'name': name, "unique_id": mother_id})

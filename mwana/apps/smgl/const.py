@@ -97,7 +97,9 @@ REFERRAL_OUTCOME_RESPONSE = _(
     "Thanks %(name)s! Referral outcome for Mother ID %(unique_id)s was received.")
 REFERRAL_OUTCOME_NOTIFICATION = _(
     "This is outcome for Mother ID %(unique_id)s sent on %(date)s: mother is %(mother_outcome)s, Baby is %(baby_outcome)s, Mode of delivery was %(delivery_mode)s.")
-REFERRAL_OUTCOME_NOTIFICATION_NOSHOW = _(
+REFERRAL_OUTCOME_NOTIFICATION_OTW = _(
+    "This is outcome for Mother ID %(unique_id)s sent on %(date)s: mother is %(mother_outcome)s, Baby is %(baby_outcome)s, Mode of delivery was %(delivery_mode)s, Delivery was on the way.")
+REFERAL_OUTCOME_NOTIFICATION_NOSHOW = _(
     "This is outcome for Mother ID %(unique_id)s sent on %(date)s: mother did not show up.")
 REFERRAL_NOT_FOUND = _(
     "No referrals for Mother ID %(unique_id)s were found. Please check the mother's ID.")
@@ -142,10 +144,10 @@ REFERRAL_OUTCOME_NOTIFICATION_DEST = _(
     "%(name)s has submitted an outcome for mother %(unique_id)s referred on %(date)s from %(origin)s to your facility.")
 
 PICK_THANKS = _("Thanks for picking mother with ID %(unique_id)s")
-PICK_NOTIFICATION = _("Mother with ID: %(unique_id)s has been just been picked by %(name)s on %(phone)s.")
+PICK_NOTIFICATION = _("Mother with ID: %(unique_id)s has just been picked by %(name)s on %(phone)s.")
 
 DROP_THANKS = _("Thanks for dropping mother with ID %(unique_id)s")
-DROP_NOTIFICATION = _("Mother with ID: %(unique_id)s has been just been dropped by %(name)s on %(phone)s.")
+DROP_NOTIFICATION = _("Mother with ID: %(unique_id)s has just been dropped by %(name)s on %(phone)s.")
 # death registration
 DEATH_REG_RESPONSE = _(
     "Thanks %(name)s! the Facility/Community death for mother with ID %(unique_id)s has been registered.")
