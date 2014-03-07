@@ -92,7 +92,7 @@ REFERRAL_RESPONSE = _(
 REFERRAL_TO_HOSPITAL_DRIVER = _(
     "A mother has been referred from %(referring_facility)s to %(referral_facility)s. Make yourself available to transport patient.")
 REFERRAL_TO_DESTINATION_HOSPITAL_NURSE = _(
-    "Mother with %(unique_id)s needs EmONC and was referred to your Hospital. Plz respond to this message with RESP %(unique_id)s.")
+    "Mother with %(unique_id)s needs EmONC and was referred to your Hospital. Reason: %(reason)s, Plz respond to this message with RESP %(unique_id)s.")
 REFERRAL_OUTCOME_RESPONSE = _(
     "Thanks %(name)s! Referral outcome for Mother ID %(unique_id)s was received.")
 REFERRAL_OUTCOME_NOTIFICATION = _(
@@ -118,9 +118,9 @@ REFERRAL_CBA_NOTIFICATION = _(
 REFERRAL_RESPONSE_NOTIFICATION_OTHER_USERS = _(
     "%(user_type)s %(name)s has responded to Referral for mother with ID:%(unique_id)s")
 REFERRAL_NOTIFICATION_OTHER_USERS = _(
-    "Mother with ID: %(unique_id)s needs EmONC. Contact: %(phone)s.")
+    "Mother with ID: %(unique_id)s needs EmONC. Reason: %(reason)s, Contact: %(phone)s.")
 REFERRAL_FACILITY_TO_HOSPITAL_NOTIFICATION = _(
-    "Mother with ID: %(unique_id)s needs ER. Location: %(facility_name)s, contact num: %(phone)s Plz SEND 'RESP %(unique_id)s OTW, DL or NA'")
+    "Mother with ID: %(unique_id)s needs ER. Location: %(facility_name)s, Reason: %(reason)s, Contact num: %(phone)s Plz SEND 'RESP %(unique_id)s OTW, DL or NA'")
 REFERRAL_NOTIFICATION = _(
     "A referral for Mother ID %(unique_id)s has been sent from %(facility)s. Please expect the mother. Reason: %(reason)s. Time: %(time)s. Emergency: %(is_emergency)s")
 RESP_THANKS = _(

@@ -484,7 +484,7 @@ class Referral(FormReferenceBase, MotherReferenceBase):
     def get_reasons(self):
         for c in sorted(self.REFERRAL_REASONS.keys()):
             if self.get_reason(c):
-                yield c
+                yield self.REFERRAL_REASONS[c]
 
     @property
     def has_seen_response(self):

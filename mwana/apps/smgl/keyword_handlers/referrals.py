@@ -50,6 +50,7 @@ def refer(session, xform, router):
 
     referring_loc = session.connection.contact.location
 
+
     # IF CBA, DO NOT SEND AN EMERGENCY REQUEST, JUST NOTIFY via
     # _get_people_to_notify
     is_cba = ['cba'] == list(
@@ -68,21 +69,20 @@ def refer(session, xform, router):
             (referring_loc.name, referring_loc.parent.name)
         for con in _get_people_to_notify(referral):
             if con.default_connection:
-                verbose_reasons = [Referral.REFERRAL_REASONS[r]
-                                   for r in referral.get_reasons()]  # This is pointless right now
+
                 if con.types.all() in [const.CTYPE_CLINICWORKER]:
                     # Data Clerks and facility in charges should not be asked
                     # to send the resp
                     msg = const.REFERRAL_CBA_NOTIFICATION_CLINIC_WORKER % {
                         "unique_id": mother_id,
                         "village": referring_loc.name,
-                        "phone": session.connection.identity
+                        "phone": session.connection.identity,
                     }
                 else:
                     msg = const.REFERRAL_CBA_NOTIFICATION % {
                         "unique_id": mother_id,
                         "village": referring_loc.name,
-                        "phone": session.connection.identity
+                        "phone": session.connection.identity,
                     }
                 router.outgoing(OutgoingMessage(con.default_connection, msg))
         # respond to the sending CBA
@@ -170,7 +170,8 @@ def refer(session, xform, router):
             msg = const.REFERRAL_FACILITY_TO_HOSPITAL_NOTIFICATION % {
                 'unique_id': mother_id,
                 'phone': session.connection.identity,
-                'facility_name': referral.from_facility.name}
+                'facility_name': referral.from_facility.name,
+                'reason': " ".join(reason for reason in referral.get_reasons())}
             _broadcast_to_ER_users(
                 amb, session, xform, facility=referral.facility, router=router, message=msg)
 
@@ -183,7 +184,8 @@ def refer(session, xform, router):
             for contact in data_clerks_and_incharges:
                 send_msg(contact.default_connection, const.REFERRAL_NOTIFICATION_OTHER_USERS%{
                     'unique_id': mother_id,
-                    'phone': session.connection.identity
+                    'phone': session.connection.identity,
+                    'reason': " ".join(reason for reason in referral.get_reasons())
                     }, router)
 
             # Respond that we're on it.
@@ -204,7 +206,9 @@ def refer(session, xform, router):
             # notify triage nurse at receiving facility
             for con in _get_people_to_notify_hospital(referral):
                 msg = const.REFERRAL_TO_DESTINATION_HOSPITAL_NURSE % {
-                    "unique_id": referral.mother_uid}
+                    "unique_id": referral.mother_uid,
+                    'reason': " ".join(reason for reason in referral.get_reasons())
+                }
                 router.outgoing(OutgoingMessage(con.default_connection, msg))
             #Tell the data clerks that we are on it.
             data_clerks_and_incharges = Contact.objects.filter(
@@ -215,7 +219,8 @@ def refer(session, xform, router):
             for contact in data_clerks_and_incharges:
                 send_msg(contact.default_connection, const.REFERRAL_NOTIFICATION_OTHER_USERS%{
                     'unique_id': mother_id,
-                    'phone': session.connection.identity
+                    'phone': session.connection.identity,
+                    'reason': " ".join(reason for reason in referral.get_reasons())
                     }, router)
 
 

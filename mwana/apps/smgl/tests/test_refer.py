@@ -60,10 +60,11 @@ class SMGLReferTest(SMGLSetUp):
                                                   "facility_name":referral_facility.name}
         notif = const.REFERRAL_FACILITY_TO_HOSPITAL_NOTIFICATION % {"unique_id": "1234",
                                                "facility_name": self.worker.location.name,
-                                               "phone":self.user_number
+                                               "phone":self.user_number,
+                                               "reason":"High Blood Pressure"
                                                 }
         script = """
-            %(num)s > refer 1234 %(facility_slug)s hbp 1200 em
+            %(num)s > refer 1234 %(facility_slug)s hbp 1200
             %(num)s < %(resp)s
             %(tnnum)s < %(notif)s
             %(amb_driver_num)s < %(notif)s
@@ -78,8 +79,7 @@ class SMGLReferTest(SMGLSetUp):
         self.assertEqual(Location.objects.get(slug__iexact="804024"), referral.facility)
         self.assertEqual(Location.objects.get(slug__iexact="804034"), referral.from_facility)
         self.assertTrue(referral.reason_hbp)
-        self.assertEqual(["hbp"], list(referral.get_reasons()))
-        self.assertEqual("em", referral.status)
+        self.assertEqual(["High Blood Pressure"], list(referral.get_reasons()))
         self.assertEqual(datetime.time(12, 00), referral.time)
         self.assertFalse(referral.responded)
         self.assertEqual(None, referral.mother_showed)
@@ -182,12 +182,41 @@ class SMGLReferTest(SMGLSetUp):
                                                   "name":self.cba.name}
         notif = const.REFERRAL_CBA_NOTIFICATION % {"unique_id": "1234",
                                                "village": self.cba.location.name,
-                                               "phone":self.cba_number}
+                                               "phone":self.cba_number,
+                                               "reason":"Not Specified"}
 
         #Register another health worker
         self.other_worker = self.createUser("worker", "777222")
         script = """
             %(num)s > refer 1234
+            %(num)s < %(resp)s
+            %(in_charge_worker_num)s < %(notif)s
+            %(ordinary_worker)s < %(notif)s
+        """ % {"num": self.cba_number, "resp": success_resp,
+                "in_charge_worker_num": "666111", "notif": notif,
+                "ordinary_worker": 777222}
+        self.runScript(script)
+        self.assertSessionSuccess()
+
+        [referral] = Referral.objects.all()
+        self.assertEqual("1234", referral.mother_uid)
+        self.assertEqual(Location.objects.get(slug__iexact="804024"), referral.facility)
+        self.assertEqual(Location.objects.get(slug__iexact="80402404"), referral.from_facility)
+        self.assertFalse(referral.responded)
+        self.assertEqual(None, referral.mother_showed)
+
+    def testReferCBAToFacilityReason(self):
+        success_resp = const.REFERRAL_CBA_THANKS % {"facility_name":self.cba.location.parent.name,
+                                                  "name":self.cba.name}
+        notif = const.REFERRAL_CBA_NOTIFICATION % {"unique_id": "1234",
+                                               "village": self.cba.location.name,
+                                               "phone":self.cba_number,
+                                               "reason":"High Blood Pressure"}
+
+        #Register another health worker
+        self.other_worker = self.createUser("worker", "777222")
+        script = """
+            %(num)s > refer 1234 hbp
             %(num)s < %(resp)s
             %(in_charge_worker_num)s < %(notif)s
             %(ordinary_worker)s < %(notif)s
@@ -222,7 +251,9 @@ class SMGLReferTest(SMGLSetUp):
         server_resp = const.REFERRAL_RESPONSE % {"name": self.name,
                                                   "unique_id": self.smh_id,
                                                   "facility_name":self.destination_facility_tn.location.name}
-        dest_nurse_notif = const.REFERRAL_TO_DESTINATION_HOSPITAL_NURSE  %{ "unique_id":self.smh_id }
+        dest_nurse_notif = const.REFERRAL_TO_DESTINATION_HOSPITAL_NURSE  %{
+            "unique_id":self.smh_id,
+            "reason":"High Blood Pressure" }
         amb_status_notif = const.REFERRAL_AMBULANCE_STATUS_TO_REFERRING_HOSPITAL %{ 'unique_id':self.smh_id,
                                                                                                  'status':amb_status,
                                                                                                  'phone':initiator_facility_driver.default_connection.identity}
@@ -248,7 +279,7 @@ class SMGLReferTest(SMGLSetUp):
         self.assertEqual(Location.objects.get(slug__iexact="804030"), referral.facility)
         self.assertEqual(Location.objects.get(slug__iexact="804031"), referral.from_facility)
         self.assertTrue(referral.reason_hbp)
-        self.assertEqual(["hbp"], list(referral.get_reasons()))
+        self.assertEqual(["High Blood Pressure"], list(referral.get_reasons()))
         self.assertEqual("em", referral.status)
         self.assertEqual(datetime.time(12, 00), referral.time)
         self.assertFalse(referral.responded)
