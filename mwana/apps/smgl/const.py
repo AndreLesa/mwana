@@ -138,11 +138,14 @@ REFERRAL_AMBULANCE_STATUS_TO_REFERRING_HOSPITAL = _(
 REFERRAL_RESPONSE_NOTIFICATION_TO_REFERRING_HOSPITAL = _(
     "Emergency Response for mother with ID %(unique_id)s: You can contact driver at %(phone)s.")
 REF_TRIAGE_NURSE_RESP_NOTIF = _(
-    "Emergency response for mother with ID %(unique_id)s: You can contact the Triage nurse at %(phone)s.")
-REF_TRIAGE_NURSE_RESP_NOTIF_STATUS = _(
+    "Emergency response for mother with ID %(unique_id)s: You can contact the %(title)s at %(phone)s.")
+TRIAGE_RESP_NOTIF_STATUS = _(
+    "Emergency Response for mother with ID %(unique_id)s: Ambulance is %(status)s. You can contact the %(title)s at %(phone)s.")
+REF_TRIAGE_NURSE_RESP_NOTIF_ORIGIN_STATUS = _(
     "Your referral for mother with ID %(unique_id)s was received. Ambulance is %(status)s. You can contact %(title)s at %(phone)s.")
-TRIAGE_RESP_STATUS = _(
-    "Emergency Response for mother with ID %(unique_id)s: Ambulance is %(status)s. You can the Triage Nurse at %(phone)s.")
+
+REF_TRIAGE_NURSE_RESP_NOTIF_ORIGIN = _(
+    "Your referral for mother with ID %(unique_id)s was received. You can contact %(title)s at %(phone)s.")
 
 REFERRAL_OUTCOME_NOTIFICATION_DEST = _(
     "%(name)s has submitted an outcome for mother %(unique_id)s referred on %(date)s from %(origin)s to your facility.")

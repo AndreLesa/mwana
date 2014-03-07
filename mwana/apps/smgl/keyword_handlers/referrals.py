@@ -491,17 +491,32 @@ def emergency_response(session, xform, router):
                 #thanks the sender
                 return respond_to_session(router, session, thank_message)
         else:
-            resp = const.REF_TRIAGE_NURSE_RESP_NOTIF % {
-                "unique_id": unique_id,
-                "phone": session.connection.identity
+
+            origin_notification = const.REF_TRIAGE_NURSE_RESP_NOTIF_ORIGIN %{
+                "unique_id":unique_id,
+                "phone":session.connection.identity,
+                "title": ",".join([contact_type.name for contact_type in contact.types.all()]),
             }
+            driver_notification = dest_notification = const.REF_TRIAGE_NURSE_RESP_NOTIF % {
+                "unique_id": unique_id,
+                "phone": session.connection.identity,
+                "title": ",".join([contact_type.name for contact_type in contact.types.all()]),
+            }
+
             if status:
                 #If the sender added the status
-                resp = const.REF_TRIAGE_NURSE_RESP_NOTIF_STATUS %{
+                origin_notification = const.REF_TRIAGE_NURSE_RESP_NOTIF_ORIGIN_STATUS %{
                     "unique_id": unique_id,
                     "phone": session.connection.identity,
                     "title": ",".join([contact_type.name for contact_type in contact.types.all()]),
-                    "status": status
+                    "status": ambulance_response.get_response_display()
+                }
+
+                dest_notification = driver_notification = const.TRIAGE_RESP_NOTIF_STATUS%{
+                    "unique_id": unique_id,
+                    "status": ambulance_response.get_response_display(),
+                    "phone": session.connection.identity,
+                    "title": ",".join([contact_type.name for contact_type in contact.types.all()]),
                 }
 
             thank_message = const.RESP_THANKS % {
@@ -514,30 +529,31 @@ def emergency_response(session, xform, router):
                 for con in _get_people_to_notify_hospital(ref):
                     # do not send to originator
                     if con != contact:
-                        send_msg(con.default_connection, resp, router)
+                        send_msg(con.default_connection, dest_notification, router)
                 # notify people at origin
                 for con in _get_people_to_notify_response(ref):
-                    send_msg(con.default_connection, resp, router)
+                    send_msg(con.default_connection, origin_notification, router)
 
                 #Tell the ambulance driver that the Triage Nurse has responded
 
             else:
+                if not status:
+                    RESP_MISSING_STATUS = "Your message is missing the STATUS"
+                    return respond_to_session(router, session, RESP_MISSING_STATUS, is_error=True, **{'unique_id': unique_id})
+
                 # Let everyone know that it has been handled
                 for con in _get_people_to_notify(ref):
                     # do not send to originator
                     if con != contact:
-                        send_msg(con.default_connection, resp, router)
+                        send_msg(con.default_connection, dest_notification, router)
                 # notify people at origin
                 for con in _get_people_to_notify_response(ref):
-                    send_msg(con.default_connection, resp, router)
-            """
+                    send_msg(con.default_connection, origin_notification, router)
+
             send_msg(ambulance_request.ambulance_driver.default_connection,
-                    const.TRIAGE_RESP_STATUS%{
-                    "unique_id": unique_id,
-                    "phone": session.connection.identity,
-                    "status": status,
+                    driver_notification,
                     router)
-            """
+
             #thanks the sender
             return respond_to_session(router, session, thank_message)
 
