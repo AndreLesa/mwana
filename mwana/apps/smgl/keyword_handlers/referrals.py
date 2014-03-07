@@ -173,6 +173,19 @@ def refer(session, xform, router):
                 'facility_name': referral.from_facility.name}
             _broadcast_to_ER_users(
                 amb, session, xform, facility=referral.facility, router=router, message=msg)
+
+            #Tell the data clerks that we are on it.
+            data_clerks_and_incharges = Contact.objects.filter(
+                types__slug__in=[const.CTYPE_DATACLERK, const.CTYPE_INCHARGE],
+                location=referral.facility,
+                is_active=True)
+
+            for contact in data_clerks_and_incharges:
+                send_msg(contact.default_connection, const.REFERRAL_NOTIFICATION_OTHER_USERS%{
+                    'unique_id': mother_id,
+                    'phone': session.connection.identity
+                    }, router)
+
             # Respond that we're on it.
             referral_response = const.REFERRAL_RESPONSE % {
                 "name": name,
@@ -193,6 +206,18 @@ def refer(session, xform, router):
                 msg = const.REFERRAL_TO_DESTINATION_HOSPITAL_NURSE % {
                     "unique_id": referral.mother_uid}
                 router.outgoing(OutgoingMessage(con.default_connection, msg))
+            #Tell the data clerks that we are on it.
+            data_clerks_and_incharges = Contact.objects.filter(
+                types__slug__in=[const.CTYPE_DATACLERK, const.CTYPE_INCHARGE],
+                location=referral.from_facility,
+                is_active=True)
+
+            for contact in data_clerks_and_incharges:
+                send_msg(contact.default_connection, const.REFERRAL_NOTIFICATION_OTHER_USERS%{
+                    'unique_id': mother_id,
+                    'phone': session.connection.identity
+                    }, router)
+
 
             # respond to the sender
             referral_response = const.REFERRAL_RESPONSE % {"name": name,
@@ -505,9 +530,14 @@ def emergency_response(session, xform, router):
                 # notify people at origin
                 for con in _get_people_to_notify_response(ref):
                     send_msg(con.default_connection, resp, router)
-
+            """
             send_msg(ambulance_request.ambulance_driver.default_connection,
-                    resp, router)
+                    const.TRIAGE_RESP_STATUS%{
+                    "unique_id": unique_id,
+                    "phone": session.connection.identity,
+                    "status": status,
+                    router)
+            """
             #thanks the sender
             return respond_to_session(router, session, thank_message)
 
@@ -818,6 +848,9 @@ def _broadcast_to_ER_users(ambulance_session, session, xform, router, facility=N
                     tn.default_connection, ER_TO_TRIAGE_NURSE, router, **session.template_vars)
 
     ambulance_session.save()
+
+    return
+
 
 
 def _broadcast_Notification_to_ER_users(ambulance_session, session, xform, router, message=None):

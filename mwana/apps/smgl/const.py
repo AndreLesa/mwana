@@ -117,7 +117,8 @@ REFERRAL_CBA_NOTIFICATION = _(
     "Mother with ID: %(unique_id)s from %(village)s needs EmONC. Contact: %(phone)s.")
 REFERRAL_RESPONSE_NOTIFICATION_OTHER_USERS = _(
     "%(user_type)s %(name)s has responded to Referral for mother with ID:%(unique_id)s")
-
+REFERRAL_NOTIFICATION_OTHER_USERS = _(
+    "Mother with ID: %(unique_id)s needs EmONC. Contact: %(phone)s.")
 REFERRAL_FACILITY_TO_HOSPITAL_NOTIFICATION = _(
     "Mother with ID: %(unique_id)s needs ER. Location: %(facility_name)s, contact num: %(phone)s Plz SEND 'RESP %(unique_id)s OTW, DL or NA'")
 REFERRAL_NOTIFICATION = _(
@@ -140,6 +141,9 @@ REF_TRIAGE_NURSE_RESP_NOTIF = _(
     "Emergency response for mother with ID %(unique_id)s: You can contact the Triage nurse at %(phone)s.")
 REF_TRIAGE_NURSE_RESP_NOTIF_STATUS = _(
     "Your referral for mother with ID %(unique_id)s was received. Ambulance is %(status)s. You can contact %(title)s at %(phone)s.")
+TRIAGE_RESP_STATUS = _(
+    "Emergency Response for mother with ID %(unique_id)s: Ambulance is %(status)s. You can the Triage Nurse at %(phone)s.")
+
 REFERRAL_OUTCOME_NOTIFICATION_DEST = _(
     "%(name)s has submitted an outcome for mother %(unique_id)s referred on %(date)s from %(origin)s to your facility.")
 
