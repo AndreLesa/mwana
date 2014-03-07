@@ -76,6 +76,9 @@
 					<text id="baby_outcome-dotw-label">
 						<value>dotw</value>
 					</text>
+					<text id="delivery_on_the_way-otw-label">
+						<value>otw</value>
+					</text>
 				</translation>
 			</itext>
 		</model>
@@ -151,6 +154,10 @@
 		</select1>
 		<select1 ref="/data/delivery_on_the_way">
 			<label ref="jr:itext('delivery_on_the_way-label')" />
+			<item>
+				<label ref="jr:itext('delivery_on_the_way-otw-label')" />
+				<value>otw</value>
+			</item>
 		</select1>
 	</h:body>
 </h:html>

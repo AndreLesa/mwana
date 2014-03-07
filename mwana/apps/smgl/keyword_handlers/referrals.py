@@ -308,7 +308,7 @@ def referral_outcome(session, xform, router):
                 "origin":ref.from_facility
             }
     else:
-        notification_origin = notification_dest = const.REFERRAL_OUTCOME_NOTIFICATION_NOSHOW %{
+        notification_origin = notification_dest = const.REFERAL_OUTCOME_NOTIFICATION_NOSHOW %{
             "unique_id": ref.mother_uid,
             "date": ref.date.strftime('%d %b %Y')}
     if is_from_hospital(ref.session.connection.contact):

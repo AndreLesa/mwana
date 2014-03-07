@@ -621,7 +621,7 @@ def send_resp_reminders_super_user(router_obj=None):
     # We need referral where the facility users have been reminded(response_reminded) but there still
     # is no response and there is still no refout(responded)
     referrals_to_remind = Referral.objects.filter(
-        has_response=False,
+        has_response=True,
         responded=False,
         super_user_notified=False,
         date__gte=reminder_threshold,

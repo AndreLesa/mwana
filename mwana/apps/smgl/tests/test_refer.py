@@ -720,7 +720,6 @@ class SMGLReferTest(SMGLSetUp):
             %(num)s < %(notify)s
             %(dc_num)s < %(notify)s
             %(ic_num)s < %(notify)s
-            666555 < %(notify)s
             %(dest_ic)s < %(dest_notif)s
             666111 < %(resp)s
 
@@ -764,7 +763,6 @@ class SMGLReferTest(SMGLSetUp):
             %(num)s < %(notify)s
             %(dc_num)s < %(notify)s
             %(ic_num)s < %(notify)s
-            666555 < %(notify)s
             %(dest_ic)s < %(dest_notif)s
             666111 < %(resp)s
 
@@ -784,7 +782,7 @@ class SMGLReferTest(SMGLSetUp):
         self.testRefer()
         resp = const.REFERRAL_OUTCOME_RESPONSE % {"name": self.name,
                                                   "unique_id": "1234"}
-        notify = const.REFERRAL_OUTCOME_NOTIFICATION_NOSHOW % {
+        notify = const.REFERAL_OUTCOME_NOTIFICATION_NOSHOW % {
             "unique_id": "1234",
             "date": datetime.datetime.now().strftime("%d %b %Y"),
        }
