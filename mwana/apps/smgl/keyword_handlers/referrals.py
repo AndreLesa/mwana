@@ -454,7 +454,7 @@ def emergency_response(session, xform, router):
             else:
                 resp = const.AMB_RESP_STATUS % {
                     "unique_id": unique_id,
-                    "status": status.upper(),
+                    "status": ambulance_response.get_response_display(),
                     "phone": session.connection.identity}
                 thank_message = const.RESP_THANKS_AMB_DRIVER % {
                     "unique_id": unique_id,
@@ -473,9 +473,14 @@ def emergency_response(session, xform, router):
                             send_msg(con.default_connection, resp, router)
 
                     #Tell the other drivers at origin facility
+                    driver_notification = const.REFERRAL_RESPONSE_NOTIFICATION_OTHER_USERS_STATUS %{
+                        "unique_id":unique_id,
+                        "user_type":",".join(contacttype.name for contacttype in contact.types.all()),
+                        "name":contact.name,
+                        "status":ambulance_response.get_response_display()}
                     for con in _pick_er_drivers(ref.from_facility):
                         if con != contact:
-                            send_msg(con.default_connection, resp, router)
+                            send_msg(con.default_connection, driver_notification, router)
                 else:
                     # Notify people at destination
                     for con in _get_people_to_notify(ref):
@@ -486,10 +491,11 @@ def emergency_response(session, xform, router):
                         send_msg(con.default_connection, resp, router)
 
                     #Tell the driver at the very facility.
-                    driver_notification = const.REFERRAL_RESPONSE_NOTIFICATION_OTHER_USERS %{
-                    "unique_id":unique_id,
-                    "user_type":",".join(contacttype.name for contacttype in contact.types.all()),
-                    "name":contact.name}
+                    driver_notification = const.REFERRAL_RESPONSE_NOTIFICATION_OTHER_USERS_STATUS %{
+                        "unique_id":unique_id,
+                        "user_type":",".join(contacttype.name for contacttype in contact.types.all()),
+                        "name":contact.name,
+                        "status":ambulance_response.get_response_display()}
                     for con in _pick_er_drivers(ref.facility):
                         if con != contact:
                             send_msg(con.default_connection, driver_notification, router)

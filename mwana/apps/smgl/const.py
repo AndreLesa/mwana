@@ -116,7 +116,9 @@ REFERRAL_CBA_NOTIFICATION_CLINIC_WORKER = _(
 REFERRAL_CBA_NOTIFICATION = _(
     "Mother with ID: %(unique_id)s from %(village)s needs EmONC. Contact: %(phone)s.")
 REFERRAL_RESPONSE_NOTIFICATION_OTHER_USERS = _(
-    "%(user_type)s %(name)s has responded to Referral for mother with ID:%(unique_id)s")
+    "%(user_type)s %(name)s has responded to Referral for mother with ID:%(unique_id)s.")
+REFERRAL_RESPONSE_NOTIFICATION_OTHER_USERS_STATUS = _(
+    "%(user_type)s %(name)s has responded with status: (%(status)s) to Referral for mother with ID:%(unique_id)s.")
 REFERRAL_NOTIFICATION_OTHER_USERS = _(
     "Mother with ID: %(unique_id)s needs EmONC. Reason: %(reason)s, Contact: %(phone)s.")
 REFERRAL_FACILITY_TO_HOSPITAL_NOTIFICATION = _(
