@@ -705,27 +705,27 @@ def send_no_outcome_reminder(router_obj=None):
                 referral.reminded = True
                 referral.save()
 
-"""
+
 def send_no_outcome_superusers_reminder(router_obj=None):
 
     #Send reminders to super users for Referrals
     #that have no Outcome and are @ 24 hours old
 
 
-    def _responses_to_remind():
+    def referrals_to_remind():
         now = datetime.utcnow()
         # Get AmbulanceResponses @ 24 hours old
+        reminder_threshold = now - timedelta(hours=48)
         twenty_four_hours_ago = now - timedelta(hours=24)
         referrals_to_remind = Referral.objects.filter(
             has_response=True,
             responded=False,
             reminded=True,
-            date__gte=twenty_four_hours_ago-timedelta(hours=12),
+            date__gte=reminder_threshold,
             date__lte=twenty_four_hours_ago,
             re_referral__isnull=True
         ).exclude(mother_uid=None)
         return referrals_to_remind
-
     users = Contact.objects.filter(is_super_user=True)
     users_per_district_super_users = []
     kalomo_district_super_users = []
@@ -736,7 +736,7 @@ def send_no_outcome_superusers_reminder(router_obj=None):
         elif district == 'Choma District':
             choma_district_super_users.append(user)
 
-    for referral in _responses_to_remind():
+    for referral in referrals_to_remind():
         receiving_facility = referral.facility
         district_users = None
         if referral.facility.district == 'Kalomo District':
@@ -749,7 +749,7 @@ def send_no_outcome_superusers_reminder(router_obj=None):
                 u.message(const.AMB_OUTCOME_NO_OUTCOME,
                           **{"unique_id": referral.mother_uid,
                              "date": referral.date.strftime("%d %B %Y")})
-"""
+
 
 def _create_notification(type, contact, mother_id):
     notif = ReminderNotification(type=type,
