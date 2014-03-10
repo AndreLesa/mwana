@@ -746,7 +746,7 @@ class ReminderNotification(MotherReferenceBase):
     """
     Any notifications sent to user
     """
-    type = models.CharField(max_length=10, choices=REMINDER_TYPE_CHOICES)
+    type = models.CharField(max_length=30, choices=REMINDER_TYPE_CHOICES)
     recipient = models.ForeignKey(Contact,
                                   related_name='sent_notifications')
     date = models.DateTimeField()
