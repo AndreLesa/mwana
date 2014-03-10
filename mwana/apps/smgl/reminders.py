@@ -16,7 +16,7 @@ from mwana.apps.smgl.models import FacilityVisit, ReminderNotification, Referral
 from mwana.apps.smgl.utils import get_district_facility_zone, get_district_super_users
 
 from mwana.apps.smgl.keyword_handlers.referrals import cba_initiated, _pick_er_drivers, _pick_er_triage_nurse, _get_people_to_notify, is_from_facility, is_from_hospital
-
+from rapidsms.errors import MessageSendingError
 # reminders will be sent up to this amount late (if, for example the system
 # was down.
 SEND_REMINDER_LOWER_BOUND = timedelta(days=5)
@@ -583,7 +583,7 @@ def send_resp_reminders_20_mins(router_obj=None):
                 people_to_notify.append(person)
             for person in _pick_er_drivers(referral.facility):
                 people_to_notify.append(person)
-        elif is_fom_hospital(referral.session.connection.contact):
+        elif is_from_hospital(referral.session.connection.contact):
             for person in _pick_er_drivers(referral.from_facility):
                 people_to_notify.append(person)
             for person in [_pick_er_triage_nurse(referral.facility)]:
@@ -600,10 +600,14 @@ def send_resp_reminders_20_mins(router_obj=None):
                     date__lte=now)
                 #Ensure reminders are not sent twice
                 if not past_reminders:
-                    person.message(const.REMINDER_REFERRAL_RESP,
-                                   **{"unique_id": referral.mother_uid,
-                                      "from_facility": referral.referring_facility.name if referral.referring_facility else "?"})
-                    _create_notification(
+                    try:
+                        person.message(const.REMINDER_REFERRAL_RESP,
+                                       **{"unique_id": referral.mother_uid,
+                                          "from_facility": referral.referring_facility.name if referral.referring_facility else "?"})
+                    except MessageSendingError:
+                        pass
+                    else:
+                        _create_notification(
                         "ref_resp_reminder", person, referral.mother_uid)
         if found_someone:
             referral.response_reminded = True
@@ -616,12 +620,12 @@ def send_resp_reminders_super_user(router_obj=None):
     # The actual destination users have been notified.
     _set_router(router_obj)
     now = datetime.utcnow()
-    reminder_threshold = now - timedelta(hours=1)
+    reminder_threshold = now - timedelta(hours=60)
     thirty_mins_ago = now - timedelta(minutes=30)
     # We need referral where the facility users have been reminded(response_reminded) but there still
     # is no response and there is still no refout(responded)
     referrals_to_remind = Referral.objects.filter(
-        has_response=True,
+        has_response=False,
         responded=False,
         super_user_notified=False,
         date__gte=reminder_threshold,
@@ -643,13 +647,16 @@ def send_resp_reminders_super_user(router_obj=None):
                         date__gte=thirty_mins_ago,
                         date__lte=now)
                     if not past_reminders:
-                        user.message(const.REMINDER_SUPER_USER_REF,
-                                  **{"unique_id": ref.mother_uid,
-                                     "dest_facility": ref.facility,
-                                     "from_facility": ref.from_facility if ref.from_facility else "?",
-                                     "phone": ref.session.connection.identity})
-
-                        _create_notification("super_user_ref_resp", user, ref.mother_uid)
+                        try:
+                            user.message(const.REMINDER_SUPER_USER_REF,
+                                      **{"unique_id": ref.mother_uid,
+                                         "dest_facility": ref.facility,
+                                         "from_facility": ref.from_facility if ref.from_facility else "?",
+                                         "phone": ref.session.connection.identity})
+                        except MessageSendingError:
+                            pass
+                        else:
+                            _create_notification("super_user_ref_resp", user, ref.mother_uid)
             if found_someone:
                 ref.super_user_notified = True
                 ref.save()
@@ -668,6 +675,7 @@ def send_no_outcome_reminder(router_obj=None):
         date__gte=reminder_threshold,
         date__lte=twelve_hours_ago,
     ).exclude(mother_uid=None)
+
     for referral in referrals_to_remind:
         found_someone = False
         if not referral.re_referral:
