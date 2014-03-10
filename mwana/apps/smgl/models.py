@@ -390,7 +390,7 @@ REFERRAL_OUTCOME_CHOICES = (("stb", "stable"), ("cri", "critical"),
                             ("dotw", "Dead on the Way"))
 DELIVERY_MODE_CHOICES = (("vag", "vaginal"), ("csec", "c-section"),
                          ("pp", "post-partum"), ("ref", "new_referral"),
-                        ("oth", "other"), ("dotw", "Dead on the Way"))
+                        ("oth", "other"))
 
 class Pick(FormReferenceBase):
     time = models.DateTimeField(auto_now_add=True)
@@ -439,10 +439,10 @@ class Referral(FormReferenceBase, MotherReferenceBase):
     time = models.TimeField(help_text="Time of referral", null=True)
     re_referral = models.ForeignKey("self", blank=True, null=True, related_name="past_referrals")
     # outcomes
-    mother_outcome = models.CharField(max_length=3,
+    mother_outcome = models.CharField(max_length=5,
                                       choices=REFERRAL_OUTCOME_CHOICES,
                                       null=True, blank=True)
-    baby_outcome = models.CharField(max_length=3,
+    baby_outcome = models.CharField(max_length=5,
                                     choices=REFERRAL_OUTCOME_CHOICES,
                                     null=True, blank=True)
     mode_of_delivery = models.CharField(max_length=4,
