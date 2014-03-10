@@ -471,16 +471,6 @@ def emergency_response(session, xform, router):
                     for con in _get_people_to_notify_response(ref):
                         if con != contact:
                             send_msg(con.default_connection, resp, router)
-
-                    #Tell the other drivers at origin facility
-                    driver_notification = const.REFERRAL_RESPONSE_NOTIFICATION_OTHER_USERS_STATUS %{
-                        "unique_id":unique_id,
-                        "user_type":",".join(contacttype.name for contacttype in contact.types.all()),
-                        "name":contact.name,
-                        "status":ambulance_response.get_response_display()}
-                    for con in _pick_er_drivers(ref.from_facility):
-                        if con != contact:
-                            send_msg(con.default_connection, driver_notification, router)
                 else:
                     # Notify people at destination
                     for con in _get_people_to_notify(ref):
@@ -490,13 +480,26 @@ def emergency_response(session, xform, router):
                     for con in _get_people_to_notify_response(ref):
                         send_msg(con.default_connection, resp, router)
 
-                    #Tell the driver at the very facility.
+                ref_type = referral_type(ref)
+                if ref_type == 'facility_to_hospital':
+                    #Tell the driver at the destination
                     driver_notification = const.REFERRAL_RESPONSE_NOTIFICATION_OTHER_USERS_STATUS %{
                         "unique_id":unique_id,
                         "user_type":",".join(contacttype.name for contacttype in contact.types.all()),
                         "name":contact.name,
                         "status":ambulance_response.get_response_display()}
                     for con in _pick_er_drivers(ref.facility):
+                        if con != contact:
+                            send_msg(con.default_connection, driver_notification, router)
+                elif ref_type == 'hospital_to_hospital':
+                    #When referral is from hospital to hospital we need the
+                    #drivers at the origin facility
+                    driver_notification = const.REFERRAL_RESPONSE_NOTIFICATION_OTHER_USERS_STATUS %{
+                        "unique_id":unique_id,
+                        "user_type":",".join(contacttype.name for contacttype in contact.types.all()),
+                        "name":contact.name,
+                        "status":ambulance_response.get_response_display()}
+                    for con in _pick_er_drivers(ref.from_facility):
                         if con != contact:
                             send_msg(con.default_connection, driver_notification, router)
                 #thanks the sender
@@ -545,7 +548,12 @@ def emergency_response(session, xform, router):
                 for con in _get_people_to_notify_response(ref):
                     send_msg(con.default_connection, origin_notification, router)
 
-                #Tell the ambulance driver that the Triage Nurse has responded
+                for con in _pick_er_drivers(ref.from_facility):
+                        #At this point we do not know which driver would respond so we
+                        #send to all.
+                        send_msg(con.default_connection,
+                                driver_notification,
+                                router)
 
             else:
                 if not status:
@@ -561,9 +569,17 @@ def emergency_response(session, xform, router):
                 for con in _get_people_to_notify_response(ref):
                     send_msg(con.default_connection, origin_notification, router)
 
-            send_msg(ambulance_request.ambulance_driver.default_connection,
-                    driver_notification,
-                    router)
+
+            ref_type = referral_type(ref)
+            if ref_type == 'facility_to_hospital':
+                #Tell the driver at the destination facility
+                for con in _pick_er_drivers(ref.facility):
+                    send_msg(con.default_connection, driver_notification, router)
+            elif ref_type == 'hospital_to_hospital':
+                #When referral is from hospital to hospital we need the
+                #drivers at the origin facility
+                for con in _pick_er_drivers(ref.from_facility):
+                    send_msg(con.default_connection, driver_notification, router)
 
             #thanks the sender
             return respond_to_session(router, session, thank_message)
@@ -796,6 +812,16 @@ def _pick_er_drivers(facility):
     else:
         raise Exception('No Ambulance Driver type found!')
 
+def referral_type(referral):
+    """should return either facility_to_hospital or hospital_to_hospital or cba_to_facility
+    """
+    contact = referral.session.connection.contact
+    if cba_initiated(contact):
+        return "cba_to_facility"
+    elif is_from_facility(contact):
+        return "facility_to_hospital"
+    elif is_from_hospital(contact):
+        return "hospital_to_hospital"
 
 def _pick_er_triage_nurse(facility):
     tn_type = ContactType.objects.get(slug__iexact='tn')
@@ -849,7 +875,7 @@ def _broadcast_to_ER_users(ambulance_session, session, xform, router, facility=N
         for ambulance_driver in ambulance_drivers:
             # This is just for now before we can properly handle multiple
             # drivers.
-            ambulance_session.ambulance_driver = ambulance_driver
+            #ambulance_session.ambulance_driver = ambulance_driver
             if ambulance_driver.default_connection and ambulance_driver not in excluded:
                 if message:
                     send_msg(ambulance_driver.default_connection,

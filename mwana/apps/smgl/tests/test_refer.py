@@ -618,7 +618,8 @@ class SMGLReferTest(SMGLSetUp):
         success_resp = const.REFERRAL_FACILITY_TO_HOSPITAL_NOTIFICATION % {"name": self.name,
                                                   "unique_id": "1234",
                                                   "facility_name":referral_facility.name,
-                                                  "phone": self.user_number
+                                                  "phone": self.user_number,
+                                                  "reason": ""
                                                   }
         notif = const.REFERRAL_NOTIFICATION % {"unique_id": "1234",
                                                "facility": self.worker.location.name,
