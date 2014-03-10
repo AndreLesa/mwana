@@ -176,12 +176,12 @@ def refer(session, xform, router):
                 amb, session, xform, facility=referral.facility, router=router, message=msg)
 
             #Tell the data clerks that we are on it.
-            data_clerks_and_incharges = Contact.objects.filter(
-                types__slug__in=[const.CTYPE_DATACLERK, const.CTYPE_INCHARGE],
+            data_clerks_workers_and_incharges = Contact.objects.filter(
+                types__slug__in=[const.CTYPE_DATACLERK, const.CTYPE_INCHARGE, const.CTYPE_CLINICWORKER],
                 location=referral.facility,
                 is_active=True)
 
-            for contact in data_clerks_and_incharges:
+            for contact in data_clerks_workers_and_incharges:
                 send_msg(contact.default_connection, const.REFERRAL_NOTIFICATION_OTHER_USERS%{
                     'unique_id': mother_id,
                     'phone': session.connection.identity,
@@ -211,12 +211,12 @@ def refer(session, xform, router):
                 }
                 router.outgoing(OutgoingMessage(con.default_connection, msg))
             #Tell the data clerks that we are on it.
-            data_clerks_and_incharges = Contact.objects.filter(
-                types__slug__in=[const.CTYPE_DATACLERK, const.CTYPE_INCHARGE],
+            data_clerks_workers_and_incharges = Contact.objects.filter(
+                types__slug__in=[const.CTYPE_DATACLERK, const.CTYPE_INCHARGE, const.CTYPE_CLINICWORKER],
                 location=referral.from_facility,
                 is_active=True)
 
-            for contact in data_clerks_and_incharges:
+            for contact in data_clerks_workers_and_incharges:
                 send_msg(contact.default_connection, const.REFERRAL_NOTIFICATION_OTHER_USERS%{
                     'unique_id': mother_id,
                     'phone': session.connection.identity,
