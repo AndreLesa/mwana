@@ -140,7 +140,7 @@ REFERRAL_AMBULANCE_STATUS_TO_REFERRING_HOSPITAL = _(
 REFERRAL_RESPONSE_NOTIFICATION_TO_REFERRING_HOSPITAL = _(
     "Emergency Response for mother with ID %(unique_id)s: You can contact driver at %(phone)s.")
 REF_TRIAGE_NURSE_RESP_NOTIF = _(
-    "Emergency response for mother with ID %(unique_id)s: You can contact the %(title)s at %(phone)s.")
+    "Emergency referral for mother ID %(unique_id)s, %(name)s from your facility has responded.")
 TRIAGE_RESP_NOTIF_STATUS = _(
     "Emergency Response for mother with ID %(unique_id)s: Ambulance is %(status)s. You can contact the %(title)s at %(phone)s.")
 REF_TRIAGE_NURSE_RESP_NOTIF_ORIGIN_STATUS = _(
@@ -153,10 +153,10 @@ REFERRAL_OUTCOME_NOTIFICATION_DEST = _(
     "%(name)s has submitted an outcome for mother %(unique_id)s referred on %(date)s from %(origin)s to your facility.")
 
 PICK_THANKS = _("Thanks for picking mother with ID %(unique_id)s")
-PICK_NOTIFICATION = _("Mother with ID: %(unique_id)s has just been picked by %(name)s on %(phone)s.")
+PICK_NOTIFICATION = _("Mother with ID: %(unique_id)s has just been picked from %(facility)s by %(title)s %(name)s Phone: %(phone)s.")
 
 DROP_THANKS = _("Thanks for dropping mother with ID %(unique_id)s")
-DROP_NOTIFICATION = _("Mother with ID: %(unique_id)s has just been dropped by %(name)s on %(phone)s.")
+DROP_NOTIFICATION = _("Mother with ID: %(unique_id)s has just been dropped at %(facility)s by %(title)s %(name)s Phone: %(phone)s.")
 # death registration
 DEATH_REG_RESPONSE = _(
     "Thanks %(name)s! the Facility/Community death for mother with ID %(unique_id)s has been registered.")

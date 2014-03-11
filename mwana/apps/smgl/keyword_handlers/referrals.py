@@ -515,6 +515,7 @@ def emergency_response(session, xform, router):
                 "unique_id": unique_id,
                 "phone": session.connection.identity,
                 "title": ",".join([contact_type.name for contact_type in contact.types.all()]),
+                "name": contact.name
             }
 
             if status:
@@ -531,6 +532,7 @@ def emergency_response(session, xform, router):
                     "status": ambulance_response.get_response_display(),
                     "phone": session.connection.identity,
                     "title": ",".join([contact_type.name for contact_type in contact.types.all()]),
+                    "name": contact.name
                 }
 
             thank_message = const.RESP_THANKS % {
@@ -634,7 +636,9 @@ def pick(session, xform, router):
     pick_notification = const.PICK_NOTIFICATION % {
         "unique_id":mother_id,
         "name":session.connection.contact.name,
-        "phone":session.connection.identity
+        "phone":session.connection.identity,
+        "facility":referral.from_facility,
+        "title": ",".join([contact_type.name for contact_type in contact.types.all()])
     }
 
     #Notify others
@@ -700,7 +704,9 @@ def drop(session, xform, router):
     drop_notification = const.DROP_NOTIFICATION %{
         "unique_id":mother_id,
         "name":session.connection.contact.name,
-        "phone":session.connection.identity
+        "phone":session.connection.identity,
+        "facility":referral.facility,
+        "title": ",".join([contact_type.name for contact_type in contact.types.all()])
     }
 
     #If the person who sent the referral in is from a hospital, we need to handle

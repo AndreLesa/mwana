@@ -296,7 +296,8 @@ class SMGLReferTest(SMGLSetUp):
         resp_notif =const.REF_TRIAGE_NURSE_RESP_NOTIF%{
                                         "unique_id":self.smh_id,
                                         "phone":self.destination_tn_no,
-                                        "title": "Triage Nurse"
+                                        "title": "Triage Nurse",
+                                        "name": "Anton"
                                         }
         resp_thanks = const.RESP_THANKS %{
                                           "name":self.name,
@@ -323,7 +324,8 @@ class SMGLReferTest(SMGLSetUp):
         resp_notif =const.REF_TRIAGE_NURSE_RESP_NOTIF%{
                                         "unique_id":self.smh_id,
                                         "phone":self.destination_tn_no,
-                                        "title":"Triage Nurse"
+                                        "title":"Triage Nurse",
+                                        "name":"Anton"
                                         }
         resp_thanks = const.RESP_THANKS %{
                                           "name":self.name,
