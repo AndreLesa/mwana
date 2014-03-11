@@ -90,9 +90,9 @@ LOOK_COMPLETE = _("The Mother ID is %(unique_id)s.")
 REFERRAL_RESPONSE = _(
     "Thanks %(name)s! Referral for Mother ID %(unique_id)s to %(facility_name)s is complete!")
 REFERRAL_TO_HOSPITAL_DRIVER = _(
-    "A mother has been referred from %(referring_facility)s to %(referral_facility)s. Make yourself available to transport patient.")
+    "A mother has been referred from %(referring_facility)s to %(referral_facility)s. Kindly make arrangements for emergency transport.")
 REFERRAL_TO_DESTINATION_HOSPITAL_NURSE = _(
-    "Mother with %(unique_id)s needs EmONC and was referred to your Hospital. Reason: %(reason)s, Plz respond to this message with RESP %(unique_id)s.")
+    "Mother with %(unique_id)s is being referred from %(from_facility)s to %(referral_facility)s by %(title)s %(name)s Phone: %(phone)s.")
 REFERRAL_OUTCOME_RESPONSE = _(
     "Thanks %(name)s! Referral outcome for Mother ID %(unique_id)s was received.")
 REFERRAL_OUTCOME_NOTIFICATION = _(
@@ -119,8 +119,10 @@ REFERRAL_RESPONSE_NOTIFICATION_OTHER_USERS = _(
     "%(user_type)s %(name)s has responded to Referral for mother with ID:%(unique_id)s.")
 REFERRAL_RESPONSE_NOTIFICATION_OTHER_USERS_STATUS = _(
     "%(user_type)s %(name)s has responded with status: (%(status)s) to Referral for mother with ID:%(unique_id)s.")
+
 REFERRAL_NOTIFICATION_OTHER_USERS = _(
-    "Mother with ID: %(unique_id)s needs EmONC. Reason: %(reason)s, Contact: %(phone)s.")
+    "Mother with ID: %(unique_id)s is being referred from %(origin_facility)s to %(dest_facility)s by %(name)s, %(title)s Phone: %(phone)s.")
+
 REFERRAL_FACILITY_TO_HOSPITAL_NOTIFICATION = _(
     "Mother with ID: %(unique_id)s needs ER. Location: %(facility_name)s, Reason: %(reason)s, Contact num: %(phone)s Plz SEND 'RESP %(unique_id)s OTW, DL or NA'")
 REFERRAL_NOTIFICATION = _(
@@ -131,8 +133,6 @@ RESP_THANKS_AMB_DRIVER = _(
     "Your response was well received. Please prepare to transport mother with ID %(unique_id)s.")
 RESP_CBA_UPDATE = _(
     "A health worker has responded to your referral and is waiting for the mother at the facility.")
-RESP_NOTIF = _(
-    "Emergency Response for mother with ID %(unique_id)s:  You can contact driver at %(phone)s.")
 AMB_RESP_STATUS = _(
     "Ambulance Response for mother with ID %(unique_id)s: Ambulance is %(status)s You can contact driver at %(phone)s.")
 REFERRAL_AMBULANCE_STATUS_TO_REFERRING_HOSPITAL = _(
@@ -147,7 +147,7 @@ REF_TRIAGE_NURSE_RESP_NOTIF_ORIGIN_STATUS = _(
     "Your referral for mother with ID %(unique_id)s was received. Ambulance is %(status)s. You can contact %(title)s at %(phone)s.")
 
 REF_TRIAGE_NURSE_RESP_NOTIF_ORIGIN = _(
-    "Your referral for mother with ID %(unique_id)s was received. You can contact %(title)s at %(phone)s.")
+    "Emergency response for mother ID %(unique_id)s. %(facility)s is awaiting patient. You can contact %(title)s at %(phone)s.")
 
 REFERRAL_OUTCOME_NOTIFICATION_DEST = _(
     "%(name)s has submitted an outcome for mother %(unique_id)s referred on %(date)s from %(origin)s to your facility.")

@@ -253,7 +253,12 @@ class SMGLReferTest(SMGLSetUp):
                                                   "facility_name":self.destination_facility_tn.location.name}
         dest_nurse_notif = const.REFERRAL_TO_DESTINATION_HOSPITAL_NURSE  %{
             "unique_id":self.smh_id,
-            "reason":"High Blood Pressure" }
+            "reason":"High Blood Pressure",
+            "from_facility":"Zimba Mission Hospital HAHC",
+            "referral_facility": "Kalomo District Hospital HAHC",
+            "name":"Anton",
+            "title": "Triage Nurse",
+            "phone": "3412"}
         amb_status_notif = const.REFERRAL_AMBULANCE_STATUS_TO_REFERRING_HOSPITAL %{ 'unique_id':self.smh_id,
                                                                                                  'status':amb_status,
                                                                                                  'phone':initiator_facility_driver.default_connection.identity}
@@ -408,7 +413,9 @@ class SMGLReferTest(SMGLSetUp):
                                                   "facility_name":dest_facility.name}
         notif = const.REFERRAL_FACILITY_TO_HOSPITAL_NOTIFICATION % {"unique_id": "1234",
                                                "facility_name": referring_facility.name,
-                                               "phone":self.dc_no
+                                               "phone":self.dc_no,
+                                               "reason": "HBP",
+
                                                 }
         script = """
             %(num)s > refer 1234 %(facility_slug)s hbp 1200
