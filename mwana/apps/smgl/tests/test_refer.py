@@ -254,7 +254,7 @@ class SMGLReferTest(SMGLSetUp):
         dest_nurse_notif = const.REFERRAL_TO_DESTINATION_HOSPITAL_NURSE  %{
             "unique_id":self.smh_id,
             "reason":"High Blood Pressure",
-            "from_facility":"Zimba Mission Hospital HAHC",
+            "facility_name":"Zimba Mission Hospital HAHC",
             "referral_facility": "Kalomo District Hospital HAHC",
             "name":"Anton",
             "title": "Triage Nurse",

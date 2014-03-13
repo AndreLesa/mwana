@@ -181,17 +181,18 @@ def refer(session, xform, router):
                 location=referral.facility,
                 is_active=True)
 
-            for contact in data_clerks_workers_and_incharges:
-                send_msg(contact.default_connection, const.REFERRAL_NOTIFICATION_OTHER_USERS%{
-                    'unique_id': mother_id,
-                    'phone': session.connection.identity,
+            for con in data_clerks_workers_and_incharges:
+                if con != contact:
+                    send_msg(con.default_connection, const.REFERRAL_NOTIFICATION_OTHER_USERS%{
+                        'unique_id': mother_id,
+                        'phone': session.connection.identity,
 
-                    'reason': " ".join(reason for reason in referral.get_reasons()),
-                    "origin_facility": referral.from_facility,
-                    "dest_facility": referral.facility,
-                    "name":contact.name,
-                    "title": ",".join([contact_type.name for contact_type in contact.types.all()]),
-                    }, router)
+                        'reason': " ".join(reason for reason in referral.get_reasons()),
+                        "origin_facility": referral.from_facility,
+                        "dest_facility": referral.facility,
+                        "name":con.name,
+                        "title": ",".join([contact_type.name for contact_type in contact.types.all()]),
+                        }, router)
 
             # Respond that we're on it.
             referral_response = const.REFERRAL_RESPONSE % {
@@ -200,23 +201,29 @@ def refer(session, xform, router):
                 "facility_name": referral.facility.name
             }
             return respond_to_session(router, session, referral_response)
+
         elif is_from_hospital(session.connection.contact):
             # If this case we request the ambulance driver + Triage Nurse at
             # the VERY facility
             message = const.REFERRAL_TO_HOSPITAL_DRIVER % {
                 "referral_facility": referral.facility,
                 "referring_facility": referral.from_facility}
+
+            driver_amb_msg = const.DRIVER_NOTIFICATION% {
+                'unique_id': mother_id,
+                'phone': session.connection.identity,
+                'facility_name': referral.from_facility.name,
+                'reason': " ".join(reason for reason in referral.get_reasons())}
+
             _broadcast_to_ER_users(
-                amb, session, xform, facility=referral.from_facility, router=router, message=message)
+                amb, session, xform, facility=referral.from_facility, router=router, message=driver_amb_msg)
             # notify triage nurse at receiving facility
             for con in _get_people_to_notify_hospital(referral):
                 msg = const.REFERRAL_TO_DESTINATION_HOSPITAL_NURSE % {
                     "unique_id": referral.mother_uid,
                     'reason': " ".join(reason for reason in referral.get_reasons()),
-                    'from_facility':referral.from_facility,
-                    'referral_facility':referral.facility,
+                    'facility_name':referral.from_facility,
                     'name':contact.name,
-                    "title": ",".join([contact_type.name for contact_type in contact.types.all()]),
                     'phone':contact.default_connection.identity
 
                 }
@@ -227,15 +234,16 @@ def refer(session, xform, router):
                 location=referral.from_facility,
                 is_active=True)
 
-            for contact in data_clerks_workers_and_incharges:
-                send_msg(contact.default_connection, const.REFERRAL_NOTIFICATION_OTHER_USERS%{
-                    'unique_id': mother_id,
-                    'phone': session.connection.identity,
-                    "origin_facility": referral.from_facility,
-                    "dest_facility": referral.facility,
-                    "name":contact.name,
-                    "title": ",".join([contact_type.name for contact_type in contact.types.all()]),
-                    }, router)
+            for con in data_clerks_workers_and_incharges:
+                if con != contact:
+                    send_msg(con.default_connection, const.REFERRAL_NOTIFICATION_OTHER_USERS%{
+                        'unique_id': mother_id,
+                        'phone': session.connection.identity,
+                        "origin_facility": referral.from_facility,
+                        "dest_facility": referral.facility,
+                        "name":contact.name,
+                        "title": ",".join([contact_type.name for contact_type in contact.types.all()]),
+                        }, router)
 
 
             # respond to the sender
@@ -519,14 +527,14 @@ def emergency_response(session, xform, router):
                 #thanks the sender
                 return respond_to_session(router, session, thank_message)
         else:
-
-            origin_notification = const.REF_TRIAGE_NURSE_RESP_NOTIF_ORIGIN %{
+            origin_notification = driver_notification =  const.REF_TRIAGE_NURSE_RESP_NOTIF_ORIGIN %{
                 "unique_id":unique_id,
                 "phone":session.connection.identity,
                 "facility":ref.facility,
                 "title": ",".join([contact_type.name for contact_type in contact.types.all()]),
             }
-            driver_notification = dest_notification = const.REF_TRIAGE_NURSE_RESP_NOTIF % {
+
+            dest_notification = const.REF_TRIAGE_NURSE_RESP_NOTIF % {
                 "unique_id": unique_id,
                 "phone": session.connection.identity,
                 "title": ",".join([contact_type.name for contact_type in contact.types.all()]),
@@ -535,7 +543,7 @@ def emergency_response(session, xform, router):
 
             if status:
                 #If the sender added the status
-                origin_notification = const.REF_TRIAGE_NURSE_RESP_NOTIF_ORIGIN_STATUS %{
+                origin_notification =  const.REF_TRIAGE_NURSE_RESP_NOTIF_ORIGIN_STATUS %{
                     "unique_id": unique_id,
                     "phone": session.connection.identity,
                     "title": ",".join([contact_type.name for contact_type in contact.types.all()]),
@@ -564,13 +572,6 @@ def emergency_response(session, xform, router):
                 # notify people at origin
                 for con in _get_people_to_notify_response(ref):
                     send_msg(con.default_connection, origin_notification, router)
-
-                for con in _pick_er_drivers(ref.from_facility):
-                        #At this point we do not know which driver would respond so we
-                        #send to all.
-                        send_msg(con.default_connection,
-                                driver_notification,
-                                router)
 
             else:
                 if not status:
@@ -758,7 +759,9 @@ def _get_people_to_notify_hospital(referral):
     # for Hospital to Hospital referrals
     # So basically people at the receiving facility.
     types = ContactType.objects.filter(
-        slug__in=[const.CTYPE_TRIAGENURSE, const.CTYPE_INCHARGE]
+        slug__in=[const.CTYPE_TRIAGENURSE, const.CTYPE_INCHARGE,
+                  const.CTYPE_CLINICWORKER, const.CTYPE_DATACLERK
+            ]
     ).all()
     return Contact.objects.filter(types__in=types,
                                   location=referral.facility,
