@@ -190,7 +190,7 @@ def refer(session, xform, router):
                         'reason': " ".join(reason for reason in referral.get_reasons()),
                         "origin_facility": referral.from_facility,
                         "dest_facility": referral.facility,
-                        "name":con.name,
+                        "name":contact.name,
                         "title": ",".join([contact_type.name for contact_type in contact.types.all()]),
                         }, router)
 
