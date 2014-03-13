@@ -777,7 +777,7 @@ def _get_people_to_notify(referral, excluded=None):
     ).all()
 
     if excluded:
-        types = types.exclude(slug__in=types)
+        types = types.exclude(slug__in=excluded)
 
     loc_parent = referral.from_facility.parent if referral.from_facility else None
     facility_lookup = referral.facility or loc_parent

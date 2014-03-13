@@ -575,11 +575,10 @@ def send_resp_reminders_20_mins(router_obj=None):
         found_someone = False
         people_to_notify = []
         if cba_initiated(referral.session.connection.contact):
-            for person in _get_people_to_notify(referral, excluded=const.CTYPE_INCHARGE):
+            for person in _get_people_to_notify(referral, excluded=[const.CTYPE_INCHARGE]):
                 people_to_notify.append(person)
-
         elif is_from_facility(referral.session.connection.contact):
-            for person in _get_people_to_notify(referral, excluded=const.CTYPE_INCHARGE):
+            for person in _get_people_to_notify(referral, excluded=[const.CTYPE_INCHARGE]):
                 people_to_notify.append(person)
             for person in _pick_er_drivers(referral.facility):
                 people_to_notify.append(person)
