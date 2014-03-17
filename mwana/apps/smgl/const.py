@@ -109,9 +109,9 @@ AMB_OUTCOME_NO_OUTCOME = _(
     "Please submit outcome SMS (REFOUT) for mother with ID %(unique_id)s referred on %(date)s from %(from_facility)s.")
 REFERRAL_CBA_THANKS = _(
     "Thanks %(name)s. A health worker at %(facility_name)s has been alerted.")
-REFERRAL_CBA_NOTIFICATION_CLINIC_WORKER = _(
-    "Mother with ID: %(unique_id)s from %(village)s needs EmONC. Contact: %(phone)s. Plz send 'RESP %(unique_id)s'.")
 REFERRAL_CBA_NOTIFICATION = _(
+    "Mother with ID: %(unique_id)s from %(village)s needs EmONC. Contact: %(name)s on %(phone)s. Plz send 'RESP %(unique_id)s'.")
+REFERRAL_CBA_NOTIFICATION_WITHOUT_REQUEST= _(
     "Mother with ID: %(unique_id)s from %(village)s needs EmONC. Contact: %(phone)s.")
 REFERRAL_RESPONSE_NOTIFICATION_OTHER_USERS = _(
     "%(user_type)s %(name)s has responded to Referral for mother with ID:%(unique_id)s.")

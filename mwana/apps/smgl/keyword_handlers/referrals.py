@@ -69,20 +69,21 @@ def refer(session, xform, router):
             (referring_loc.name, referring_loc.parent.name)
         for con in _get_people_to_notify(referral):
             if con.default_connection:
-
-                if con.types.all() in [const.CTYPE_CLINICWORKER]:
+                if con.types.all() in [const.CTYPE_DATACLERK]:
                     # Data Clerks and facility in charges should not be asked
                     # to send the resp
-                    msg = const.REFERRAL_CBA_NOTIFICATION_CLINIC_WORKER % {
+                    msg = const.REFERRAL_CBA_NOTIFICATION_WITHOUT_REQUEST % {
                         "unique_id": mother_id,
                         "village": referring_loc.name,
                         "phone": session.connection.identity,
+                        "name": contact.name
                     }
                 else:
                     msg = const.REFERRAL_CBA_NOTIFICATION % {
                         "unique_id": mother_id,
                         "village": referring_loc.name,
                         "phone": session.connection.identity,
+                        "name":contact.name
                     }
                 router.outgoing(OutgoingMessage(con.default_connection, msg))
         # respond to the sending CBA
