@@ -112,7 +112,7 @@ REFERRAL_CBA_THANKS = _(
 REFERRAL_CBA_NOTIFICATION = _(
     "Mother with ID: %(unique_id)s from %(village)s needs EmONC. Contact: %(name)s on %(phone)s. Plz send 'RESP %(unique_id)s'.")
 REFERRAL_CBA_NOTIFICATION_WITHOUT_REQUEST= _(
-    "Mother with ID: %(unique_id)s from %(village)s needs EmONC. Contact: %(phone)s.")
+    "Mother with ID: %(unique_id)s from %(village)s needs EmONC. Contact: %(name)s on %(phone)s.")
 REFERRAL_RESPONSE_NOTIFICATION_OTHER_USERS = _(
     "%(user_type)s %(name)s has responded to Referral for mother with ID:%(unique_id)s.")
 REFERRAL_RESPONSE_NOTIFICATION_OTHER_USERS_STATUS = _(
@@ -122,13 +122,20 @@ REFERRAL_NOTIFICATION_OTHER_USERS = _(
     "Mother with ID: %(unique_id)s is being referred from %(origin_facility)s to %(dest_facility)s by %(name)s, %(title)s Phone: %(phone)s.")
 
 REFERRAL_FACILITY_TO_HOSPITAL_NOTIFICATION = _(
-    "Mother with ID: %(unique_id)s needs ER. Location: %(facility_name)s, Reason: %(reason)s, Contact num: %(phone)s Plz SEND 'RESP %(unique_id)s OTW, DL or NA'")
+    "Mother with ID: %(unique_id)s needs ER. Location: %(facility_name)s, Reason: %(reason)s, Contact %(title)s, %(name)s Phone: %(phone)s. Plz SEND 'RESP %(unique_id)s OTW, DL or NA'")
+
+REFERRAL_FACILITY_TO_HOSPITAL_NOTIFICATION_WITHOUT_REQUEST = _(
+    "Mother with ID: %(unique_id)s needs ER. Location: %(facility_name)s, Reason: %(reason)s, Contact %(title)s, %(name)s Phone: %(phone)s.")
+
 
 DRIVER_NOTIFICATION = _(
     "Mother with ID: %(unique_id)s needs ER. Location: %(facility_name)s, Reason: %(reason)s, Contact num: %(phone)s Plz SEND 'RESP %(unique_id)s OTW, DL or NA'")
 
-REFERRAL_TO_DESTINATION_HOSPITAL_NURSE = _(
-    "Mother with ID: %(unique_id)s needs ER. Location: %(facility_name)s, Reason: %(reason)s, Contact num: %(phone)s Plz SEND 'RESP %(unique_id)s'")
+REFERRAL_TO_DESTINATION_HOSPITAL = _(
+    "Mother with ID: %(unique_id)s needs ER. Location: %(facility_name)s, Reason: %(reason)s, Contact %(title)s, %(name)s Phone: %(phone)s. Plz SEND 'RESP %(unique_id)s'")
+
+REFERRAL_TO_DESTINATION_HOSPITAL_WITHOUT_REQUEST = _(
+    "Mother with ID: %(unique_id)s needs ER. Location: %(facility_name)s, Reason: %(reason)s, Contact %(title)s, %(name)s Phone: %(phone)s.")
 
 
 REFERRAL_NOTIFICATION = _(

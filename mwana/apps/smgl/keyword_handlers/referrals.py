@@ -184,16 +184,26 @@ def refer(session, xform, router):
 
             for con in data_clerks_workers_and_incharges:
                 if con != contact:
-                    send_msg(con.default_connection, const.REFERRAL_NOTIFICATION_OTHER_USERS%{
-                        'unique_id': mother_id,
-                        'phone': session.connection.identity,
+                    if con.types.all() in [const.CTYPE_DATACLERK]:
+                        #For the data clerk, no need to respond
+                        send_msg(con.default_connection, const.REFERRAL_FACILITY_TO_HOSPITAL_NOTIFICATION%{
+                            'unique_id': mother_id,
+                            'phone': session.connection.identity,
+                            'reason': " ".join(reason for reason in referral.get_reasons()),
+                            "facility_name": referral.from_facility,
+                            "name":contact.name,
+                            "title": ",".join([contact_type.name for contact_type in contact.types.all()]),
+                            }, router)
 
-                        'reason': " ".join(reason for reason in referral.get_reasons()),
-                        "origin_facility": referral.from_facility,
-                        "dest_facility": referral.facility,
-                        "name":contact.name,
-                        "title": ",".join([contact_type.name for contact_type in contact.types.all()]),
-                        }, router)
+                    else:
+                        send_msg(con.default_connection, const.REFERRAL_FACILITY_TO_HOSPITAL_NOTIFICATION%{
+                            'unique_id': mother_id,
+                            'phone': session.connection.identity,
+                            'reason': " ".join(reason for reason in referral.get_reasons()),
+                            "facility_name": referral.from_facility,
+                            "name":contact.name,
+                            "title": ",".join([contact_type.name for contact_type in contact.types.all()]),
+                            }, router)
 
             # Respond that we're on it.
             referral_response = const.REFERRAL_RESPONSE % {
@@ -216,18 +226,29 @@ def refer(session, xform, router):
                 'facility_name': referral.from_facility.name,
                 'reason': " ".join(reason for reason in referral.get_reasons())}
 
+            #Send to the drivers and other ER users without sending to the person who sent it in.
             _broadcast_to_ER_users(
-                amb, session, xform, facility=referral.from_facility, router=router, message=driver_amb_msg)
+                amb, session, xform, facility=referral.from_facility, router=router, message=driver_amb_msg, excluded=[contact])
             # notify triage nurse at receiving facility
             for con in _get_people_to_notify_hospital(referral):
-                msg = const.REFERRAL_TO_DESTINATION_HOSPITAL_NURSE % {
-                    "unique_id": referral.mother_uid,
-                    'reason': " ".join(reason for reason in referral.get_reasons()),
-                    'facility_name':referral.from_facility,
-                    'name':contact.name,
-                    'phone':contact.default_connection.identity
-
-                }
+                if con.types.all() in [const.CTYPE_DATACLERK]:
+                    msg = const.REFERRAL_TO_DESTINATION_HOSPITAL_WITHOUT_REQUEST % {
+                        "unique_id": referral.mother_uid,
+                        'reason': " ".join(reason for reason in referral.get_reasons()),
+                        'facility_name':referral.from_facility,
+                        'name':contact.name,
+                        'phone':contact.default_connection.identity,
+                        "title": ",".join([contact_type.name for contact_type in contact.types.all()]),
+                    }
+                else:
+                    msg = const.REFERRAL_TO_DESTINATION_HOSPITAL % {
+                        "unique_id": referral.mother_uid,
+                        'reason': " ".join(reason for reason in referral.get_reasons()),
+                        'facility_name':referral.from_facility,
+                        'name':contact.name,
+                        'phone':contact.default_connection.identity,
+                        "title": ",".join([contact_type.name for contact_type in contact.types.all()]),
+                    }
                 router.outgoing(OutgoingMessage(con.default_connection, msg))
             #Tell the data clerks that we are on it.
             data_clerks_workers_and_incharges = Contact.objects.filter(
@@ -551,7 +572,7 @@ def emergency_response(session, xform, router):
                     "status": ambulance_response.get_response_display()
                 }
 
-                dest_notification = driver_notification = const.TRIAGE_RESP_NOTIF_STATUS%{
+                driver_notification = const.TRIAGE_RESP_NOTIF_STATUS%{
                     "unique_id": unique_id,
                     "status": ambulance_response.get_response_display(),
                     "phone": session.connection.identity,
@@ -570,6 +591,7 @@ def emergency_response(session, xform, router):
                     # do not send to originator
                     if con != contact:
                         send_msg(con.default_connection, dest_notification, router)
+
                 # notify people at origin
                 for con in _get_people_to_notify_response(ref):
                     send_msg(con.default_connection, origin_notification, router)
