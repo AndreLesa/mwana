@@ -178,7 +178,6 @@ def refer(session, xform, router):
                 }
             _broadcast_to_ER_users(
                 amb, session, xform, facility=referral.facility, router=router, message=msg)
-
             #Tell the data clerks that we are on it.
             data_clerks_workers_and_incharges = Contact.objects.filter(
                 types__slug__in=[const.CTYPE_DATACLERK, const.CTYPE_INCHARGE, const.CTYPE_CLINICWORKER],
@@ -189,7 +188,7 @@ def refer(session, xform, router):
                 if con != contact:
                     if const.CTYPE_DATACLERK in con.types.values_list('slug', flat=True):
                         #For the data clerk, no need to respond
-                        send_msg(con.default_connection, const.REFERRAL_FACILITY_TO_HOSPITAL_NOTIFICATION%{
+                        send_msg(con.default_connection, const.REFERRAL_FACILITY_TO_HOSPITAL_NOTIFICATION_WITHOUT_REQUEST%{
                             'unique_id': mother_id,
                             'phone': session.connection.identity,
                             'reason': " ".join(reason for reason in referral.get_reasons()),
