@@ -61,7 +61,9 @@ class SMGLReferTest(SMGLSetUp):
         notif = const.REFERRAL_FACILITY_TO_HOSPITAL_NOTIFICATION % {"unique_id": "1234",
                                                "facility_name": self.worker.location.name,
                                                "phone":self.user_number,
-                                               "reason":"High Blood Pressure"
+                                               "reason":"High Blood Pressure",
+                                               "title": ",".join([contact_type.name for contact_type in self.worker.types.all()]),
+                                               "name": "Anton"
                                                 }
         script = """
             %(num)s > refer 1234 %(facility_slug)s hbp 1200
@@ -183,7 +185,8 @@ class SMGLReferTest(SMGLSetUp):
         notif = const.REFERRAL_CBA_NOTIFICATION % {"unique_id": "1234",
                                                "village": self.cba.location.name,
                                                "phone":self.cba_number,
-                                               "reason":"Not Specified"}
+                                               "reason":"Not Specified",
+                                               "name": "Anton"}
 
         #Register another health worker
         self.other_worker = self.createUser("worker", "777222")
@@ -211,7 +214,8 @@ class SMGLReferTest(SMGLSetUp):
         notif = const.REFERRAL_CBA_NOTIFICATION % {"unique_id": "1234",
                                                "village": self.cba.location.name,
                                                "phone":self.cba_number,
-                                               "reason":"High Blood Pressure"}
+                                               "reason":"High Blood Pressure",
+                                               "name": "Anton"}
 
         #Register another health worker
         self.other_worker = self.createUser("worker", "777222")
@@ -242,16 +246,19 @@ class SMGLReferTest(SMGLSetUp):
         initiator_facility = "804031" #Zimba Mission Hospital HAHC
         initiator_facility_driver = self.createUser("AM", self.initiator_driver_no, location=initiator_facility)
         incharge = self.createUser("incharge", "1300", location=initiator_facility)
+
         #test that clinic workers get response
         initiator_clinic_worker = self.createUser("worker", "3000", location=initiator_facility)
         self.initiator_facility_tn = self.createUser("TN", self.initiator_tn_no, location=initiator_facility)
         destination_facility = "804030" #Kalomo Mission Hospital HAHC
         self.destination_facility_tn = self.createUser("TN", self.destination_tn_no, location=destination_facility)
+        another_dc = self.createUser(const.CTYPE_DATACLERK, "900", location=destination_facility)
+
         amb_status = "OTW"
         server_resp = const.REFERRAL_RESPONSE % {"name": self.name,
                                                   "unique_id": self.smh_id,
                                                   "facility_name":self.destination_facility_tn.location.name}
-        dest_nurse_notif = const.REFERRAL_TO_DESTINATION_HOSPITAL_NURSE  %{
+        dest_nurse_notif = const.REFERRAL_TO_DESTINATION_HOSPITAL  %{
             "unique_id":self.smh_id,
             "reason":"High Blood Pressure",
             "facility_name":"Zimba Mission Hospital HAHC",
@@ -415,6 +422,8 @@ class SMGLReferTest(SMGLSetUp):
                                                "facility_name": referring_facility.name,
                                                "phone":self.dc_no,
                                                "reason": "HBP",
+                                               "title": 'Data Clerk',
+                                               "name": "Anton"
 
                                                 }
         script = """

@@ -69,7 +69,7 @@ def refer(session, xform, router):
             (referring_loc.name, referring_loc.parent.name)
         for con in _get_people_to_notify(referral):
             if con.default_connection:
-                if con.types.all() in [const.CTYPE_DATACLERK]:
+                if const.CTYPE_DATACLERK in con.types.values_list('slug', flat=True):
                     # Data Clerks and facility in charges should not be asked
                     # to send the resp
                     msg = const.REFERRAL_CBA_NOTIFICATION_WITHOUT_REQUEST % {
@@ -172,7 +172,10 @@ def refer(session, xform, router):
                 'unique_id': mother_id,
                 'phone': session.connection.identity,
                 'facility_name': referral.from_facility.name,
-                'reason': " ".join(reason for reason in referral.get_reasons())}
+                'reason': " ".join(reason for reason in referral.get_reasons()),
+                "title": ",".join([contact_type.name for contact_type in contact.types.all()]),
+                "name":contact.name
+                }
             _broadcast_to_ER_users(
                 amb, session, xform, facility=referral.facility, router=router, message=msg)
 
@@ -184,7 +187,7 @@ def refer(session, xform, router):
 
             for con in data_clerks_workers_and_incharges:
                 if con != contact:
-                    if con.types.all() in [const.CTYPE_DATACLERK]:
+                    if const.CTYPE_DATACLERK in con.types.values_list('slug', flat=True):
                         #For the data clerk, no need to respond
                         send_msg(con.default_connection, const.REFERRAL_FACILITY_TO_HOSPITAL_NOTIFICATION%{
                             'unique_id': mother_id,
@@ -226,12 +229,13 @@ def refer(session, xform, router):
                 'facility_name': referral.from_facility.name,
                 'reason': " ".join(reason for reason in referral.get_reasons())}
 
+
             #Send to the drivers and other ER users without sending to the person who sent it in.
             _broadcast_to_ER_users(
                 amb, session, xform, facility=referral.from_facility, router=router, message=driver_amb_msg, excluded=[contact])
             # notify triage nurse at receiving facility
             for con in _get_people_to_notify_hospital(referral):
-                if con.types.all() in [const.CTYPE_DATACLERK]:
+                if const.CTYPE_DATACLERK in con.types.values_list('slug', flat=True):
                     msg = const.REFERRAL_TO_DESTINATION_HOSPITAL_WITHOUT_REQUEST % {
                         "unique_id": referral.mother_uid,
                         'reason': " ".join(reason for reason in referral.get_reasons()),
@@ -258,6 +262,7 @@ def refer(session, xform, router):
 
             for con in data_clerks_workers_and_incharges:
                 if con != contact:
+
                     send_msg(con.default_connection, const.REFERRAL_NOTIFICATION_OTHER_USERS%{
                         'unique_id': mother_id,
                         'phone': session.connection.identity,
