@@ -109,6 +109,7 @@ def send_non_emergency_referral_reminders(router_obj=None):
 
 
 def send_emergency_referral_reminders(router_obj=None):
+    return False
     """
     Reminder to collect outcomes for emergency referrals.
 
@@ -445,6 +446,7 @@ def reactivate_user(router_obj=None):
 
 
 def send_syphillis_reminders(router_obj=None):
+    return False
     """
     Next visit date from SyphilisTreatment should
     be used to generate reminder for the next appointment.
