@@ -145,9 +145,12 @@ RESP_THANKS = _(
 RESP_THANKS_AMB_DRIVER = _(
     "Your response was well received. Please prepare to transport mother with ID %(unique_id)s.")
 RESP_CBA_UPDATE = _(
-    "A health worker has responded to your referral and is waiting for the mother at the facility.")
+    "A health worker has responded to your referral and is waiting for the mother at the facility. You can contact %(responder_name)s at %(phone)s.")
 AMB_RESP_STATUS = _(
-    "Ambulance Response for mother with ID %(unique_id)s: Ambulance is %(status)s You can contact driver at %(phone)s.")
+    "Ambulance Response for mother with ID %(unique_id)s: Ambulance is %(status)s to %(facility)s You can contact %(name)s at %(phone)s.")
+AMB_RESP_STATUS_HOSP = _(
+    "Ambulance Response for mother with ID %(unique_id)s: Ambulance is %(status)s from %(facility)s You can contact %(name)s at %(phone)s.")
+
 REFERRAL_AMBULANCE_STATUS_TO_REFERRING_HOSPITAL = _(
     "Ambulance Response for mother with ID %(unique_id)s: You can contact driver at %(phone)s.")
 REFERRAL_RESPONSE_NOTIFICATION_TO_REFERRING_HOSPITAL = _(

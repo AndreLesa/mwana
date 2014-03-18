@@ -416,8 +416,12 @@ def emergency_response(session, xform, router):
     ref.save()
     if cba_initiated(ref.session.connection.contact):
         # Tell the initiating CBA that a RESP has been received.
+        resp_update  = const.RESP_CBA_UPDATE%{
+            "phone": contact.default_connection.identity,
+            "responder_name": contact.name
+        }
         send_msg(ref.session.connection,
-                 const.RESP_CBA_UPDATE,
+                 resp_update,
                  router, **session.template_vars)
 
         # Let everyone know that this resp has been handled
@@ -500,33 +504,45 @@ def emergency_response(session, xform, router):
                 RESP_MISSING_STATUS = "Your message is missing the STATUS"
                 return respond_to_session(router, session, RESP_MISSING_STATUS, is_error=True, **{'unique_id': unique_id})
             else:
-                resp = const.AMB_RESP_STATUS % {
+                facility_to_hosp = const.AMB_RESP_STATUS % {
                     "unique_id": unique_id,
                     "status": ambulance_response.get_response_display(),
-                    "phone": session.connection.identity}
+                    "phone": session.connection.identity,
+                    "facility": ref.from_facility,
+                    "name":contact.name
+                    }
+
+                hosp_to_hosp = const.AMB_RESP_STATUS_HOSP % {
+                    "unique_id": unique_id,
+                    "status": ambulance_response.get_response_display(),
+                    "phone": session.connection.identity,
+                    "facility": ref.facility,
+                    "name":contact.name
+                }
+
                 thank_message = const.RESP_THANKS_AMB_DRIVER % {
                     "unique_id": unique_id,
-                    "name": contact.name
+                    "name": contact.name,
                 }
                 if is_from_hospital(ref.session.connection.contact):
                     # Let everyone know that it has been handled
                     for con in _get_people_to_notify_hospital(ref):
                         # do not send to responder
                         if con != contact:
-                            send_msg(con.default_connection, resp, router)
+                            send_msg(con.default_connection, hosp_to_hosp, router)
 
                     # notify people at origin
                     for con in _get_people_to_notify_response(ref):
                         if con != contact:
-                            send_msg(con.default_connection, resp, router)
+                            send_msg(con.default_connection, hosp_to_hosp, router)
                 else:
                     # Notify people at destination
                     for con in _get_people_to_notify(ref):
                         if con != contact:
-                            send_msg(con.default_connection, resp, router)
+                            send_msg(con.default_connection, facility_to_hosp, router)
                     # notify people at origin
                     for con in _get_people_to_notify_response(ref):
-                        send_msg(con.default_connection, resp, router)
+                        send_msg(con.default_connection, facility_to_hosp, router)
 
                 ref_type = referral_type(ref)
                 if ref_type == 'facility_to_hospital':
