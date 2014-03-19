@@ -680,20 +680,7 @@ def send_no_outcome_reminder(router_obj=None):
     for referral in referrals_to_remind:
         found_someone = False
         if not referral.re_referral:
-            people_to_notify = []
-            if cba_initiated(referral.session.connection.contact):
-                for person in _get_people_to_notify(ref):
-                    people_to_notify.append(person)
-            elif is_from_facility(referral.session.connection.contact):
-                for person in _pick_er_drivers(referral.facility):
-                    people_to_notify.append(person)
-                for person in [_pick_er_triage_nurse(referral.facility)]:
-                    people_to_notify.append(person)
-            elif is_from_hospital(referral.session.connection.contact):
-                for person in [_pick_er_triage_nurse(referral.facility)]:
-                    people_to_notify.append(person)
-
-            for person in people_to_notify:
+            for person in _get_people_to_notify(referral):
                 if person.default_connection:
                     found_someone = True
                     person.message(const.AMB_OUTCOME_NO_OUTCOME,
