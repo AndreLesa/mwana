@@ -115,8 +115,13 @@ REFERRAL_CBA_NOTIFICATION_WITHOUT_REQUEST= _(
     "Mother with ID: %(unique_id)s from %(village)s needs EmONC. Contact: %(name)s at %(phone)s.")
 REFERRAL_RESPONSE_NOTIFICATION_OTHER_USERS = _(
     "%(user_type)s %(name)s has responded to Referral for mother with ID:%(unique_id)s.")
+
 REFERRAL_RESPONSE_NOTIFICATION_OTHER_USERS_STATUS = _(
-    "%(user_type)s %(name)s has responded with status: (%(status)s) to Referral for mother with ID:%(unique_id)s.")
+    "%(user_type)s %(name)s has responded with status: (%(status)s) to %(facility)s for Referral with mother ID:%(unique_id)s.")
+
+REFERRAL_RESPONSE_NOTIFICATION_OTHER_USERS_STATUS_HOSP_TO_HOSP = _(
+    "%(user_type)s %(name)s has responded with status: (%(status)s) from %(facility)s for Referral with mother ID:%(unique_id)s.")
+
 
 REFERRAL_NOTIFICATION_OTHER_USERS = _(
     "Mother with ID: %(unique_id)s is being referred from %(origin_facility)s to %(dest_facility)s by %(name)s, %(title)s Phone: %(phone)s.")
@@ -158,12 +163,12 @@ REFERRAL_RESPONSE_NOTIFICATION_TO_REFERRING_HOSPITAL = _(
 REF_TRIAGE_NURSE_RESP_NOTIF = _(
     "Emergency referral for mother ID %(unique_id)s, %(name)s from your facility has responded.")
 TRIAGE_RESP_NOTIF_STATUS = _(
-    "Emergency Response for mother with ID %(unique_id)s: Ambulance is %(status)s. You can contact the %(title)s at %(phone)s.")
+    "Emergency Response for mother with ID %(unique_id)s: Ambulance is %(status)s. You can contact %(title)s %(name)s at %(phone)s.")
 REF_TRIAGE_NURSE_RESP_NOTIF_ORIGIN_STATUS = _(
-    "Your referral for mother with ID %(unique_id)s was received. Ambulance is %(status)s. You can contact %(title)s at %(phone)s.")
+    "Your referral for mother with ID %(unique_id)s was received. Ambulance is %(status)s. You can contact %(title)s %(name)s at %(phone)s.")
 
 REF_TRIAGE_NURSE_RESP_NOTIF_ORIGIN = _(
-    "Emergency response for mother ID %(unique_id)s. %(facility)s is awaiting patient. You can contact %(title)s at %(phone)s.")
+    "Emergency response for mother ID %(unique_id)s. %(facility)s is awaiting patient. You can contact %(title)s %(name)s at %(phone)s.")
 
 REFERRAL_OUTCOME_NOTIFICATION_DEST = _(
     "%(name)s has submitted an outcome for mother %(unique_id)s referred on %(date)s from %(origin)s to your facility.")

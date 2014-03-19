@@ -408,7 +408,7 @@ def emergency_response(session, xform, router):
     unique_id = get_value_from_form('unique_id', xform)
     try:
         ref = Referral.objects.filter(mother_uid=unique_id).latest('date')
-    except IndexError:
+    except Referral.DoesNotExist:
         return respond_to_session(router, session, ER_CONFIRM_SESS_NOT_FOUND,
                                   is_error=True, **{'unique_id': unique_id})
     # Save the fact that we now have a response
@@ -516,7 +516,7 @@ def emergency_response(session, xform, router):
                     "unique_id": unique_id,
                     "status": ambulance_response.get_response_display(),
                     "phone": session.connection.identity,
-                    "facility": ref.facility,
+                    "facility": ref.from_facility,
                     "name":contact.name
                 }
 
@@ -551,18 +551,20 @@ def emergency_response(session, xform, router):
                         "unique_id":unique_id,
                         "user_type":",".join(contacttype.name for contacttype in contact.types.all()),
                         "name":contact.name,
-                        "status":ambulance_response.get_response_display()}
+                        "status":ambulance_response.get_response_display(),
+                        "facility":ref.from_facility}
                     for con in _pick_er_drivers(ref.facility):
                         if con != contact:
                             send_msg(con.default_connection, driver_notification, router)
                 elif ref_type == 'hospital_to_hospital':
                     #When referral is from hospital to hospital we need the
                     #drivers at the origin facility
-                    driver_notification = const.REFERRAL_RESPONSE_NOTIFICATION_OTHER_USERS_STATUS %{
+                    driver_notification = const.REFERRAL_RESPONSE_NOTIFICATION_OTHER_USERS_STATUS_HOSP_TO_HOSP %{
                         "unique_id":unique_id,
                         "user_type":",".join(contacttype.name for contacttype in contact.types.all()),
                         "name":contact.name,
-                        "status":ambulance_response.get_response_display()}
+                        "status":ambulance_response.get_response_display(),
+                        "facility":ref.from_facility}
                     for con in _pick_er_drivers(ref.from_facility):
                         if con != contact:
                             send_msg(con.default_connection, driver_notification, router)
@@ -574,6 +576,7 @@ def emergency_response(session, xform, router):
                 "phone":session.connection.identity,
                 "facility":ref.facility,
                 "title": ",".join([contact_type.name for contact_type in contact.types.all()]),
+                "name": contact.name
             }
 
             dest_notification = const.REF_TRIAGE_NURSE_RESP_NOTIF % {
@@ -588,6 +591,7 @@ def emergency_response(session, xform, router):
                 origin_notification =  const.REF_TRIAGE_NURSE_RESP_NOTIF_ORIGIN_STATUS %{
                     "unique_id": unique_id,
                     "phone": session.connection.identity,
+                    "name":contact.name,
                     "title": ",".join([contact_type.name for contact_type in contact.types.all()]),
                     "status": ambulance_response.get_response_display()
                 }
