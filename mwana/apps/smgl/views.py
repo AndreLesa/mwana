@@ -279,8 +279,6 @@ def anc_report(request, id=None):
     return HttpResponse(anc_delivery_table.as_html())
 
 def pnc_report(request, id=None):
-
-#TODO: pnc remove nmr and ensure filters work down to one month.
     records = []
     facility_parent = None
     start_date, end_date = get_default_dates()
