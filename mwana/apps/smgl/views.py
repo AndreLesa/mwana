@@ -201,10 +201,11 @@ def anc_report(request, id=None):
             dispose_date, end_date = get_default_dates()
         r['home'] = births.filter(place='h').count() #home births
         r['facility'] = births.filter(place='f').count() #facility births
+        """
         r['unknown'] = pregnancies.exclude(id__in=births.\
             values_list('mother', flat=True)).filter(
             edd__lte=end_date-datetime.timedelta(days=30)).count()
-
+        """
         # Aggregate ANC visits by Mother and # of visits
         #visits = visits.filter(mother__in=pregnancies)
         place_visits = visits.filter(**visit_filter)
@@ -772,13 +773,10 @@ def mothers(request):
 
             if gestational_age:
                 if gestational_age > 365:
-                    worksheet.write(row_index, 9, "Error: Too many days")
+                    worksheet.write(row_index, 9, "Error: Too many days(%s)"%gestational_age)
                 else:
                     worksheet.write(row_index, 9, "{0:.0f} Weeks".format(gestational_age/7)),
             else:
-                if has_delivered:
-                    worksheet.write(row_index, 9, 'Has Delivered')
-                elif not mother.edd:
                     worksheet.write(row_index, 9, 'Error')
 
             worksheet.write(row_index, 10, 'Yes' if has_delivered else 'No')
