@@ -690,6 +690,18 @@ def get_four_anc_visits(mother):
     if mother_visits.count() < 3:
         for num in range(mother_visits.count(), 3):
             mother_visit_list.append(None)
+
+    return mother_visit_list
+
+def get_four_pnc_visits(mother):
+    mother_visits = mother.facility_visits.filter(visit_type='pos').order_by('visit_date')
+    #we should have 3 pnc visits if not, we will pad the list of pnc visits with
+    #null values
+    mother_visit_list = list(mother_visits)
+    if mother_visits.count() < 3:
+        for num in range(mother_visits.count(), 3):
+            mother_visit_list.append(None)
+
     return mother_visit_list
 
 
@@ -743,8 +755,11 @@ def mothers(request):
         workbook = xlwt.Workbook(encoding='utf-8')
         worksheet = workbook.add_sheet("Mother's Page")
         column_headers = ['Created Date', 'SMN', 'Name', 'District', 'Facility', 'Zone', 'Risk', 'LMP', 'EDD',
-                      'Gestational Age', 'Has Delivered', 'NVD2 Date', 'Actual Second ANC Date', 'Second ANC', 'NVD3 Date',
-                      'Actual third ANC Date', 'Third ANC', 'NVD4 Date', 'Actual Fourth ANC Date', 'Fourth ANC']
+                      'Gestational Age', 'NVD2 Date', 'Actual Second ANC Date', 'Second ANC', 'NVD3 Date',
+                      'Actual third ANC Date', 'Third ANC', 'NVD4 Date', 'Actual Fourth ANC Date', 'Fourth ANC',
+                      'Has Delivered', 'Delivery Date', 'Delivery Location', 'Six Day PNC Date',
+                      'Actual Six Day PNC Date', 'Six Day PNC', 'Six Week PNC Date', 'Actual Six Week PNC Date',
+                      'Six Week PNC']
         selected_level = zone or facility or district
         worksheet, row_index = excel_export_header(
                                                    worksheet,
@@ -760,6 +775,8 @@ def mothers(request):
         worksheet.col(9).width = 14*256
         for mother in mothers:
             anc_visits = get_four_anc_visits(mother)
+            pnc_visits = get_four_pnc_visits(mother)
+
             gestational_age = mother.get_gestational_age()
             has_delivered = mother.has_delivered
             district, facility, zone = get_district_facility_zone(mother.location)
@@ -781,44 +798,93 @@ def mothers(request):
             else:
                     worksheet.write(row_index, 9, 'Error')
 
-            worksheet.write(row_index, 10, 'Yes (%s)'%(mother.birth_location.title()) if has_delivered else 'No')
             second_anc = anc_visits[0]
 
 
             if second_anc:
-                worksheet.write(row_index, 11, mother.next_visit, date_format)
-                worksheet.write(row_index, 12, second_anc.visit_date, date_format)
-                worksheet.write(row_index, 13, 'Yes')
+                worksheet.write(row_index, 10, mother.next_visit, date_format)
+                worksheet.write(row_index, 11, second_anc.visit_date, date_format)
+                worksheet.write(row_index, 12, 'Yes')
             else:
-                worksheet.write(row_index, 11, mother.next_visit, date_format)
-                worksheet.write(row_index, 12, 'N/A')
-                worksheet.write(row_index, 13, 'No')
+                worksheet.write(row_index, 10, mother.next_visit, date_format)
+                worksheet.write(row_index, 11, 'N/A')
+                worksheet.write(row_index, 12, 'No')
 
             third_anc = anc_visits[1]
             if third_anc:
-                worksheet.write(row_index, 14, second_anc.next_visit, date_format)
-                worksheet.write(row_index, 15, third_anc.visit_date, date_format)
-                worksheet.write(row_index, 16, 'Yes')
+                worksheet.write(row_index, 13, second_anc.next_visit, date_format)
+                worksheet.write(row_index, 14, third_anc.visit_date, date_format)
+                worksheet.write(row_index, 15, 'Yes')
             else:
                 if second_anc:
-                    worksheet.write(row_index, 14, second_anc.next_visit, date_format)
+                    worksheet.write(row_index, 13, second_anc.next_visit, date_format)
                 else:
-                    worksheet.write(row_index, 14, 'N/A')
-                worksheet.write(row_index, 15, 'N/A')
-                worksheet.write(row_index, 16, 'No')
+                    worksheet.write(row_index, 13, 'N/A')
+                worksheet.write(row_index, 14, 'N/A')
+                worksheet.write(row_index, 15, 'No')
 
             fourth_anc = anc_visits[2]
             if fourth_anc:
-                worksheet.write(row_index, 17, third_anc.next_visit, date_format)
-                worksheet.write(row_index, 18, third_anc.visit_date, date_format)
-                worksheet.write(row_index, 19, 'Yes')
+                worksheet.write(row_index, 16, third_anc.next_visit, date_format)
+                worksheet.write(row_index, 17, third_anc.visit_date, date_format)
+                worksheet.write(row_index, 18, 'Yes')
             else:
                 if third_anc:
-                    worksheet.write(row_index, 17, third_anc.next_visit, date_format)
+                    worksheet.write(row_index, 16, third_anc.next_visit, date_format)
                 else:
-                    worksheet.write(row_index, 17, )
-                worksheet.write(row_index, 18, 'N/A')
-                worksheet.write(row_index, 19, 'No')
+                    worksheet.write(row_index, 16, )
+                worksheet.write(row_index, 17, 'N/A')
+                worksheet.write(row_index, 18, 'No')
+
+            worksheet.write(row_index, 19, 'Yes' if has_delivered else 'No')
+
+            if has_delivered:
+                try:
+                    worksheet.write(row_index, 20, mother.birth.date, date_format)
+                except AttributeError:
+                    #This means the birth is null meaning that the has delivered
+                    #was based on the edd.
+                    worksheet.write(row_index, 20, "Unregistered Birth", date_format)
+            else:
+                worksheet.write(row_index, 20, 'N/A', date_format)
+
+            if has_delivered:
+                try:
+                    worksheet.write(row_index, 21, mother.birth_location.title())
+                except AttributeError:
+                    worksheet.write(row_index, 21, "Unregistered Birth")
+            else:
+                worksheet.write(row_index, 21, "N/A")
+
+            try:
+                birth_date = mother.birth.date
+            except AttributeError:
+                pass
+            else:
+                six_day_pnc = pnc_visits[0]
+                six_day_pnc_date = birth_date + datetime.timedelta(days=6)
+                if six_day_pnc:
+                    worksheet.write(row_index, 22, six_day_pnc_date, date_format)
+                    worksheet.write(row_index, 23, six_day_pnc.visit_date, date_format)
+                    worksheet.write(row_index, 24, 'Yes')
+                else:
+                    worksheet.write(row_index, 22, six_day_pnc_date, date_format)
+                    worksheet.write(row_index, 23, 'N/A')
+                    worksheet.write(row_index, 24, 'No')
+
+                six_week_pnc = pnc_visits[1]
+                if six_week_pnc:
+                    worksheet.write(row_index, 25, six_day_pnc.next_visit, date_format)
+                    worksheet.write(row_index, 26, six_week_pnc.visit_date, date_format)
+                    worksheet.write(row_index, 27, 'Yes')
+                else:
+                    if six_day_pnc:
+                        worksheet.write(row_index, 25, six_day_pnc.next_visit, date_format)
+                    else:
+                        worksheet.write(row_index, 25, 'N/A')
+                    worksheet.write(row_index, 26, 'N/A')
+                    worksheet.write(row_index, 27, 'No')
+
             row_index += 1
 
         fname = 'Mothers-export.xls'
