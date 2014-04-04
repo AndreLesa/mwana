@@ -154,7 +154,9 @@ def anc_report(request, id=None):
             #AND gave birth OR had EDD scheduled within our specified time frame
             pregnancies_reg = filter_by_dates(pregnancies, 'created_date',
                 start=start_date, end=end_date)
+
             births = births.filter(mother__in=pregnancies_reg)
+
             births = filter_by_dates(births, 'date',
                             start=start_date, end=end_date)
             #Get all mothers with birth registrations within the specified time frame.
@@ -162,17 +164,20 @@ def anc_report(request, id=None):
             #Get all mothers with edd and registration within the specified time frame
             pregnancies_edd = filter_by_dates(pregnancies_reg, 'edd',
                              start=start_date, end=end_date)
+            pregnancies_edd = pregnancies_edd.exclude(id__in=birth_mothers.values_list('id', flat=True))
             #Combine the two querysets
             pregnancies = birth_mothers | pregnancies_edd
         else:
             # All women who gave birth or had EDD within specified time frame
-            pregnancies_edd = filter_by_dates(pregnancies, 'edd',
-                             start=start_date, end=end_date)
-            births = births.filter(mother__in=pregnancies_edd)
+            births = births.filter(mother__in=pregnancies)
             births = filter_by_dates(births, 'date',
                             start=start_date, end=end_date)
             #Get all mothers with birth registrations within the specified time frame.
-            birth_mothers = pregnancies.filter(id__in=births.values_list('mother', flat=True))
+            birth_mothers = pregnancies.filter(id__in=births.values_list('mother__id', flat=True))
+            pregnancies_edd = filter_by_dates(pregnancies, 'edd',
+                             start=start_date, end=end_date)
+            #for edd, exclude all mothers who already have a birth registration
+            pregnancies_edd = pregnancies_edd.exclude(id__in=birth_mothers.values_list('id', flat=True))
             pregnancies = pregnancies_edd | birth_mothers
 
 #TODO Mothers should be unique per option so filter by mothers not dates.
@@ -198,12 +203,12 @@ def anc_report(request, id=None):
         # utilize start/end date if supplied
         if not end_date:
             dispose_date, end_date = get_default_dates()
-        r['home'] = births.filter(place='h').count() #home births
-        r['facility'] = births.filter(place='f').count() #facility births
+        r['home'] = births.filter(place='h').distinct('mother').count() #home births
+        r['facility'] = births.filter(place='f').distinct('mother').count() #facility births
 
-        r['unknown'] = pregnancies.exclude(id__in=births.\
-            values_list('mother', flat=True)).filter(
-            edd__lte=end_date).count()
+
+        r['unknown'] = pregnancies.filter(edd__lte=end_date).exclude(id__in=births.\
+            values_list('mother__id', flat=True)).distinct().count()
         #TODO Locations numbers still look wrong
         # Aggregate ANC visits by Mother and # of visits
         visits = FacilityVisit.objects.all()
@@ -372,6 +377,8 @@ def pnc_report(request, id=None):
             dispose_date, end_date = get_default_dates()
         births = filter_by_dates(births, 'date',
                                  start=start_date, end=end_date-datetime.timedelta(days=42))
+
+        births = births.filter(mother__in=pregnancies)
         r['registered_deliveries'] = births.count()
         visits = filter_by_dates(FacilityVisit.objects.filter(visit_type='pos'),
                                 'created_date', start=start_date, end=end_date)
@@ -683,7 +690,14 @@ def user_report(request):
     return HttpResponse(user_report_table.as_html())
 
 def get_four_anc_visits(mother):
-    mother_visits = mother.facility_visits.filter(visit_type='anc').order_by('visit_date')
+    #If there is a birth registration, we look at everything before birth as anc and anything post
+    #as pnc
+    try:
+        birth_date = mother.birth.date
+    except AttributeError:
+        mother_visits = mother.facility_visits.filter(visit_type='anc').order_by('visit_date')
+    else:
+        mother_visits = mother.facility_visits.filter(visit_date__lt=birth_date).order_by('visit_date')
     #we should have 3 anc visits if not, we will pad the list of anc visits with
     #null values
     mother_visit_list = list(mother_visits)
@@ -694,7 +708,13 @@ def get_four_anc_visits(mother):
     return mother_visit_list
 
 def get_four_pnc_visits(mother):
-    mother_visits = mother.facility_visits.filter(visit_type='pos').order_by('visit_date')
+    try:
+        birth_date = mother.birth.date
+    except AttributeError:
+        mother_visits = mother.facility_visits.filter(visit_type='pos').order_by('visit_date')
+    else:
+        mother_visits = mother.facility_visits.filter(visit_date__gte=birth_date).order_by('visit_date')
+
     #we should have 3 pnc visits if not, we will pad the list of pnc visits with
     #null values
     mother_visit_list = list(mother_visits)
@@ -799,8 +819,6 @@ def mothers(request):
                     worksheet.write(row_index, 9, 'Error')
 
             second_anc = anc_visits[0]
-
-
             if second_anc:
                 worksheet.write(row_index, 10, mother.next_visit, date_format)
                 worksheet.write(row_index, 11, second_anc.visit_date, date_format)
@@ -826,7 +844,7 @@ def mothers(request):
             fourth_anc = anc_visits[2]
             if fourth_anc:
                 worksheet.write(row_index, 16, third_anc.next_visit, date_format)
-                worksheet.write(row_index, 17, third_anc.visit_date, date_format)
+                worksheet.write(row_index, 17, fourth_anc.visit_date, date_format)
                 worksheet.write(row_index, 18, 'Yes')
             else:
                 if third_anc:
