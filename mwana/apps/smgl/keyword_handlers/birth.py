@@ -60,7 +60,7 @@ def birth_registration(session, xform, router):
             mother=mom,
             location=session.connection.contact.location,
             visit_date=datetime.datetime.today() + datetime.timedelta(days=1),
-            visit_type='pnc',
+            visit_type='pos',
             reason_for_visit='birth_reg',
             next_visit=next_visit,
             contact=contact,
