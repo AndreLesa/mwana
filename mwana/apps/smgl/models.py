@@ -562,9 +562,9 @@ class Referral(FormReferenceBase, MotherReferenceBase):
 
     @property
     def outcome(self):
+        outcome = ''
         if self.re_referral:
             outcome = "Re-referred to %s"%self.re_referral.facility
-        outcome = ''
         mother_outcome = "Mother is %s"%self.get_mother_outcome_display().title() if self.mother_outcome else ''
         if self.baby_outcome:
             outcome = '{}/Baby is {}'.format(mother_outcome, self.get_baby_outcome_display().title())

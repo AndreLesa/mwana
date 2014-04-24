@@ -1886,6 +1886,8 @@ def referrals(request):
         workbook = xlwt.Workbook(encoding='utf-8')
         time_format = xlwt.easyxf(num_format_str='HH:MM')
         date_format = xlwt.easyxf('align: horiz left;', num_format_str='mm/dd/yyyy')
+
+        date_time_format = xlwt.easyxf('align: horiz left;', num_format_str='HH:MM mm/dd/yyyy')
         worksheet = workbook.add_sheet("Referrals")
         column_headers = ['Date', 'System Timestamp', 'SMH', 'From Facility', 'To Facility', 'Time of Referral', 'Response',
                        'Resp User', 'Confirm AMB', 'Pick', 'Drop', 'Outcome', 'Date Refout', 'Outcome Mother', 'Outcome Baby',
@@ -1924,9 +1926,9 @@ def referrals(request):
             column += 1
             worksheet.write(row_index, column, referral.ambulance_response)
             column += 1
-            worksheet.write(row_index, column, "")#pick
+            worksheet.write(row_index, column, referral.pick.time if referral.pick else '', date_time_format)
             column += 1
-            worksheet.write(row_index, column, "")#drop
+            worksheet.write(row_index, column, referral.drop.time if referral.drop else '', date_time_format)
             column += 1
             worksheet.write(row_index, column, referral.outcome)
             column += 1
