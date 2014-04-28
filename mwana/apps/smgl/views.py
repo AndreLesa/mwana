@@ -496,6 +496,7 @@ def referral_report(request):
     start_date, end_date = get_default_dates()
     province = district = facility = None
     referrals = Referral.objects.all()
+
     if request.GET:
         form = ReportsFilterForm(request.GET)
         if form.is_valid():
@@ -521,7 +522,6 @@ def referral_report(request):
 
     #if facility:
     #    locations = get_location_tree_nodes(facility)
-
     referrals = referrals.filter(from_facility__in=locations)
 
     # filter by created_date
@@ -1870,7 +1870,6 @@ def referrals(request):
         locations = get_location_tree_nodes(facility)
 
     referrals = referrals.filter(from_facility__in=locations)
-
     # filter by created_date
     referrals = filter_by_dates(referrals, 'date',
                              start=start_date, end=end_date)
