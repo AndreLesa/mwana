@@ -180,6 +180,8 @@ def send_upcoming_delivery_reminders_two_week(router_obj=None):
 
     Cancel reminders after notification of birth.
     """
+    #This has been disabled for now
+    return False
     _set_router(router_obj)
     now = datetime.utcnow().date()
     reminder_threshold = now + timedelta(days=14)

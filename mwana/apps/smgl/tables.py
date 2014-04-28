@@ -165,21 +165,21 @@ class StatisticsLinkTable(StatisticsTable):
 
 class ReminderStatsTable(Table):
     reminder_type = NamedColumn(col_name="Reminder Type")
-    number = NamedColumn(col_name="Number")
+    number = NamedColumn(col_name="# MOTHERS")
     scheduled_reminders = NamedColumn(col_name='Scheduled')
     sent_reminders = NamedColumn(col_name='Sent')
     reminded = NamedColumn(col_name='Reminded')
-    birth_anc_pnc_ref = NamedColumn(col_name='Birth/ANC/PNC/REF')
-    told_and_showed = NamedColumn(col_name='Told and showed')
-    showed_on_time = NamedColumn(col_name='Showed on Time')
+    birth_anc_pnc_ref = NamedColumn(col_name='ANC/PNC')
+    told_and_showed = NamedColumn(col_name='TOLD & SHOWED')
+    showed_on_time = NamedColumn(col_name='SHOWED W/O TOLD')
 
 class ReminderStatsTableSMAG(Table):
     reminder_type = NamedColumn(sortable=False, col_name="Reminder Type")
-    smag_number = NamedColumn(col_name="Number")
+    smag_number = NamedColumn(col_name="SCHEDULED VISITS")
     smag_scheduled_reminders = NamedColumn(col_name='Scheduled (SMAG)')
     smag_sent_reminders = NamedColumn(col_name='Sent (SMAG)')
-    smag_tolds = NamedColumn(col_name='Received Told')
-    response_rate = NamedColumn(sortable=False, col_name='Response rate')
+    smag_tolds = NamedColumn(col_name='TOLD RECEIVED')
+    response_rate = NamedColumn(col_name='Response rate')
 
 class SummaryReportTable(Table):
     data = Column(sortable=False)
@@ -492,7 +492,7 @@ class ErrorTable(Table):
     facility = Column(
         value=lambda cell: cell.object.connection.contact.location if cell.object.connection.contact else '')
     text = NamedColumn(
-        col_name="Message", value=lambda cell: map_message_fields(cell.object))
+        col_name="Message", value=lambda cell: cell.object)
     error_response = NamedColumn(col_name="Error Resp", value=lambda cell: get_response(cell.object))
 
 

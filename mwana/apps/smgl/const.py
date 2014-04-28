@@ -206,7 +206,7 @@ REMINDER_SYP_TREATMENT_DUE = _(
     "This is a reminder: Mother named %(name)s should visit the health center for follow-up on %(date)s")
 
 # LEAVE
-LEAVE_COMPLETE = _("Thanks %(name)s. You have deactivated your account.")
+LEAVE_COMPLETE = _("Your account will be re-activated on %(return_date)s.")
 DEACTIVATED = _("This phone number has been deactivated.")
 
 # QUIT
