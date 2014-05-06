@@ -209,8 +209,8 @@ def anc_report(request, id=None):
         # utilize start/end date if supplied
         if not end_date:
             dispose_date, end_date = get_default_dates()
-        r['home'] = date_filtered_births.filter(place='h').distinct('mother').count() #home births
-        r['facility'] = date_filtered_births.filter(place='f').distinct('mother').count() #facility births
+        r['home'] = date_filtered_births.filter(place='h').count() #home births
+        r['facility'] = date_filtered_births.filter(place='f').count() #facility births
 
 
         r['unknown'] = pregnancies.filter(edd__lte=end_date).exclude(id__in=births.\
@@ -219,33 +219,42 @@ def anc_report(request, id=None):
         # Aggregate ANC visits by Mother and # of visits
         visits = FacilityVisit.objects.all()
         visits = visits.filter(mother__in=pregnancies)
-        #visits = visits.filter(mother__id__in=pregnancies.values_list('id', flat=True))
-        place_visits = visits.filter(**visit_filter)
-        #place_visits = filter_by_dates(place_visits, 'visit_date',
-        #                          start=start_date, end=end_date)
 
-        mother_ids = place_visits.distinct('mother') \
+        mother_ids = visits.distinct('mother') \
                             .values_list('mother', flat=True)
+
         mothers = PregnantMother.objects.filter(id__in=mother_ids)
 
-        anc_visits = mothers.filter(facility_visits__visit_type='anc') \
-                            .annotate(Count('facility_visits')) \
-                            .values_list('facility_visits__count', flat=True)
-
-        r['anc1'] = r['anc2'] = r['anc3'] = r['anc4'] = 0
-        # ANC1 is PregnantMother registrations
         r['pregnancies'] = pregnancies.count()
-        r['anc1'] = pregnancies.count()
-        num_visits = {}
-        for num in anc_visits:
-            if num in num_visits:
-                num_visits[num] += 1
+
+
+        two_anc = 0
+        three_anc = 0
+        four_anc = 0
+        for mother in mothers:
+            if mother.birthregistration_set.all():
+                birth_date = mother.birthregistration_set.all()[0].date
+                anc_visits = FacilityVisit.objects.filter(
+                    mother=mother,
+                    visit_date__lt=birth_date)
             else:
-                num_visits[num] = 1
-        for i in range(1, 4):
-            key = 'anc{0}'.format(i)
-            if i in num_visits:
-                r[key] = num_visits[i]
+
+                anc_visits = FacilityVisit.objects.filter(
+                    mother=mother,
+                    visit_type='anc'
+                    )
+
+            if len(anc_visits) == 2:
+                two_anc += 1
+            if len(anc_visits) == 3:
+                three_anc += 1
+            if len(anc_visits) >= 4:
+                four_anc += 1
+
+        r['anc2'] = two_anc
+        r['anc3'] = three_anc
+        r['anc4'] = four_anc
+        # ANC1 is PregnantMother registrations
 
         records.append(r)
 
@@ -367,16 +376,15 @@ def pnc_report(request, id=None):
                             .filter(zone__in=district_facilities)
             births = BirthRegistration.objects.filter(
                 mother__zone__in=district_facilities)
+            visits = FacilityVisit.objects.all()
+
         else:
             pregnancies = PregnantMother.objects.filter(location=place)
 
-        pregnancies = filter_by_dates(pregnancies, 'created_date',
-                                 start=start_date, end=end_date)
 
         r = {'location': place.name}
 
         r['location_id'] = place.id
-
 
         # utilize start/end date if supplied
         if not end_date:
@@ -384,29 +392,23 @@ def pnc_report(request, id=None):
         births = filter_by_dates(births, 'date',
                                  start=start_date, end=end_date-datetime.timedelta(days=42))
 
-        births = births.filter(mother__in=pregnancies)
         r['registered_deliveries'] = births.count()
-        visits = FacilityVisit.objects.filter(visit_type='pos')
-
-        visits = visits.filter(mother__in=pregnancies)
 
         def has_six_day_pnc(birth, visits):
-            birth_reg = birth.date
-            six_days_later = birth.date + datetime.timedelta(days=6)
-            visits = visits.filter(mother=birth.mother,
-                created_date__gte=six_days_later-datetime.timedelta(hours=24),
-                created_date__lte=six_days_later+datetime.timedelta(hours=24))
+            visits = visits.filter(
+                mother=birth.mother,
+                visit_date__lte=birth.date+datetime.timedelta(days=7),
+                visit_date__gt=birth.date)
             if visits:
                 return True
             else:
                 return False
 
         def has_six_week_pnc(birth, visits):
-            birth_reg = birth.date
-            six_weeks_later = birth.date + datetime.timedelta(days=42)
-            visits = visits.filter(mother=birth.mother,
-                created_date__gte=six_weeks_later-datetime.timedelta(days=7),
-                created_date__lte=six_weeks_later+datetime.timedelta(days=7))
+            visits = visits.filter(
+                mother=birth.mother,
+                visit_date__gt=birth.date+datetime.timedelta(days=7),
+                visit_date__lte=birth.date+datetime.timedelta(days=49))
             if visits:
                 return True
             else:
@@ -420,12 +422,17 @@ def pnc_report(request, id=None):
             for birth in births:
                 six_day_pnc = has_six_day_pnc(birth, visits)
                 six_week_pnc = has_six_week_pnc(birth, visits)
-                if six_day_pnc:
+
+                if six_day_pnc and not six_week_pnc:
+                    #If they have the six day visit only
                     six_day_pnc_num += 1
-                if six_week_pnc:
+                if six_week_pnc and not six_day_pnc:
+                    #If they have the six week visit only
                     six_week_pnc_num += 1
-                if six_day_pnc_num and six_week_pnc:
+                if six_day_pnc and six_week_pnc:
+                    #If they have both visits
                     complete_pnc_num += 1
+
             return (six_hour_pnc_num, six_day_pnc_num, six_week_pnc_num,
                 complete_pnc_num)
 
