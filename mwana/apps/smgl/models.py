@@ -507,10 +507,39 @@ class Referral(FormReferenceBase, MotherReferenceBase):
 
     @property
     def has_seen_response(self):
-        if self.has_response or self.ambulance_response != None:
+        if self.get_responders:
             return True
         else:
             return False
+
+
+    @property
+    def get_responders(self):
+        responders = set()
+        try:
+            amb_responders = [
+                amb_resp.responder for amb_resp in self.amb_req.ambulanceresponse_set.all()]
+        except AttributeError:
+            return []
+        else:
+            return amb_responders
+
+        responders.update(amb_responders)
+
+        mother_id = self.mother_uid
+        other_referrals = Referral.objects.filter(mother_uid=mother_id, date__gte=self.date).exclude(id=self.id).order_by('date')
+
+        resp_messages = Message.objects.filter(text__istartswith="resp %s "%mother_id, date__gte=self.date)
+        if other_referrals and resp_messages:
+            #If there are any other referrals with the same mother id, we shall
+            #only try to find the referrals responses which come before the other referrals.
+            other_referral = other_referrals[0]
+            resp_messages = resp_messages.filter(date__lte=other_referral.date)
+
+        other_responders = [msg.connection.contact for msg in resp_messages]
+        responders.update(other_responders)
+        print responders
+        return responders
 
     @classmethod
     def non_emergencies(cls):
