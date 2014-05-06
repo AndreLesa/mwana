@@ -1873,7 +1873,7 @@ def referrals(request):
     # filter by created_date
     referrals = filter_by_dates(referrals, 'date',
                              start=start_date, end=end_date)
-
+    referrals = referrals.order_by('date')
 
     if request.GET.get('export'):
         workbook = xlwt.Workbook(encoding='utf-8')
@@ -1898,7 +1898,7 @@ def referrals(request):
         row_index += 1
         for referral in referrals:
             worksheet.write(row_index, 0, referral.date, date_format)
-            worksheet.write(row_index, 1, datetime.datetime.now(), date_format)
+            worksheet.write(row_index, 1, referral.time if referral.time else referral.date.time(), time_format)
             worksheet.write(row_index, 2, referral.mother_uid)
             worksheet.write(row_index, 3, referral.from_facility.name)
             worksheet.write(row_index, 4, referral.facility.name)
@@ -1911,11 +1911,11 @@ def referrals(request):
                     text = 'No'
                 worksheet.write(row_index, column, text)
                 column += 1
-            worksheet.write(row_index, column, referral.time, time_format)
+            worksheet.write(row_index, column, referral.time if referral.time else referral.date.time(), time_format)
             column += 1
-            worksheet.write(row_index, column, "Yes" if referral.responded else "No",)
+            worksheet.write(row_index, column, "Yes" if referral.has_seen_response else "No",)
             column += 1
-            worksheet.write(row_index, column, referral.amb_responders())
+            worksheet.write(row_index, column, ["%s (%s) from %s, "%(contact.name, "".join([con_type.name for con_type in contact.types.all()]), contact.get_current_facility()) for contact in referral.get_responders])
             column += 1
             worksheet.write(row_index, column, referral.ambulance_response)
             column += 1
