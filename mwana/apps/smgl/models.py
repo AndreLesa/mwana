@@ -1,6 +1,7 @@
 # vim: ai ts=4 sts=4 et sw=4
 from rapidsms.models import Contact, Connection
 from django.db import models
+from django.utils import timezone
 from django.contrib.auth.models import User
 from django.core.exceptions import MultipleObjectsReturned
 

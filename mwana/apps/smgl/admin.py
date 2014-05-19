@@ -29,12 +29,14 @@ class AmbulanceRequestAdmin(admin.ModelAdmin):
 
 class AmbulanceResponseAdmin(admin.ModelAdmin):
     list_display = ['ambulance_request', 'mother', 'mother_uid', 'response']
+    exclude = ['session']
 
 
 class ReferralAdmin(admin.ModelAdmin):
     list_display = ['date', 'facility', 'from_facility', 'mother', 'mother_uid', 'responded', 'status',
                     'mother_outcome', 'baby_outcome', 'mode_of_delivery', 'reminded']
     list_filter = ['reminded', 'date']
+    exclude = ['session']
 
 
 class BirthRegistrationAdmin(admin.ModelAdmin):

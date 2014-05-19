@@ -1905,7 +1905,7 @@ def referrals(request):
         row_index += 1
         for referral in referrals:
             worksheet.write(row_index, 0, referral.date, date_format)
-            worksheet.write(row_index, 1, referral.time if referral.time else referral.date.time(), time_format)
+            worksheet.write(row_index, 1, referral.date.time(), time_format)
             worksheet.write(row_index, 2, referral.mother_uid)
             worksheet.write(row_index, 3, referral.from_facility.name)
             worksheet.write(row_index, 4, referral.facility.name)
@@ -2043,7 +2043,6 @@ def sms_records(request):
         return response
 
     records_table = SMSRecordsTable(sms_records, request=request)
-    records_table.as_html()
 
     return render_to_response(
         "smgl/sms_records.html",

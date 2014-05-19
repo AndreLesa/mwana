@@ -192,6 +192,7 @@ DJANGO_LOG_FILE  = 'logs/django.log'
 MIDDLEWARE_CLASSES = [
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'mwana.apps.smgl.middleware.TimezoneMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -356,3 +357,7 @@ DUPECHECKER_IGNORE = ["birth none",
                       'resp',
                       'refer'
                      ]
+
+USE_TZ = True
+TIME_ZONE = 'UTC'
+USE_L10N = True
