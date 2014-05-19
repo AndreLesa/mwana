@@ -416,13 +416,13 @@ class Pick(FormReferenceBase):
     time = models.DateTimeField(auto_now_add=True)
 
     def __unicode__(self):
-        return "Picked at %s"%self.time.strftime("%x %X")
+        return "Picked at %s"%self.time.astimezone(timezone.get_current_timezone()).strftime("%x %X")
 
 class Drop(FormReferenceBase):
     time = models.DateTimeField(auto_now_add=True)
 
     def __unicode__(self):
-        return self.time
+        return "Dropped at %s"%self.time.astimezone(timezone.get_current_timezone()).strftime("%x %X")
 
 class Referral(FormReferenceBase, MotherReferenceBase):
     REFERRAL_REASONS = {
