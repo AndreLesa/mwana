@@ -30,17 +30,18 @@ class NamedColumn(Column):
 class AwareDateColumn(DateColumn):
 
     def render(self, cell, *args, **kwargs):
-        if cell.value:
-            value = self.value(cell)
+        value = self.value(cell)
+        if value:
             #date_time = value
-            date_time = value.astimezone(timezone.get_current_timezone())
+            try:
+                date_time = value.astimezone(timezone.get_current_timezone())
+            except AttributeError:
+                date_time = value
         else:
             return ''
         return defaultfilters.date(
             date_time,
             self._format)
-
-
 
 
 class PregnantMotherTable(Table):
@@ -397,7 +398,7 @@ class UserReport(Table):
 
 
 class SMSUsersTable(Table):
-    created_date = AwareDateColumn(format="Y m d ")
+    created_date = DateColumn(format="Y m d ")
     name = Column(link=lambda cell: reverse("sms-user-history",
         args=[cell.object.id]))
     number = Column(

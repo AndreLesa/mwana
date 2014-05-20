@@ -1,10 +1,12 @@
 from datetime import datetime
 
 from django.db import models
+from django.utils import timezone
 
 
 class ContactLocation(models.Model):
-    unique_id = models.CharField(max_length=255, blank=True, null=True, unique=True,
+    unique_id = models.CharField(
+        max_length=255, blank=True, null=True, unique=True,
                                  help_text="An optional Unique Identifier for this contact")
 
     created_date = models.DateField(auto_now_add=True)
@@ -53,9 +55,11 @@ class ContactLocation(models.Model):
 
     @property
     def active_status(self, start_date=None, end_date=None):
-        #If this is a cba, inactive is 60 days
-        is_cba = ['cba'] == list(self.types.all().values_list('slug', flat=True))
-        #If we are passed in the start_date and end_date we consider the period
+        # If this is a cba, inactive is 60 days
+        is_cba = ['cba'] == list(
+            self.types.all().values_list('slug', flat=True))
+        # If we are passed in the start_date and end_date we consider the
+        # period
         if start_date and end_date:
             model = models.get_model('messagelog', 'Message')
             messages = model.objects.filter(
@@ -74,8 +78,8 @@ class ContactLocation(models.Model):
             if is_cba:
                 inactivity_threshold = 60
             if self.latest_sms_date:
-                now = datetime.now()
-                days = (now - self.latest_sms_date).days
+                now = datetime.utcnow().replace(tzinfo=timezone.get_default_timezone())
+                days = (now - self.latest_sms_date.replace(tzinfo=timezone.get_default_timezone())).days
                 if days <= inactivity_threshold:
                     status = 'active'
         return status

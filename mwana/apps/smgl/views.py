@@ -13,6 +13,7 @@ from django.views import generic
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import DetailView, DeleteView
 from django.core.exceptions import MultipleObjectsReturned
+from django.utils import timezone
 
 from extra_views import CreateWithInlinesView, UpdateWithInlinesView, InlineFormSet
 
@@ -809,7 +810,7 @@ def mothers(request):
 
             zone = mother.zone.name if mother.zone else ''
 
-            worksheet.write(row_index, 0, mother.created_date, date_format)
+            worksheet.write(row_index, 0, mother.created_date.replace(tzinfo=None), date_format)
             worksheet.write(row_index, 1, mother.uid)
             worksheet.write(row_index, 2, mother.name)
             worksheet.write(row_index, 3, district)
@@ -993,7 +994,6 @@ def mother_history(request, id):
 
 
     if request.GET.get('export'):
-        messages = messages.filter(direction='I') #only show incoming messages.
         workbook = xlwt.Workbook(encoding='utf-8')
         worksheet = workbook.add_sheet("Mother's Page")
         column_headers = ['Date', 'Time', 'Type', 'SMH', 'Sender Number', 'District', 'Facility', 'Zone', 'Message']
@@ -1010,7 +1010,7 @@ def mother_history(request, id):
         worksheet.col(8).width = 100*256
         for message in messages:
             district, facility, zone = get_district_facility_zone(message.connection.contact.location)
-            worksheet.write(row_index, 0, message.date, date_format)
+            worksheet.write(row_index, 0, message.date.replace(tzinfo=None), date_format)
             worksheet.write(row_index, 1, message.date.time(), time_format)
             worksheet.write(row_index, 2, get_msg_type(message))
             worksheet.write(row_index, 3, mother.uid)
@@ -1819,7 +1819,7 @@ def notifications(request):
         worksheet.col(8).width = 100*256
         for message in messages:
             district, facility, zone = get_district_facility_zone(message.connection.contact.location)
-            worksheet.write(row_index, 0, message.date, date_format)
+            worksheet.write(row_index, 0, message.date.replace(tzinfo=None), date_format)
             worksheet.write(row_index, 1, message.connection.identity)
             worksheet.write(row_index, 2, message.contact.name)
             worksheet.write(row_index, 3, ", ".join([contact_type.name for contact_type in message.connection.contact.types.all()]))
@@ -1904,7 +1904,7 @@ def referrals(request):
         worksheet, row_index = write_excel_columns(worksheet, row_index, column_headers)
         row_index += 1
         for referral in referrals:
-            worksheet.write(row_index, 0, referral.date, date_format)
+            worksheet.write(row_index, 0, referral.date.replace(tzinfo=None), date_format)
             worksheet.write(row_index, 1, referral.date.time(), time_format)
             worksheet.write(row_index, 2, referral.mother_uid)
             worksheet.write(row_index, 3, referral.from_facility.name)
@@ -1926,13 +1926,15 @@ def referrals(request):
             column += 1
             worksheet.write(row_index, column, referral.ambulance_response)
             column += 1
-            worksheet.write(row_index, column, referral.pick.time if referral.pick else '', date_time_format)
+            worksheet.write(row_index, column, referral.pick.time.replace(tzinfo=None) if referral.pick else '', date_time_format)
             column += 1
-            worksheet.write(row_index, column, referral.drop.time if referral.drop else '', date_time_format)
+            worksheet.write(row_index, column, referral.drop.time.replace(tzinfo=None) if referral.drop else '', date_time_format)
             column += 1
             worksheet.write(row_index, column, referral.outcome)
             column += 1
-            worksheet.write(row_index, column, referral.date_outcome, date_format)
+            worksheet.write(row_index, column,
+                referral.date_outcome.replace(tzinfo=None) if isinstance(referral.date_outcome, datetime.datetime) else referral.date_outcome,
+                date_format)
             column += 1
             worksheet.write(row_index, column, referral.get_mother_outcome_display())
             column += 1
@@ -2025,7 +2027,7 @@ def sms_records(request):
 
         for message in sms_records:
             district, facility, zone = get_district_facility_zone(message.connection.contact.location)
-            worksheet.write(row_index, 0, message.date, date_format)
+            worksheet.write(row_index, 0, message.date.replace(tzinfo=None), date_format)
             worksheet.write(row_index, 1, get_msg_type(message))
             worksheet.write(row_index, 2, message.get_direction_display())
             worksheet.write(row_index, 3, message.connection.identity)
@@ -2153,7 +2155,7 @@ def sms_users(request):
             worksheet.write(row_index, 4, district)
             worksheet.write(row_index, 5, facility)
             worksheet.write(row_index, 6, zone)
-            worksheet.write(row_index, 7, contact.latest_sms_date, date_format)
+            worksheet.write(row_index, 7, contact.latest_sms_date.replace(tzinfo=None), date_format)
             worksheet.write(row_index, 8, contact.created_date, date_format)
             worksheet.write(row_index, 9, 'Yes' if contact in active_contacts else 'No')
             row_index += 1
@@ -2176,6 +2178,7 @@ def sms_users(request):
     users_table = SMSUsersTable(contacts,
         request=request,
         )
+    print users_table.as_html()
     return render_to_response(
         "smgl/sms_users.html",
         {"users_table": users_table,
@@ -2212,7 +2215,7 @@ def sms_user_history(request, id):
                 is_accepted='Yes'
             else:
                 is_accepted='No'
-            worksheet.write(row_index, 0, message.date, date_format)
+            worksheet.write(row_index, 0, message.date.replace(tzinfo=None), date_format)
             worksheet.write(row_index, 1, contact.name)
             worksheet.write(row_index, 2, contact.default_connection.identity)
             worksheet.write(row_index, 3, ", ".join([contact_type.name for contact_type in contact.types.all()]))
@@ -2657,7 +2660,7 @@ def error(request):
         for message in messages:
             contact=message.connection.contact
             district, facility, zone = get_district_facility_zone(contact.location)
-            worksheet.write(row_index, 0, message.date, date_format)
+            worksheet.write(row_index, 0, message.date.replace(tzinfo=None), date_format)
             worksheet.write(row_index, 1, get_msg_type(message))
             worksheet.write(row_index, 2, contact.name)
             worksheet.write(row_index, 3, contact.default_connection.identity)
@@ -2721,7 +2724,7 @@ def error_history(request, id):
         worksheet.col(8).width = 100*256
         for message in messages:
             district, facility, zone = get_district_facility_zone(message.connection.contact.location)
-            worksheet.write(row_index, 0, message.date, date_format)
+            worksheet.write(row_index, 0, message.date.replace(tzinfo=None), date_format)
             worksheet.write(row_index, 1, message.date.time(), time_format)
             worksheet.write(row_index, 2, get_msg_type(message))
             worksheet.write(row_index, 3, message.connection.identity)

@@ -33,7 +33,7 @@ class AmbulanceResponseAdmin(admin.ModelAdmin):
 
 
 class ReferralAdmin(admin.ModelAdmin):
-    list_display = ['date', 'facility', 'from_facility', 'mother', 'mother_uid', 'responded', 'status',
+    list_display = ['date', 'facility', 'from_facility', 'mother', 'mother_uid', 'has_response', 'status',
                     'mother_outcome', 'baby_outcome', 'mode_of_delivery', 'reminded']
     list_filter = ['reminded', 'date']
     exclude = ['session']
