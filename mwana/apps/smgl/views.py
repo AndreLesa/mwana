@@ -232,7 +232,7 @@ def anc_report(request, id=None):
         two_anc = 0
         three_anc = 0
         four_anc = 0
-        for mother in mothers:
+        for mother in pregnancies:
             if mother.birthregistration_set.all():
                 birth_date = mother.birthregistration_set.all()[0].date
                 anc_visits = FacilityVisit.objects.filter(
@@ -245,12 +245,27 @@ def anc_report(request, id=None):
                     visit_type='anc'
                     )
 
-            if len(anc_visits) == 2:
+            if len(anc_visits) == 1:
                 two_anc += 1
-            if len(anc_visits) == 3:
+            if len(anc_visits) == 2:
                 three_anc += 1
-            if len(anc_visits) >= 4:
+            if len(anc_visits) >= 3:
                 four_anc += 1
+
+        if place.name == 'Kalomo District':
+            workbook = xlwt.Workbook(encoding='utf-8')
+            worksheet = workbook.add_sheet("Report Export")
+            row_index = 0
+            bold_style = xlwt.easyxf('font: bold 1')
+            worksheet.write(row_index, 0, 'Mother UID', bold_style)
+            row_index += 1
+            for mother in pregnancies:
+                worksheet.write(row_index, 0, mother.uid)
+                row_index += 1
+
+            now = datetime.datetime.now()
+            fname = 'reports_exports/ANC_report_%s_%s.xls'%(now.strftime("%d_%b_(%H_%M)"), filter_option)
+            workbook.save(fname)
 
         r['anc2'] = two_anc
         r['anc3'] = three_anc
@@ -436,6 +451,24 @@ def pnc_report(request, id=None):
 
             return (six_hour_pnc_num, six_day_pnc_num, six_week_pnc_num,
                 complete_pnc_num)
+
+
+        #!!!Export
+        if place.name == 'Kalomo District':
+            workbook = xlwt.Workbook(encoding='utf-8')
+            worksheet = workbook.add_sheet("Report Export")
+            row_index = 0
+            bold_style = xlwt.easyxf('font: bold 1')
+            worksheet.write(row_index, 0, 'Mother UID', bold_style)
+            row_index += 1
+            for birth in births:
+                worksheet.write(row_index, 0, birth.mother.uid)
+                row_index += 1
+
+            now = datetime.datetime.now()
+            fname = 'reports_exports/PNC_report_%s.xls'%(now.strftime("%d_%b_(%H_%M)"))
+            workbook.save(fname)
+
 
         r['six_hour_pnc'], r['six_day_pnc'], r['six_week_pnc'],\
         r['complete_pnc'] = pnc_visits(births, visits)

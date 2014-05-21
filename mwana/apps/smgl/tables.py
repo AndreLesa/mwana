@@ -83,7 +83,7 @@ class ErrorMessageTable(Table):
     contact = NamedColumn(col_name="Sender")
     facility = Column(
         value=lambda cell: cell.object.contact.location.name if cell.object.contact else '')
-    text = NamedColumn(col_name="Message")
+    text = NamedColumn(col_name="Message", value=lambda cell:cell.object.text)
     error_response = NamedColumn(col_name="Error Resp", value=lambda cell: get_response(cell.object))
 
 
@@ -510,7 +510,7 @@ class ErrorTable(Table):
     facility = Column(
         value=lambda cell: cell.object.connection.contact.location if cell.object.connection.contact else '')
     text = NamedColumn(
-        col_name="Message", value=lambda cell: cell.object)
+        col_name="Message", value=lambda cell: cell.object.text)
     error_response = NamedColumn(col_name="Error Resp", value=lambda cell: get_response(cell.object))
 
 
