@@ -508,7 +508,7 @@ class Referral(FormReferenceBase, MotherReferenceBase):
 
     @property
     def has_seen_response(self):
-        if self.get_responders:
+        if self.get_responders or self.has_response:
             return True
         else:
             return False
@@ -516,30 +516,39 @@ class Referral(FormReferenceBase, MotherReferenceBase):
 
     @property
     def get_responders(self):
+
         responders = set()
         try:
             amb_responders = [
                 amb_resp.responder for amb_resp in self.amb_req.ambulanceresponse_set.all()]
         except AttributeError:
-            return []
+            amb_responders = []
+            #There is still a chance though that this might be a cba initiated
+            # referral which has not recorded the responders.
         else:
             return amb_responders
+
+
 
         responders.update(amb_responders)
 
         mother_id = self.mother_uid
+
+
         other_referrals = Referral.objects.filter(mother_uid=mother_id, date__gte=self.date).exclude(id=self.id).order_by('date')
 
-        resp_messages = Message.objects.filter(text__istartswith="resp %s "%mother_id, date__gte=self.date)
+        #Below we use the mysql regex to match for just the motherID
+        resp_messages = Message.objects.filter(text__iregex="^resp %s[[:>:]]"%mother_id, date__gte=self.date)
+
         if other_referrals and resp_messages:
             #If there are any other referrals with the same mother id, we shall
             #only try to find the referrals responses which come before the other referrals.
             other_referral = other_referrals[0]
             resp_messages = resp_messages.filter(date__lte=other_referral.date)
 
+
         other_responders = [msg.connection.contact for msg in resp_messages]
         responders.update(other_responders)
-        print responders
         return responders
 
     @classmethod
