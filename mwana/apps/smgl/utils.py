@@ -7,6 +7,7 @@ from django.core.urlresolvers import reverse
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models.query import QuerySet
 from django.http import HttpResponse
+from django.utils import timezone
 
 from mwana.apps.locations.models import Location
 from mwana.apps.contactsplus.models import ContactType
@@ -21,6 +22,14 @@ NONE_VALUES = ['none', 'n', None, '']
 
 
 class DateFormatError(ValueError):  pass
+
+def strip_timezone_info(date_time):
+    #updates the passed in date to the current timezone before stripping it out.
+    if not isinstance(date_time, datetime.datetime):
+        raise ValueError('Argument needs to be an instance of datetime')
+    date_time = date_time.astimezone(timezone.get_current_timezone())
+    date_time = date_time.replace(tzinfo=None)
+    return date_time
 
 def active_within_messages(messages, period_start, period_end, contact):
     messages =  messages.filter(
