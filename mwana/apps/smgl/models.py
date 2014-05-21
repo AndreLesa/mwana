@@ -523,18 +523,11 @@ class Referral(FormReferenceBase, MotherReferenceBase):
                 amb_resp.responder for amb_resp in self.amb_req.ambulanceresponse_set.all()]
         except AttributeError:
             amb_responders = []
-            #There is still a chance though that this might be a cba initiated
-            # referral which has not recorded the responders.
-        else:
-            return amb_responders
-
 
 
         responders.update(amb_responders)
 
         mother_id = self.mother_uid
-
-
         other_referrals = Referral.objects.filter(mother_uid=mother_id, date__gte=self.date).exclude(id=self.id).order_by('date')
 
         #Below we use the mysql regex to match for just the motherID
@@ -609,6 +602,22 @@ class Referral(FormReferenceBase, MotherReferenceBase):
             outcome = '{}/Baby is {}'.format(mother_outcome, self.get_baby_outcome_display().title())
         if self.delivered_on_the_way:
             outcome = '{}/{}'.format(outcome, "Delivered on The way")
+
+        #Try to see if this is just a re-referral that wasn't marked as such,
+        #so see if there are referrals of this mother from this facility within
+        #5 days
+        if outcome == '':
+            other_referrals = Referral.objects.filter(
+                mother_uid=self.mother_uid,
+                from_facility=self.facility,
+                date__gt=self.date,
+                date__lte=self.date+datetime.timedelta(days=5)
+            )
+            try:
+                outcome = "Re-referred to %s"%other_referrals[0].facility
+            except IndexError:
+                outcome = ''
+
         return outcome
 
     @property
