@@ -210,12 +210,16 @@ def anc_report(request, id=None):
         # utilize start/end date if supplied
         if not end_date:
             dispose_date, end_date = get_default_dates()
-        r['home'] = date_filtered_births.filter(place='h').count() #home births
-        r['facility'] = date_filtered_births.filter(place='f').count() #facility births
+        r['home'] = date_filtered_births.filter(place='h').distinct('mother').count() #home births
+        r['facility'] = date_filtered_births.filter(place='f').distinct('mother').count() #facility births
 
 
-        r['unknown'] = pregnancies.filter(edd__lte=end_date).exclude(id__in=births.\
-            values_list('mother__id', flat=True)).distinct().count()
+
+        birth_mothers = date_filtered_births.values_list('mother__uid', flat=True)
+        r['unknown'] = pregnancies.filter(edd__lte=end_date, edd__gte=start_date).exclude(uid__in=birth_mothers).distinct('uid').count()
+
+        r['pregnancies'] = r['home'] + r['facility'] + r['unknown']
+
         #TODO Locations numbers still look wrong
         # Aggregate ANC visits by Mother and # of visits
         visits = FacilityVisit.objects.all()
@@ -226,7 +230,6 @@ def anc_report(request, id=None):
 
         mothers = PregnantMother.objects.filter(id__in=mother_ids)
 
-        r['pregnancies'] = pregnancies.count()
 
 
         two_anc = 0
@@ -645,28 +648,33 @@ def user_report(request):
                   }
         form = ReportsFilterForm(initial=fetch_initial(initial, request.session))
 
-    cbas_registered = ContactType.objects.get(slug='cba').contacts.all()
+    cbas_registered = ContactType.objects.get(slug='cba').contacts.filter(is_active=True)
     cbas_active_ids =  Message.objects.filter(
         connection__contact__in=cbas_registered,
-        date__gte=now-datetime.timedelta(days=60)
+        date__gte=now-datetime.timedelta(days=60),
+        direction='I'
         ).values_list('connection__contact', flat=True).distinct()
     cbas_active = Contact.objects.filter(id__in=cbas_active_ids)
 
 
-    data_clerks_registered = ContactType.objects.get(slug='dc').contacts.all()
+    data_clerks_registered = ContactType.objects.get(slug='dc').contacts.filter(is_active=True)
     data_clerks_active_ids =  Message.objects.filter(
         connection__contact__in=data_clerks_registered,
-        date__gte=now-datetime.timedelta(days=14)
+        date__gte=now-datetime.timedelta(days=14),
+        direction='I'
         ).values_list('connection__contact', flat=True).distinct()
     data_clerks_active = Contact.objects.filter(id__in=data_clerks_active_ids)
 
 
     clinic_worker_types = ContactType.objects.filter(slug__in=['worker'])
-    clinic_workers_registered = Contact.objects.filter(types__in=clinic_worker_types)
+    clinic_workers_registered = Contact.objects.filter(
+        types__in=clinic_worker_types,
+        is_active=True)
 
     clinic_workers_active_ids =  Message.objects.filter(
         connection__contact__in=clinic_workers_registered,
         date__gte=now-datetime.timedelta(days=30),
+        direction='I'
       ).values_list('connection__contact', flat=True).distinct()
     clinic_workers_active = Contact.objects.filter(id__in=clinic_workers_active_ids)
 
@@ -798,7 +806,7 @@ def mothers(request):
     if district:
         locations = get_location_tree_nodes(district)
     if facility:
-        locations = get_location_tree_nodes(facility)
+        locations = [facility]
     if zone:
         locations = [zone]
 
