@@ -37,7 +37,7 @@ INITIAL_AMBULANCE_RESPONSE = _('Thank you.Your request for an ambulance has been
 ER_TO_DRIVER = _("Mother with ID:%(unique_id)s needs ER.Location:%(from_location)s,contact num:%(sender_phone_number)s. Plz SEND 'RESP %(unique_id)s OTW, DL, or NA' if you see this")
 ER_TO_TRIAGE_NURSE = _("Mother with ID:%(unique_id)s needs ER.Location:%(from_location)s,contact num:%(sender_phone_number)s. Plz SEND 'RESP %(unique_id)s OTW, DL, or NA' if you see this")
 ER_CONFIRM_SESS_NOT_FOUND = _("The Emergency with ID:%(unique_id)s can not be found! Please try again or contact your DMO immediately.")
-NOT_REGISTERED_TO_CONFIRM_ER = _("Sorry. You are not registered as Triage Nurse, Ambulance or DMO")
+NOT_REGISTERED_TO_CONFIRM_ER = _("Sorry, you are not allowed to respond to referral. Only a registered health worker can respond.")
 THANKS_ER_CONFIRM = _("Thank you for confirming. When you know the status of the Ambulance, please send RESP <RESPONSE_TYPE>!")
 NOT_ALLOWED_ER_WORKFLOW = _("Sorry, your registration type is not allowed to send Emergency Response type messages")
 AMB_RESPONSE_THANKS = _("Thank you. The ambulance for this request has been marked as %(response)s. We will notify the Rural Facility.")
@@ -102,7 +102,7 @@ def _get_or_create_zone(clinic, name):
 
 def _get_allowed_ambulance_workflow_contact(session):
     connection = session.connection
-    legal_types = ['tn', 'am', 'dmo', 'worker']
+    legal_types = ['tn', 'am', 'dmo', 'worker', 'incharge']
     try:
         contact = Contact.objects.get(connection=connection, types__slug__in=legal_types)
         return contact
@@ -124,7 +124,6 @@ def handle_submission(sender, **args):
     router = args['router']
     xform.initiating_phone_number = session.connection.identity
     keyword = session.trigger.trigger_keyword
-
     logger.debug('Attempting to post-process submission. Keyword: %s  Session is: %s' % (keyword, session))
     try:
         kw_handler = XFormKeywordHandler.objects.get(keyword=keyword)
@@ -142,13 +141,23 @@ def handle_submission(sender, **args):
 
         # call the actual handling function
         return func(session, xform, router)
-    except Exception:
+    except Exception, e:
         # assume that we were supposed to deal with this but something
         # unexpected went wrong. Respond with a general default
         # TODO: should we also mark the form somehow as errored out?
+
+        #we try to get the unique_id that was passed in.
+        #TODO: need to look for other variations of unique_id such as mother_id e.t.c
+        try:
+            unique_id = xform.get_form['unique_id']
+            error_msg = const.GENERAL_ERROR_WITH_UNIQUE_ID%{'unique_id':unique_id,
+                                                            'keyword':keyword.upper()}
+        except IndexError:
+            error_msg = const.GENERAL_ERROR%{'keyword':keyword.upper()}
+
         logging.exception("Problem processing message in session %s from %s." % \
                           (session, session.connection))
-        respond_to_session(router, session, const.GENERAL_ERROR, is_error=True)
+        respond_to_session(router, session, error_msg, is_error=True)
 
 # then wire it to the xform_received signal
 xform_saved_with_session.connect(handle_submission)

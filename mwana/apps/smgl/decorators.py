@@ -1,3 +1,4 @@
+# vim: ai ts=4 sts=4 et sw=4
 from rapidsms.messages.outgoing import OutgoingMessage
 from mwana.apps.smgl import const
 import functools
@@ -13,7 +14,7 @@ class registration_required(object):
         self.func = func
 
     def __call__(self, session, xform, router):
-        if not session.connection.contact:
+        if not session.connection.contact: 
             return respond_to_session(router, session, const.NOT_REGISTERED,
                                       is_error=True)
         else:

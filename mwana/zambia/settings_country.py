@@ -36,7 +36,7 @@ EMAIL_SUBJECT_PREFIX = '[Mwana] '
 EMAIL_HOST = 'localhost'
 DEFAULT_FROM_EMAIL = 'sinkalation@gmail.com'
 
-TIME_ZONE = 'Africa/Lusaka'
+#TIME_ZONE = 'Africa/Lusaka'
 
 LANGUAGE_CODE = 'to-zm'
 

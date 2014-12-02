@@ -7,11 +7,13 @@ from django.core.urlresolvers import reverse
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models.query import QuerySet
 from django.http import HttpResponse
+from django.utils import timezone
 
 from mwana.apps.locations.models import Location
 from mwana.apps.contactsplus.models import ContactType
 from rapidsms.messages.outgoing import OutgoingMessage
 from rapidsms.contrib.messagelog.models import Message, DIRECTION_CHOICES
+from rapidsms.models import Contact
 from mwana.apps.smgl import const
 import string
 import xlwt
@@ -20,6 +22,14 @@ NONE_VALUES = ['none', 'n', None, '']
 
 
 class DateFormatError(ValueError):  pass
+
+def strip_timezone_info(date_time):
+    #updates the passed in date to the current timezone before stripping it out.
+    if not isinstance(date_time, datetime.datetime):
+        raise ValueError('Argument needs to be an instance of datetime')
+    date_time = date_time.astimezone(timezone.get_current_timezone())
+    date_time = date_time.replace(tzinfo=None)
+    return date_time
 
 def active_within_messages(messages, period_start, period_end, contact):
     messages =  messages.filter(
@@ -116,6 +126,15 @@ def get_location_and_parents_types(location, facility_types={}):
         return get_location_and_parents_types(location.parent, facility_types)
     else:
         return facility_types
+
+def get_district_super_users(district_name):
+    users = Contact.objects.filter(is_super_user=True)
+    district_super_users = []
+    for user in users:
+        district, facility, zone = get_district_facility_zone(user.location)
+        if district == district_name:
+            district_super_users.append(user)
+    return district_super_users
 
 def get_district_facility_zone(location):
     facility = None

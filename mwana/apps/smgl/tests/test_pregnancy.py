@@ -4,6 +4,7 @@ from mwana.apps.smgl.models import PregnantMother, FacilityVisit,\
     ReminderNotification
 from mwana.apps.smgl import const
 from datetime import datetime, timedelta
+
 from mwana.apps.smgl.reminders import (send_followup_reminders,)
 from mwana.apps.smgl.app import BIRTH_REG_RESPONSE
 from mwana.apps.smgl.tests.shared import create_mother

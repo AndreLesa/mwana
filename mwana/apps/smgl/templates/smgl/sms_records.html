@@ -79,7 +79,10 @@
       <input type="submit" class="btn" name="export" value="Export" />
   </form>
   {{ form.media.js }}
+{% load tz %}
+{% localtime on %}
 {{ records_table.as_html }}
+{% endlocaltime %}
 </div>
 
   <script type="text/javascript">

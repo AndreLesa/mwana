@@ -99,6 +99,9 @@ class LocationBase(models.Model):
         if self.type.slug == 'zone':
             return "%s: Zone %s" % (self.parent.name, self.name)
 
+        if self.type.slug == 'village':
+            return "%s: Village %s" %(self.parent.name, self.name)
+
         return self.name
 
     def __repr__(self):

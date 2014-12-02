@@ -90,9 +90,6 @@ class SMGLBirthRegTest(SMGLSetUp):
 
         send_second_postpartum_reminders(router_obj=self.router)
 
-
-
-
     def testBirthNotRegistered(self):
         script = """
             %(num)s > birth 1234 01 01 2012 bo h yes t2

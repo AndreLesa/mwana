@@ -35,7 +35,7 @@ def told(session, xform, router):
         mother = PregnantMother.objects.get(uid=unique_id)
     except ObjectDoesNotExist:
         return respond_to_session(router, session, const.FUP_MOTHER_DOES_NOT_EXIST,
-                                  is_error=True)
+                                  is_error=True, **{'unique_id': unique_id})
     else:
         now = datetime.datetime.now()
         if reminder_type == 'edd':

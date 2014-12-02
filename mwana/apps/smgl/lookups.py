@@ -31,7 +31,7 @@ class DistrictLookup(ModelLookup):
 
 class FacilityLookup(ModelLookup):
     model = Location
-    exclude = {'type__singular__in': ['district', 'Province', 'Zone', 'Head Office', 'village']}
+    exclude = {'type__singular__in': ['district', 'Province', 'Zone', 'village', 'Head Office']}
     search_fields = ('name__icontains', )
 
     def get_queryset(self):

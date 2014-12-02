@@ -1,5 +1,7 @@
+# vim: ai ts=4 sts=4 et sw=4
 from rapidsms.models import Contact, Connection
 from django.db import models
+from django.utils import timezone
 from django.contrib.auth.models import User
 from django.core.exceptions import MultipleObjectsReturned
 
@@ -15,7 +17,8 @@ import ntpath
 REASON_FOR_VISIT_CHOICES = (
     ('r', 'Routine'),
     ('nr', 'Non-Routine'),
-    ('birth_reg', 'Birth Registration,')
+    ('reg', 'Pregnancy Registration'),
+    ('birth_reg', 'Birth Registration')
 )
 
 VISIT_TYPE_CHOICES = (
@@ -84,7 +87,8 @@ class PregnantMother(models.Model):
         max_length=160, choices=REASON_FOR_VISIT_CHOICES)
     zone = models.ForeignKey(Location, null=True, blank=True,
                              related_name="pregnant_mother_zones")
-
+    village = models.ForeignKey(Location, null=True, blank=True,
+                             related_name="pregnant_mother_villages")
     risk_reason_csec = models.BooleanField(default=False)
     risk_reason_cmp = models.BooleanField(default=False)
     risk_reason_gd = models.BooleanField(default=False)
@@ -93,7 +97,12 @@ class PregnantMother(models.Model):
     risk_reason_oth = models.BooleanField(default=False)
     risk_reason_none = models.BooleanField(default=False)
 
-    reminded = models.BooleanField(default=False)
+    reminded = models.BooleanField(default=False, help_text="Set to True if reminded for EDD")
+    one_week_away_reminded = models.BooleanField(default=False)
+    two_week_away_reminded = models.BooleanField(default=False)
+    three_week_away_reminded = models.BooleanField(default=False)
+    four_week_away_reminded = models.BooleanField(default=False)
+    five_week_away_reminded = models.BooleanField(default=False)
 
 
     def get_field_value_mapping(self):
@@ -344,6 +353,9 @@ class FacilityVisit(models.Model):
         return FacilityVisit.objects.filter(mother=self.mother)\
             .order_by("-created_date")[0] == self
 
+    def __unicode__(self):
+        return "%s %s"%(self.visit_type, self.visit_date)
+
     def save(self, *args, **kwargs):
         """
         Sets the district associated with the current location
@@ -395,11 +407,23 @@ class AmbulanceResponse(FormReferenceBase, MotherReferenceBase):
 
 REFERRAL_STATUS_CHOICES = (("em", "emergent"), ("nem", "non-emergent"))
 REFERRAL_OUTCOME_CHOICES = (("stb", "stable"), ("cri", "critical"),
-                            ("dec", "deceased"), ("oth", "other"))
+                            ("dec", "deceased"), ("oth", "other"),
+                            ("dotw", "Dead on the Way"))
 DELIVERY_MODE_CHOICES = (("vag", "vaginal"), ("csec", "c-section"),
                          ("pp", "post-partum"), ("ref", "new_referral"),
                         ("oth", "other"))
 
+class Pick(FormReferenceBase):
+    time = models.DateTimeField(auto_now_add=True)
+
+    def __unicode__(self):
+        return "Picked at %s"%self.time.astimezone(timezone.get_current_timezone()).strftime("%x %X")
+
+class Drop(FormReferenceBase):
+    time = models.DateTimeField(auto_now_add=True)
+
+    def __unicode__(self):
+        return "Dropped at %s"%self.time.astimezone(timezone.get_current_timezone()).strftime("%x %X")
 
 class Referral(FormReferenceBase, MotherReferenceBase):
     REFERRAL_REASONS = {
@@ -421,8 +445,12 @@ class Referral(FormReferenceBase, MotherReferenceBase):
                                       null=True, blank=True,
                                       help_text="The referring facility",
                                       related_name="referrals_made")
+    #Some highly confusing fields here.
+    #responded is actually set if a refout is sent, while has_response is set
+    #when there is a response to the referral.
+    responded = models.BooleanField(default=False, help_text="Set to True if REFOUT is received.")
+    has_response = models.BooleanField(default=False, help_text="Set to True if a RESP is recieved")
 
-    responded = models.BooleanField(default=False)
     mother_showed = models.NullBooleanField(default=None)
 
     status = models.CharField(max_length=3,
@@ -430,12 +458,12 @@ class Referral(FormReferenceBase, MotherReferenceBase):
                               null=True, blank=True)
 
     time = models.TimeField(help_text="Time of referral", null=True)
-
+    re_referral = models.ForeignKey("self", blank=True, null=True, related_name="past_referrals")
     # outcomes
-    mother_outcome = models.CharField(max_length=3,
+    mother_outcome = models.CharField(max_length=5,
                                       choices=REFERRAL_OUTCOME_CHOICES,
                                       null=True, blank=True)
-    baby_outcome = models.CharField(max_length=3,
+    baby_outcome = models.CharField(max_length=5,
                                     choices=REFERRAL_OUTCOME_CHOICES,
                                     null=True, blank=True)
     mode_of_delivery = models.CharField(max_length=4,
@@ -455,7 +483,15 @@ class Referral(FormReferenceBase, MotherReferenceBase):
     reason_pp = models.BooleanField(default=False)
 
     reminded = models.BooleanField(default=False)
+    response_reminded = models.BooleanField(default=False)#Has been reminded of response
+    super_user_notified = models.BooleanField(default=False)
     amb_req = models.ForeignKey(AmbulanceRequest, null=True, blank=True)
+    delivered_on_the_way = models.BooleanField(default=False)
+    pick = models.OneToOneField(Pick, null=True, blank=True)
+    drop = models.OneToOneField(Drop, null=True, blank=True)
+
+    def __unicode__(self):
+        return "MotherID:%s from %s to %s at %s" %(self.mother_uid, self.from_facility, self.facility, self.date)
 
     def set_reason(self, code, val=True):
         assert code in self.REFERRAL_REASONS, "%s is not a valid \
@@ -469,7 +505,45 @@ class Referral(FormReferenceBase, MotherReferenceBase):
     def get_reasons(self):
         for c in sorted(self.REFERRAL_REASONS.keys()):
             if self.get_reason(c):
-                yield c
+                yield self.REFERRAL_REASONS[c]
+
+    @property
+    def has_seen_response(self):
+        if self.get_responders or self.has_response:
+            return True
+        else:
+            return False
+
+
+    @property
+    def get_responders(self):
+
+        responders = set()
+        try:
+            amb_responders = [
+                amb_resp.responder for amb_resp in self.amb_req.ambulanceresponse_set.all()]
+        except AttributeError:
+            amb_responders = []
+
+
+        responders.update(amb_responders)
+
+        mother_id = self.mother_uid
+        other_referrals = Referral.objects.filter(mother_uid=mother_id, date__gte=self.date).exclude(id=self.id).order_by('date')
+
+        #Below we use the mysql regex to match for just the motherID
+        resp_messages = Message.objects.filter(text__iregex="^resp %s[[:>:]]"%mother_id, date__gte=self.date)
+
+        if other_referrals and resp_messages:
+            #If there are any other referrals with the same mother id, we shall
+            #only try to find the referrals responses which come before the other referrals.
+            other_referral = other_referrals[0]
+            resp_messages = resp_messages.filter(date__lte=other_referral.date)
+
+
+        other_responders = [msg.connection.contact for msg in resp_messages]
+        responders.update(other_responders)
+        return responders
 
     @classmethod
     def non_emergencies(cls):
@@ -501,41 +575,60 @@ class Referral(FormReferenceBase, MotherReferenceBase):
 
     def get_receiving_data_clerks(self):
         # people who need to be reminded to collect the outcome
-        return Contact.objects.filter(types__slug=const.CTYPE_DATACLERK,
+        people_types = [const.CTYPE_DATACLERK, const.CTYPE_INCHARGE, const.CTYPE_TRIAGENURSE]
+        return Contact.objects.filter(types__slug__in=people_types,
                                       location=self.facility,
                                       is_active=True)
 
     @property
     def ambulance_response(self):
-        response = 'non-em'
-        if self.status == 'em':
-            if self.amb_req:
-                try:
-                    response = self.amb_req.ambulanceresponse_set.all()[
-                        0].response
-                except:
-                    response = None
-            else:
-                response = "No Data"
+
+        if self.amb_req:
+            try:
+                response = self.amb_req.ambulanceresponse_set.all()[
+                    0].response
+            except IndexError:
+                response = None
+        else:
+            response = None
         return response
 
     @property
     def outcome(self):
-        outcome = self.mother_outcome if self.mother_outcome else ''
+        outcome = ''
+        if self.re_referral:
+            outcome = "Re-referred to %s"%self.re_referral.facility
+        mother_outcome = "Mother is %s"%self.get_mother_outcome_display().title() if self.mother_outcome else ''
         if self.baby_outcome:
-            outcome = '{}/{}'.format(outcome, self.baby_outcome)
+            outcome = '{}/Baby is {}'.format(mother_outcome, self.get_baby_outcome_display().title())
+        if self.delivered_on_the_way:
+            outcome = '{}/{}'.format(outcome, "Delivered on The way")
+
+        #Try to see if this is just a re-referral that wasn't marked as such,
+        #so see if there are referrals of this mother from this facility within
+        #5 days
+        if outcome == '':
+            other_referrals = Referral.objects.filter(
+                mother_uid=self.mother_uid,
+                from_facility=self.facility,
+                date__gt=self.date,
+                date__lte=self.date+datetime.timedelta(days=5)
+            )
+            try:
+                outcome = "Re-referred to %s"%other_referrals[0].facility
+            except IndexError:
+                outcome = ''
+
         return outcome
 
     @property
     def flag(self):
-        if self.status == 'em':
-            if self.ambulance_response and not self.outcome:
-                return 'resp-no-out'
-            elif self.ambulance_response and self.outcome:
-                return 'resp-out'
-            else:
-                return 'no-resp-no-out'
-        return ''
+        if self.has_seen_response and not self.outcome:
+            return 'resp-no-out'
+        elif self.has_seen_response and self.outcome:
+            return 'resp-out'
+        else:
+            return 'no-resp-no-out'
 
     def amb_responders(self):
         try:
@@ -561,10 +654,10 @@ class Referral(FormReferenceBase, MotherReferenceBase):
             return ""
 
     def turn_around_time(self):
-        if not self.date_outcome:
+        if not self.pick:
             return 0
         else:
-            turn_around = self.date_outcome - self.date
+            turn_around = self.pick.time - self.date
             return turn_around.seconds
 
 
@@ -710,6 +803,9 @@ REMINDER_TYPE_CHOICES = (("nvd", "Next Visit Date"),
                          ("em_ref", "Emergency Referral"),
                          ("nem_ref", "Non-Emergency Referral"),
                          ("edd_14", "Expected Delivery, 14 days before"),
+                         ("super_user_ref_resp", "Referral Resp not sent (super user)(30 mins)"),
+                         ("ref_resp_reminder", "Referral Resp not sent (facility staff)(20 mins)"),
+                         ("no_refout_reminder_staff", "Reminder for REFOUT not received to staff."),
                          ("syp", "Syphilis Treatment"))
 
 
@@ -718,7 +814,7 @@ class ReminderNotification(MotherReferenceBase):
     """
     Any notifications sent to user
     """
-    type = models.CharField(max_length=10, choices=REMINDER_TYPE_CHOICES)
+    type = models.CharField(max_length=30, choices=REMINDER_TYPE_CHOICES)
     recipient = models.ForeignKey(Contact,
                                   related_name='sent_notifications')
     date = models.DateTimeField()

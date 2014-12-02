@@ -1,6 +1,7 @@
 import datetime
 from django.core.urlresolvers import reverse
-
+from django.template import defaultfilters
+from django.utils import timezone
 
 from djtables import Table, Column
 from djtables.column import DateColumn
@@ -26,12 +27,29 @@ class NamedColumn(Column):
         return self._col_name or self.name
 
 
+class AwareDateColumn(DateColumn):
+
+    def render(self, cell, *args, **kwargs):
+        value = self.value(cell)
+        if value:
+            #date_time = value
+            try:
+                date_time = value.astimezone(timezone.get_current_timezone())
+            except AttributeError:
+                date_time = value
+        else:
+            return ''
+        return defaultfilters.date(
+            date_time,
+            self._format)
+
+
 class PregnantMotherTable(Table):
-    created_date = DateColumn(format="Y m d H:i ")
+    created_date = AwareDateColumn(format="Y m d H:i ")
     uid = Column(link=lambda cell: reverse(
         "mother-history", args=[cell.object.id]))
     location = Column()
-    edd = DateColumn(format="d/m/Y")
+    edd = AwareDateColumn(format="d/m/Y")
     risks = Column(value=lambda cell: ", ".join([x.upper()
                                                  for x in cell.object.get_risk_reasons(
                                                  )]),
@@ -43,7 +61,7 @@ class PregnantMotherTable(Table):
 
 
 class MotherMessageTable(Table):
-    date = DateColumn(format="Y m d H:i ")
+    date = AwareDateColumn(format="Y m d H:i ")
     msg_type = NamedColumn(col_name="Type",
                            value=lambda cell: cell.object.text.split(
                                ' ')[0].upper(),
@@ -57,7 +75,7 @@ class MotherMessageTable(Table):
         order_by = "-date"
 
 class ErrorMessageTable(Table):
-    date = DateColumn(format="Y m d H:i ")
+    date = AwareDateColumn(format="Y m d H:i ")
     msg_type = NamedColumn(col_name="Type",
                            value=lambda cell: cell.object.text.split(
                                ' ')[0].upper(),
@@ -73,7 +91,7 @@ class ErrorMessageTable(Table):
         order_by = "-date"
 
 class NotificationsTable(Table):
-    date = DateColumn(format="Y m d H:i ")
+    date = AwareDateColumn(format="Y m d H:i ")
     name = Column(
         value=lambda cell: cell.object.connection.contact if cell.object.connection else '', sortable=False)
     number = Column(
@@ -87,15 +105,14 @@ class NotificationsTable(Table):
 
 
 class ReferralsTable(Table):
-    date = DateColumn(format="Y m d H:i ")
+    date = AwareDateColumn(format="Y m d H:i ")
     from_facility = Column()
     sender = Column(
         value=lambda cell: cell.object.session.connection.contact if cell.object.session.connection else '', sortable=False)
     number = Column(
         value=lambda cell: cell.object.session.connection.identity if cell.object.session.connection else '', sortable=False)
     response = Column(
-        value=lambda cell: "Yes" if cell.object.responded else "No", sortable=False)
-    status = Column()
+        value=lambda cell: "Yes" if cell.object.has_seen_response else "No", sortable=False)
     confirm_amb = Column(
         value=lambda cell: cell.object.ambulance_response, sortable=False)
     outcome = Column(sortable=False)
@@ -317,7 +334,7 @@ def map_message_fields(message):
 
 class SMSRecordsTable(Table):
 
-    date = DateColumn(format="Y m d H:i")
+    date = AwareDateColumn(format="Y m d H:i")
     phone_number = NamedColumn(
         col_name="Phone Number", value=lambda cell: cell.object.connection.identity)
     user_name = NamedColumn(link=lambda cell: reverse("sms-user-history", args=[
@@ -406,7 +423,7 @@ class SMSUsersTable(Table):
 
 
 class SMSUserMessageTable(Table):
-    date = DateColumn(format="Y m d H:i")
+    date = AwareDateColumn(format="Y m d H:i")
     msg_type = NamedColumn(col_name="Type",
                            value=lambda cell: cell.object.text.split(
                                ' ')[0].upper(),
@@ -440,7 +457,7 @@ def find_help_message(help_request):
 class HelpRequestTable(Table):
     id = Column(link=lambda cell: reverse(
         "help-manager", args=[cell.object.id]))
-    requested_on = DateColumn(format="Y m d H:i ")
+    requested_on = AwareDateColumn(format="Y m d H:i ")
     phone = Column(value=lambda cell: cell.object.requested_by.identity)
     name = Column(value=lambda cell:
                   cell.object.requested_by.contact.name if cell.object.requested_by.contact else '')
@@ -480,7 +497,7 @@ def get_response(message):
         return session.message_outgoing.text if session.message_outgoing else ""
 
 class ErrorTable(Table):
-    date = DateColumn(format='Y m d H:i ')
+    date = AwareDateColumn(format='Y m d H:i ')
     type = NamedColumn(col_name="Type",
                       value=lambda cell: get_msg_type(cell.object),
                       sortable=False
@@ -510,7 +527,7 @@ class ErrorTable(Table):
 
 
 class SMSRecordsTable(Table):
-    date = DateColumn(format="Y m d H:i")
+    date = AwareDateColumn(format="Y m d H:i")
     type = NamedColumn(col_name="Type",
                       value=lambda cell: get_msg_type(cell.object),
                       sortable=False

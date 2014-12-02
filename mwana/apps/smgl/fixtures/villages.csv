@@ -1,0 +1,506 @@
+Health Facility,Zone Name,Zone ID,Village Name,Village ID
+Chilala,,804024,,804024
+Chilala,Chilala,80402401,,80402401
+Chilala,Chilala,80402401,Chilala,8040240101
+Chilala,Chilala,80402401,Chivunya,8040240102
+Chilala,Chilala,80402401,Chilyata,8040240103
+Chilala,Chilala,80402401,Mwaayo,8040240104
+Chilala,Chilala,80402401,Monde,8040240105
+Chilala,Chilala,80402401,Namungundu,8040240106
+Chilala,Chilala,80402401,Kabumbwe,8040240107
+Chilala,Chilala,80402401,Mwabbila,8040240108
+Chilala,Chilala,80402401,Nchibwende,8040240109
+Chilala,Chilala,80402401,Mweebo,8040240110
+Chilala,Chilala,80402401,Chungu,8040240111
+Chilala,Chilala,80402401,Hachimpombe,8040240112
+Chilala,Mwebo,80402402,,80402402
+Chilala,Mwebo,80402402,Chuubo,8040240201
+Chilala,Mwebo,80402402,Chilyata,8040240202
+Chilala,Mwebo,80402402,Hamuyala,8040240203
+Chilala,Mwebo,80402402,Mapulanga,8040240204
+Chilala,Mwebo,80402402,Mulobela,8040240205
+Chilala,Mwebo,80402402,Lingamba,8040240206
+Chilala,Mwebo,80402402,Hanampota,8040240207
+Chilala,Kaminya,80402403,,80402403
+Chilala,Kaminya,80402403,Singowa,8040240301
+Chilala,Kaminya,80402403,Simakanta,8040240302
+Chilala,Kaminya,80402403,Makwenda,8040240303
+Chilala,Kaminya,80402403,Jombo,8040240304
+Chilala,Chikanta,80402404,,80402404
+Chilala,Chikanta,80402404,Nakasamu,8040240401
+Chilala,Chikanta,80402404,hamukasunka,8040240402
+Chilala,Chikanta,80402404,Simakanta,8040240403
+Chilala,Chikanta,80402404,Nabuundu,8040240404
+Chilala,Chikanta,80402404,Simoono,8040240405
+Chilala,Chikanta,80402404,Similindi,8040240406
+Chilala,Chikanta,80402404,Natanga,8040240407
+Chilala,Chikanta,80402404,Kabumbwe,8040240408
+Chilala,Chikanta,80402404,Chungu,8040240409
+Chilala,Chikanta,80402404,Makwenda,8040240410
+Chilala,Chikanta,80402404,Namaloongo,8040240411
+Chilala,Chikanta,80402404,Misinzo,8040240412
+Chilala,Hanzembwe,80402405,,80402405
+Chilala,Hanzembwe,80402405,Hanzembwe,8040240501
+Chilala,Hanzembwe,80402405,Handavwu,8040240502
+Chilala,Hanzembwe,80402405,Sinzala,8040240503
+Chilala,Hanzembwe,80402405,Simungoma,8040240504
+Chilala,Hanzembwe,80402405,Mwabbila,8040240505
+Chilala,Hanzembwe,80402405,Makupe,8040240506
+Chilala,Hanzembwe,80402405,Similindi,8040240507
+Chilala,Hanzembwe,80402405,Chivwunya,8040240508
+Chilala,Hanzembwe,80402405,Habalengu,8040240509
+Chilala,Sichmbwali,80402406,,80402406
+Chilala,Sichmbwali,80402406,Kantoolo,8040240601
+Chilala,Sichmbwali,80402406,Sichimbwali,8040240602
+Chilala,Sichmbwali,80402406,Namalindi,8040240603
+Chilala,Sichmbwali,80402406,Handavu,8040240604
+Chilala,Sichmbwali,80402406,Kauwe,8040240605
+Chilala,Sichmbwali,80402406,Katambo,8040240606
+Chilala,Sichmbwali,80402406,Habalengu,8040240607
+Chilala,Sichmbwali,80402406,Kuliwa,8040240608
+Chilala,Sichmbwali,80402406,Chibyabusiku,8040240609
+Chilala,Sichmbwali,80402406,Kanyungwa,8040240610
+Chilala,Sichmbwali,80402406,Matimba,8040240611
+Chilala,Sichmbwali,80402406,Malindi,8040240612
+Chilala,Sichmbwali,80402406,Hamubbampa,8040240613
+Chilala,Sichmbwali,80402406,Simwembela,8040240614
+Chilala,Sichmbwali,80402406,Sivwimikamwi,8040240615
+Chilala,Sichmbwali,80402406,Mubinda,8040240616
+Chilala,Sichmbwali,80402406,Mupande,8040240617
+Chilala,Hambweka,80402407,,80402407
+Chilala,Hambweka,80402407,Hambweka,8040240701
+Chilala,Hambweka,80402407,Mateele,8040240702
+Chilala,Hambweka,80402407,Makondo,8040240703
+Chilala,Hambweka,80402407,Moomba,8040240704
+Chilala,Hambweka,80402407,Hachibabu,8040240705
+Chilala,Hambweka,80402407,Kauwe,8040240706
+Kalomo HAHC,,804030,,804030
+Kalomo HAHC,Katanda,80403001,,80403001
+Kalomo HAHC,Katanda,80403001,Simbansao,8040300101
+Kalomo HAHC,Katanda,80403001,Stain,8040300102
+Kalomo HAHC,Katanda,80403001,Tooboi,8040300103
+Kalomo HAHC,Katanda,80403001,Simooloka,8040300104
+Kalomo HAHC,Katanda,80403001,Kangala,8040300105
+Kalomo HAHC,Katanda,80403001,Kayumba,8040300106
+Kalomo HAHC,Katanda,80403001,Kabenza,8040300107
+Kalomo HAHC,Katanda,80403001,Lwambi,8040300108
+Kalomo HAHC,Muyuni,80403002,,80403002
+Kalomo HAHC,Muyuni,80403002,Kangela,8040300201
+Kalomo HAHC,Muyuni,80403002,Mutanga,8040300202
+Kalomo HAHC,Muyuni,80403002,Sibbula,8040300203
+Kalomo HAHC,Muyuni,80403002,Siananjokwe,8040300204
+Kalomo HAHC,Muyuni,80403002,Salt,8040300205
+Kalomo HAHC,Muyuni,80403002,Motoyandane,8040300206
+Kalomo HAHC,Muyuni,80403002,Muzyamba,8040300207
+Kalomo HAHC,Boongo,80403003,,80403003
+Kalomo HAHC,Boongo,80403003,Malala,8040300301
+Kalomo HAHC,Boongo,80403003,Siambela,8040300302
+Kalomo HAHC,Boongo,80403003,Siachifulo,8040300303
+Kalomo HAHC,Boongo,80403003,Lwaambi,8040300304
+Kalomo HAHC,Matoondo,80403004,,80403004
+Kalomo HAHC,Matoondo,80403004,Simutete,8040300401
+Kalomo HAHC,Matoondo,80403004,Dafani,8040300402
+Kalomo HAHC,Matoondo,80403004,Simuluwe,8040300403
+Kalomo HAHC,Matoondo,80403004,Mancom,8040300404
+Kalomo HAHC,Matoondo,80403004,Simundaduli,8040300405
+Kalomo HAHC,Kinatone,80403005,,80403005
+Kalomo HAHC,Kinatone,80403005,Country club farm,8040300501
+Kalomo HAHC,Kinatone,80403005,Dube farm,8040300502
+Kalomo HAHC,Kinatone,80403005,Tutalike farm,8040300503
+Kalomo HAHC,Kinatone,80403005,Siapenga Farm,8040300504
+Kalomo HAHC,Kinatone,80403005,Nyambe farm,8040300505
+Kalomo HAHC,Kinatone,80403005,Musa farm,8040300506
+Kalomo HAHC,Kinatone,80403005,Siamapuka farm,8040300507
+Kalomo HAHC,Kinatone,80403005,Kinatone community school,8040300508
+Kalomo HAHC,Kinatone,80403005,Banji farm,8040300509
+Kalomo HAHC,Kinatone,80403005,Haamonga farm,8040300510
+Kalomo HAHC,Kinatone,80403005,Chaala farm,8040300511
+Kalomo HAHC,Kinatone,80403005,Sishamu farm,8040300512
+Kalomo HAHC,Bowood,80403006,,80403006
+Kalomo HAHC,Bowood,80403006,Simatanga farm,8040300601
+Kalomo HAHC,Bowood,80403006,Siakasasa farm,8040300602
+Kalomo HAHC,Bowood,80403006,Bowood rail station,8040300603
+Kalomo HAHC,Bowood,80403006,Hambwalu farm,8040300604
+Kalomo HAHC,Bowood,80403006,Matimba farm,8040300605
+Kalomo HAHC,Bowood,80403006,Tumango,8040300606
+Kalomo HAHC,Bowood,80403006,Mazuba farm,8040300607
+Kalomo HAHC,Bowood,80403006,Vanberg-Chabwino farm,8040300608
+Kalomo HAHC,Kalomo HAHC Central,80403007,,80403007
+Kalomo HAHC,Kalomo HAHC Central,80403007,Siafwa Compound,8040300701
+Kalomo HAHC,Kalomo HAHC Central,80403007,Bridge ,8040300702
+Kalomo HAHC,Kalomo HAHC Central,80403007,Town Market,8040300703
+Kalomo HAHC,Kalomo HAHC Central,80403007,Town Centre,8040300704
+Kalomo HAHC,Kalomo HAHC Central,80403007,Mathews,8040300705
+Kalomo HAHC,Kalomo HAHC Central,80403007,Kalomo High School,8040300706
+Kalomo HAHC,Kalomo HAHC Central,80403007,Road Block,8040300707
+Kalomo HAHC,Kalomo HAHC Central,80403007,Hospital Compound,8040300708
+Kalomo HAHC,Kalomo HAHC Central,80403007,Zesco Compound,8040300709
+Kalomo HAHC,Kalomo HAHC Central,80403007,Police Camp,8040300710
+Kalomo HAHC,Kalomo HAHC Central,80403007,GB Compound,8040300711
+Kalomo HAHC,Kalomo HAHC Central,80403007,Ma Germany,8040300712
+Kalomo HAHC,Kalomo HAHC Central,80403007,Magrimondi,8040300713
+Kalomo HAHC,Kalomo HAHC Central,80403007,Mwata Compound,8040300714
+Zimba HAHC,,804031,,804031
+Zimba HAHC,Sichimwa,80403101,,80403101
+Zimba HAHC,Sichimwa,80403101,Dindi,8040310101
+Zimba HAHC,Sichimwa,80403101,Mukwalantila,8040310102
+Zimba HAHC,Sichimwa,80403101,Siansumo,8040310103
+Zimba HAHC,Sichimwa,80403101,Mamadula,8040310104
+Zimba HAHC,Sichimwa,80403101,Kalamba Sianene,8040310105
+Zimba HAHC,Luwezi,80403102,,80403102
+Zimba HAHC,Luwezi,80403102,Lonkwe,8040310201
+Zimba HAHC,Luwezi,80403102,Siamazila,8040310202
+Zimba HAHC,Luwezi,80403102,Musebela,8040310203
+Zimba HAHC,Luwezi,80403102,Nasilele,8040310204
+Zimba HAHC,Luwezi,80403102,Chinkusu,8040310205
+Zimba HAHC,Luwezi,80403102,Chingobe,8040310206
+Zimba HAHC,Luwezi,80403102,Chundwe,8040310207
+Zimba HAHC,Luwezi,80403102,Shunta,8040310208
+Zimba HAHC,Zimba Static,80403106,,80403106
+Zimba HAHC,Zimba Static,80403106,Treasure,8040310601
+Zimba HAHC,Zimba Static,80403106,Simwami,8040310602
+Zimba HAHC,Zimba Static,80403106,Mawaya,8040310603
+Zimba HAHC,Zimba Static,80403106,Transmitter,8040310604
+Zimba HAHC,Zimba Static,80403106,Mantanyani,8040310605
+Zimba HAHC,Zimba Static,80403106,Zimba Town,8040310606
+Zimba HAHC,Zimba Static,80403106,Namadula A,8040310607
+Zimba HAHC,Zimba Static,80403106,Namadula B,8040310608
+Zimba HAHC,Zimba Static,80403106,Namadula C,8040310609
+Zimba HAHC,Zimba Static,80403106,Kalundu Farm,8040310610
+Zimba HAHC,Zimba Static,80403106,Police Compound,8040310611
+Zimba HAHC,Zimba Static,80403106,Highland,8040310612
+Zimba HAHC,Zimba Static,80403106,Mutunda Farm,8040310613
+Zimba HAHC,Kabutu,80403107,,80403107
+Zimba HAHC,Kabutu,80403107,Kabutu,8040310701
+Zimba HAHC,Kabutu,80403107,Island,8040310702
+Zimba HAHC,Kabutu,80403107,Homesteady,8040310703
+Zimba HAHC,Kabutu,80403107,Nakoya,8040310704
+Zimba HAHC,Kabutu,80403107,Seventen,8040310705
+Zimba HAHC,Kabutu,80403107,Kalundu ,8040310706
+Namwianga,,804028,,804028
+Namwianga,Goodhope,80402801,,80402801
+Namwianga,Goodhope,80402801,Seven fountain ,8040280101
+Namwianga,Goodhope,80402801,Twinfountain,8040280102
+Namwianga,Goodhope,80402801,Goodhope ,8040280103
+Namwianga,Swart,80402803,,80402803
+Namwianga,Swart,80402803,Muliwana Old Farm,8040280301
+Namwianga,Swart,80402803,Mpuundu Farm,8040280302
+Namwianga,Swart,80402803,Maambo Farm,8040280303
+Namwianga,Swart,80402803,Bryan,8040280304
+Namwianga,Swart,80402803,Nangala,8040280305
+Namwianga,Yusa,80402804,,80402804
+Namwianga,Yusa,80402804,Yusa Farm,8040280401
+Namwianga,Yusa,80402804,Bbelo,8040280402
+Namwianga,Bbello,80402805,,80402805
+Namwianga,Bbello,80402805,Siandwazi,8040280501
+Namwianga,Bbello,80402805,Mpuundu,8040280502
+Namwianga,Siabalumbi,80402806,,80402806
+Namwianga,Siabalumbi,80402806,Plateau Farm,8040280601
+Namwianga,Siabalumbi,80402806,Rema farm,8040280602
+Namwianga,Siabalumbi,80402806,Lubombo,8040280603
+Namwianga,Siabalumbi,80402806,Siabalumbi,8040280604
+Namwianga,Kalowa,80402807,,80402807
+Namwianga,Kalowa,80402807,Muyoba,8040280701
+Namwianga,Kalowa,80402807,Sibajene,8040280702
+Namwianga,Kalowa,80402807,Katungu,8040280703
+Namwianga,Katungu,80402808,,80402808
+Namwianga,Katungu,80402808,Siachija,8040280801
+Namwianga,Katungu,80402808,Sikweya,8040280802
+Namwianga,Katungu,80402808,Siampeta,8040280803
+Namwianga,Katungu,80402808,Sibalwa,8040280804
+Namwianga,Katungu,80402808,Gwalala,8040280805
+Namwianga,Katungu,80402808,Lubombo,8040280806
+Namwianga,Katungu,80402808,Munakanyemba,8040280807
+Namwianga,Namwianga,80402809,,80402809
+Namwianga,Namwianga,80402809,Tumango,8040280901
+Namwianga,Namwianga,80402809,Choolwe,8040280902
+Namwianga,Namwianga,80402809,Mutala,8040280903
+Namwianga,Namwianga,80402809,Wasawange,8040280904
+Namwianga,Namwianga,80402809,Namwianga,8040280905
+Namwianga,Namwianga,80402809,Plateau Farm,8040280906
+Namwianga,Namwianga,80402809,Lema Farm,8040280907
+Namwianga,Namwianga,80402809,Siabalumbi,8040280908
+Namwianga,Namwianga,80402809,Lubombo,8040280909
+Sipatunyana,,804011,,804011
+Sipatunyana,Shangu,80401101,,80401101
+Sipatunyana,Shangu,80401101,Kalowa,8040110101
+Sipatunyana,Shangu,80401101,Sibalwa,8040110102
+Sipatunyana,Shangu,80401101,Katukula,8040110103
+Sipatunyana,Shangu,80401101,Mulwani,8040110104
+Sipatunyana,Shangu,80401101,Muyoba,8040110105
+Sipatunyana,Shangu,80401101,Siachija,8040110106
+Sipatunyana,Shangu,80401101,Sibajene,8040110107
+Sipatunyana,Simapuka,80401102,,80401102
+Sipatunyana,Simapuka,80401102,Simwaamwa,8040110201
+Sipatunyana,Simapuka,80401102,Simapuka,8040110202
+Sipatunyana,Simapuka,80401102,Kalefula,8040110203
+Sipatunyana,Simapuka,80401102,Siankutu,8040110204
+Sipatunyana,Siamwaamvwa,80401103,,80401103
+Sipatunyana,Siamwaamvwa,80401103,Siamwaamvwa,8040110301
+Sipatunyana,Siamoono,80401104,,80401104
+Sipatunyana,Siamoono,80401104,Siamoono,8040110401
+Sipatunyana,Chuundwe,80401105,,80401105
+Sipatunyana,Chuundwe,80401105,Shunta,8040110501
+Sipatunyana,Chuundwe,80401105,Sibayi,8040110502
+Sipatunyana,Chuundwe,80401105,Chinkusu,8040110503
+Sipatunyana,Chuundwe,80401105,Chingobe,8040110504
+Sipatunyana,Chuundwe,80401105,Siamazila,8040110505
+Sipatunyana,Chuundwe,80401105,Simuyuni,8040110506
+Sipatunyana,Chuundwe,80401105,Siakaloba,8040110507
+Sipatunyana,Chuundwe,80401105,Nasilele,8040110508
+Sipatunyana,Njabalombe,80401106,,80401106
+Sipatunyana,Njabalombe,80401106,Siampondo,8040110601
+Sipatunyana,Njabalombe,80401106,Njabalombe,8040110602
+Sipatunyana,Njabalombe,80401106,Siakulya,8040110603
+Sipatunyana,Njabalombe,80401106,Siamajali,8040110604
+Sipatunyana,Njabalombe,80401106,Kayumba,8040110605
+Sipatunyana,Njabalombe,80401106,Sianagombe 2,8040110606
+Sipatunyana,Njabalombe,80401106,Sianagombe 3,8040110607
+Sipatunyana,Mutana,80401107,,80401107
+Sipatunyana,Mutana,80401107,Siambula,8040110701
+Sipatunyana,Mutana,80401107,Mutana,8040110702
+Sipatunyana,Mutana,80401107,Siachongwe,8040110703
+Sipatunyana,Mutana,80401107,Siaboya,8040110704
+Sipatunyana,Munakanyemba,80401108,,80401108
+Sipatunyana,Munakanyemba,80401108,Siampeta,8040110801
+Sipatunyana,Munakanyemba,80401108,Mweebo,8040110802
+Sipatunyana,Munakanyemba,80401108,Munakanyembe,8040110803
+Sipatunyana,Munakanyemba,80401108,Kanyeba,8040110804
+Sipatunyana,Munakanyemba,80401108,Museta,8040110805
+Sipatunyana,Munakanyemba,80401108,Kambulu,8040110806
+Sipatunyana,Kasikili,80401109,,80401109
+Sipatunyana,Kasikili,80401109,Siasyalumba,8040110901
+Sipatunyana,Kasikili,80401109,luyala,8040110902
+Sipatunyana,Kasikili,80401109,Kaduku,8040110903
+Sipatunyana,Kasikili,80401109,Ngandu,8040110904
+Sipatunyana,Kambulu,80401110,,80401110
+Sipatunyana,Kambulu,80401110,Kabulu,8040111001
+Mawaya,,804034,,804034
+Mawaya,Najika,80403401,,80403401
+Mawaya,Najika,80403401,Katanga,8040340101
+Mawaya,Najika,80403401,Chibila,8040340102
+Mawaya,Najika,80403401,Michelo,8040340103
+Mawaya,Najika,80403401,Malala,8040340104
+Mawaya,Najika,80403401,Muchindu,8040340105
+Mawaya,Najika,80403401,Munsaka,8040340106
+Mawaya,Chizunda,80403402,,80403402
+Mawaya,Chizunda,80403402,Simeja,8040340201
+Mawaya,Chizunda,80403402,Michelo,8040340202
+Mawaya,Chizunda,80403402,Mundilila,8040340203
+Mawaya,Muchindu,80403403,,80403403
+Mawaya,Muchindu,80403403,Michelo,8040340301
+Mawaya,Muchindu,80403403,74,8040340302
+Mawaya,Muchindu,80403403,Mafwafwa,8040340303
+Mawaya,Muchindu,80403403,Simalele,8040340304
+Mawaya,Muchindu,80403403,Musutu,8040340305
+Mawaya,Muchindu,80403403,Number 4,8040340306
+Mawaya,Mancom,80403404,,80403404
+Mawaya,Mancom,80403404,Mancom,8040340401
+Mawaya,Daphan,80403405,,80403405
+Mawaya,Daphan,80403405,Daphan,8040340501
+Mawaya,Simakakata,80403406,,80403406
+Mawaya,Simakakata,80403406,Kaleya,8040340601
+Mawaya,Simakakata,80403406,Cibbonta,8040340602
+Mawaya,Simakakata,80403406,Siafwa,8040340603
+Mawaya,Mawaya Central,80403407,,80403407
+Mawaya,Mawaya Central,80403407,Mawaya,8040340701
+Mawaya,Mawaya Central,80403407,Bwacha,8040340702
+Mawaya,Mawaya Central,80403407,Chikoli B,8040340703
+Mawaya,Mawaya Central,80403407,Twambaule,8040340704
+Naluja,,804022,,804022
+Naluja,Dongo,80402202,,80402202
+Naluja,Dongo,80402202,Ncheenje,8040220201
+Naluja,Dongo,80402202,Namilonga,8040220202
+Naluja,Dongo,80402202,Hamuni,8040220203
+Naluja,Dongo,80402202,Nakayanga,8040220204
+Naluja,Dongo,80402202,Siluunga,8040220205
+Naluja,Nakatala,80402203,,80402203
+Naluja,Nakatala,80402203,Naluube,8040220301
+Naluja,Nakatala,80402203,Lunamba,8040220302
+Naluja,Nakatala,80402203,Simukama,8040220303
+Naluja,Nakatala,80402203,Nakatala,8040220304
+Naluja,Nakatala,80402203,Simaamba,8040220305
+Naluja,Nakatala,80402203,Nacibbwanta,8040220306
+Naluja,Nakatala,80402203,Simoonga,8040220307
+Naluja,Sichibeya,80402206,,80402206
+Naluja,Sichibeya,80402206,Nzila,8040220601
+Naluja,Sichibeya,80402206,Hamwenda,8040220602
+Naluja,Sichibeya,80402206,Hameja,8040220603
+Naluja,Sichibeya,80402206,Hamboole,8040220604
+Naluja,Sichibeya,80402206,Hakwale,8040220605
+Naluja,Sichibeya,80402206,Hantambo,8040220606
+Naluja,Sichibeya,80402206,Chikapula,8040220607
+Naluja,Sichibeya,80402206,Chinkumbe,8040220608
+Naluja,Sichibeya,80402206,Munachande,8040220609
+Naluja,Sichibeya,80402206,Kalulu,8040220610
+Naluja,Sichibeya,80402206,Masumpula,8040220611
+Naluja,Siampayuma,80402207,,80402207
+Naluja,Siampayuma,80402207,Settlement  A,8040220701
+Naluja,Siampayuma,80402207,Settlement  B,8040220702
+Naluja,Siampayuma,80402207,Chimvule,8040220703
+Naluja,Siampayuma,80402207,Sibulyoblyo E,8040220704
+Naluja,Siampayuma,80402207,Siachuunga,8040220705
+Naluja,Siampayuma,80402207,Chitembo,8040220706
+Naluja,Gombe,80402208,,80402208
+Naluja,Gombe,80402208,Gombe,8040220801
+Naluja,Gombe,80402208,Mabwe atuba,8040220802
+Naluja,Gombe,80402208,Suntwe moowa,8040220803
+Naluja,Gombe,80402208,Simoonga,8040220804
+Naluja,Gombe,80402208,Koolwe,8040220805
+Naluja,Naluja,80402209,,80402209
+Naluja,Naluja,80402209,Siamakumba,8040220901
+Naluja,Naluja,80402209,Siamukumwa,8040220902
+Naluja,Naluja,80402209,Sibulyoblyo C,8040220903
+Naluja,Naluja,80402209,Mangwada,8040220904
+Naluja,Naluja,80402209,Malilwe,8040220905
+Naluja,Naluja,80402209,Hamwiinga,8040220906
+Naluja,Naluja,80402209,Moondoma,8040220907
+Naluja,Naluja,80402209,Mulomya,8040220908
+Naluja,Naluja,80402209,Hankwimbi,8040220909
+Simwatachela,,804012,,804012
+Simwatachela,Kabanga,80401201,,80401201
+Simwatachela,Kabanga,80401201,Syuulikwa,8040120101
+Simwatachela,Kabanga,80401201,Simwatachela A,8040120102
+Simwatachela,Kabanga,80401201,Simwatachela B,8040120103
+Simwatachela,Kabanga,80401201,Kapenda,8040120104
+Simwatachela,Kabanga,80401201,Simukabe,8040120105
+Simwatachela,Kabanga,80401201,Sikaale,8040120106
+Simwatachela,Muulamfu,80401202,,80401202
+Simwatachela,Muulamfu,80401202,Mayobo,8040120201
+Simwatachela,Muulamfu,80401202,Kalundu Kambelele,8040120202
+Simwatachela,Mafuta,80401203,,80401203
+Simwatachela,Mafuta,80401203,Siampola,8040120301
+Simwatachela,Mafuta,80401203,Kanyeba,8040120302
+Simwatachela,Mafuta,80401203,Matantilo,8040120303
+Simwatachela,Mafuta,80401203,Basweene,8040120304
+Simwatachela,Mafuta,80401203,Sianyanga,8040120305
+Simwatachela,Mafuta,80401203,Siamalonda,8040120306
+Simwatachela,Mafuta,80401203,Siankope C,8040120307
+Simwatachela,Mafuta,80401203,Siampango,8040120308
+Simwatachela,Mafuta,80401203,Nkaala 1,8040120309
+Simwatachela,Mafuta,80401203,Simalonga,8040120310
+Simwatachela,Chiidi,80401204,,80401204
+Simwatachela,Chiidi,80401204,Mukanlanga,8040120401
+Simwatachela,Chiidi,80401204,Silokomela,8040120402
+Simwatachela,Chiidi,80401204,Polo A,8040120403
+Simwatachela,Chiidi,80401204,Polo B,8040120404
+Simwatachela,Chiidi,80401204,Chilundika,8040120405
+Simwatachela,Chiidi,80401204,Nsemani,8040120406
+Simwatachela,Chiidi,80401204,Simutenge,8040120407
+Simwatachela,Sibooli,80401205,,80401205
+Simwatachela,Sibooli,80401205,Sibooli A,8040120501
+Simwatachela,Sibooli,80401205,Sibooli B,8040120502
+Simwatachela,Sibooli,80401205,Mushome,8040120503
+Simwatachela,Sibooli,80401205,Njenga,8040120504
+Simwatachela,Sibooli,80401205,Simoono,8040120505
+Simwatachela,Sibooli,80401205,Siamabwe,8040120506
+Simwatachela,Sibooli,80401205,Siapenga,8040120507
+Simwatachela,Sibooli,80401205,Simwatachela C,8040120508
+Simwatachela,Sikazimina,80401206,,80401206
+Simwatachela,Sikazimina,80401206,Siampongo,8040120601
+Simwatachela,Sikazimina,80401206,Chikwenya,8040120602
+Simwatachela,Sikazimina,80401206,Sipawa,8040120603
+Simwatachela,Sikazimina,80401206,Gwangwazu,8040120604
+Simwatachela,Sikazimina,80401206,Mulungwa,8040120605
+Simwatachela,Sikazimina,80401206,Sikazimina,8040120606
+Simwatachela,Konayuma,80401207,,80401207
+Simwatachela,Konayuma,80401207,Mupengo,8040120701
+Simwatachela,Konayuma,80401207,Masuka,8040120702
+Simwatachela,Konayuma,80401207,Siatebwele,8040120703
+Simwatachela,Konayuma,80401207,Jankile,8040120704
+Simwatachela,Konayuma,80401207,Munsaka,8040120705
+Simwatachela,Konayuma,80401207,Konauma,8040120706
+Simwatachela,Sianjina,80401208,,80401208
+Simwatachela,Sianjina,80401208,Kataba,8040120801
+Simwatachela,Sianjina,80401208,Jata,8040120802
+Simwatachela,Sianjina,80401208,Musanje,8040120803
+Simwatachela,Sianjina,80401208,Sianjina,8040120804
+Simwatachela,Sianjina,80401208,Sianchind,8040120805
+Simwatachela,Sianjina,80401208,Siampipi,8040120806
+Simwatachela,Chilubwa,80401209,,80401209
+Simwatachela,Chilubwa,80401209,Chalimongela,8040120901
+Simwatachela,Chilubwa,80401209,Chisangu,8040120902
+Simwatachela,Chilubwa,80401209,Chilubwa,8040120903
+Simwatachela,Chilubwa,80401209,Mandonda,8040120904
+Simwatachela,Misiki,80401210,,80401210
+Simwatachela,Misiki,80401210,Keenabanyama A,8040121001
+Simwatachela,Misiki,80401210,Keenabanyama B,8040121002
+Simwatachela,Misiki,80401210,Sianenga,8040121003
+Simwatachela,Misiki,80401210,Misika,8040121004
+Simwatachela,Kayaba,80401211,,80401211
+Simwatachela,Kayaba,80401211,Kayaba,8040121101
+Simwatachela,Kayaba,80401211,Malambo,8040121102
+Simwatachela,Kayaba,80401211,Sikapili,8040121103
+Simwatachela,Siakasasa,80401212,,80401212
+Simwatachela,Siakasasa,80401212,Siakasasa,8040121201
+Simwatachela,Siakasasa,80401212,Siachileka,8040121202
+Simwatachela,Siakasasa,80401212,Machila,8040121203
+Simwatachela,Siankope,80401213,,80401213
+Simwatachela,Siankope,80401213,Siankope A,8040121301
+Simwatachela,Siankope,80401213,Siankope B,8040121302
+Simwatachela,Siankope,80401213,Kapongo,8040121303
+Simwatachela,Siankope,80401213,Munkombwe,8040121304
+Simwatachela,Siankope,80401213,Sianamalembe,8040121305
+Siachitema,,804013,,804013
+Siachitema,Nyezya,80401301,,80401301
+Siachitema,Nyezya,80401301,Muluka,8040130101
+Siachitema,Nyezya,80401301,Bbilibisi,8040130102
+Siachitema,Nyezya,80401301,Siakwangala,8040130103
+Siachitema,Nyezya,80401301,Simuluka,8040130104
+Siachitema,Nyezya,80401301,Settlement A,8040130105
+Siachitema,Nyezya,80401301,Settlement C,8040130106
+Siachitema,Nyezya,80401301,Ndyacamaluli,8040130107
+Siachitema,Nyezya,80401301,Siampande,8040130108
+Siachitema,Nyezya,80401301,Siamubisi,8040130109
+Siachitema,Kapondo,80401302,,80401302
+Siachitema,Kapondo,80401302,Ndyatamaluli,8040130201
+Siachitema,Kapondo,80401302,Malawo,8040130202
+Siachitema,Kapondo,80401302,Kapondo,8040130203
+Siachitema,Kapondo,80401302,Misozi,8040130204
+Siachitema,Kapondo,80401302,Siambizi,8040130205
+Siachitema,Kapondo,80401302,Dankwerts farm,8040130206
+Siachitema,Kapondo,80401302,Nkoli,8040130207
+Siachitema,Kapondo,80401302,Siachoono,8040130208
+Siachitema,Katundulu,80401303,,80401303
+Siachitema,Katundulu,80401303,Siasulwe,8040130301
+Siachitema,Katundulu,80401303,Sett C,8040130302
+Siachitema,Katundulu,80401303,Sikwaazwa,8040130303
+Siachitema,Katundulu,80401303,Sett B,8040130304
+Siachitema,Katundulu,80401303,Muyuni,8040130305
+Siachitema,Simbunji,80401304,,80401304
+Siachitema,Simbunji,80401304,Simbunji,8040130401
+Siachitema,Simbunji,80401304,Siamabela,8040130402
+Siachitema,Simbunji,80401304,Siachuunga,8040130403
+Siachitema,Simbunji,80401304,Mazambani,8040130404
+Siachitema,Katete,80401305,,80401305
+Siachitema,Katete,80401305,Muzyamba,8040130501
+Siachitema,Katete,80401305,Muzyamba,8040130502
+Siachitema,Katete,80401305,Siachuunga,8040130503
+Siachitema,Katete,80401305,Siamable-west,8040130504
+Siachitema,Katete,80401305,Sett A,8040130505
+Siachitema,Katete,80401305,Sett B,8040130506
+Siachitema,Katete,80401305,Bbilibisis,8040130507
+Siachitema,Katete,80401305,Mudobo west,8040130508
+Siachitema,Chibimboma,80401306,,80401306
+Siachitema,Chibimboma,80401306,Misozi,8040130601
+Siachitema,Chibimboma,80401306,Sikwaaba,8040130602
+Siachitema,Chibimboma,80401306,Simulubwa,8040130603
+Siachitema,Chibimboma,80401306,Muuka,8040130604
+Siachitema,Chibimboma,80401306,Simakando,8040130605
+Siachitema,Chibimboma,80401306,Sinduunda,8040130606
+Siachitema,Chibimboma,80401306,Nyanga,8040130607
+Siachitema,Chibimboma,80401306,Munansangu,8040130608
+Siachitema,Chibimboma,80401306,Chitembo,8040130609
+Siachitema,Van-Eden,80401307,,80401307
+Siachitema,Van-Eden,80401307,Farm 12,8040130701
+Siachitema,Van-Eden,80401307,Farm 13,8040130702
+Siachitema,Van-Eden,80401307,Cornhill,8040130703
+Siachitema,Siachitema,80401308,,80401308
+Siachitema,Siachitema,80401308,Chibiisya,8040130801
+Siachitema,Siachitema,80401308,Siamabele,8040130802
+Siachitema,Siachitema,80401308,Mudobo,8040130803
+Siachitema,Siachitema,80401308,Siachitema,8040130804
+Siachitema,Siachitema,80401308,Ndyatamaluli,8040130805
+Siachitema,Siachitema,80401308,Malawo,8040130806
+Siachitema,Siachitema,80401308,Dankwerts,8040130807
+Siachitema,Siachitema,80401308,Elephants,8040130808

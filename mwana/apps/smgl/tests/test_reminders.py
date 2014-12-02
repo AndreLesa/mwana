@@ -79,5 +79,3 @@ class SMGLReminderTest(SMGLSetUp):
         # this should do nothing because there's no incharge
         send_expected_deliveries(router_obj=self.router)
         self.assertEqual(Message.objects.all().count(), 0)
-
-
