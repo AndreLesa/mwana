@@ -41,21 +41,13 @@
               'text-align':'center'
             });
 
-            if (targ == 'reminder-report'){
-              $("#"+targ).html("<p>Under Development</p>").css({
+            if (targ == 'reminder-report' || targ == 'pnc-report' || targ == 'anc-report' || 'reminder-report-smag'){
+              $("#"+targ).html("<p>Not enough data to show</p>").css({
                 'margin-top':'20px',
                 'font-size':'25px',
                 'text-align':'center'
               });
             }
-            if (targ == 'reminder-report-smag'){
-              $("#"+targ).html("<p>Under Development</p>").css({
-                'margin-top':'20px',
-                'font-size':'25px',
-                'text-align':'center'
-              });
-            }
-
 
         });
 
